@@ -104,25 +104,6 @@ public class VisionModule {
         addResultConsumer(ntConsumer);
         addResultConsumer(uiDataConsumer);
 
-        // TODO is this the right spot to do this? OR should it be its own thread?
-        addResultConsumer(
-                result -> {
-                    var now = System.currentTimeMillis();
-                    // Wait 0.5 seconds after last change to send full settings
-                    if (lastSettingChangeTimestamp > 0 && now - lastSettingChangeTimestamp > 500) {
-                        DataChangeService.getInstance()
-                                .publishEvent(
-                                        new OutgoingUIEvent<>(
-                                                UIUpdateType.BROADCAST,
-                                                "fullsettings",
-                                                ConfigManager.getInstance().getConfig().toHashMap(),
-                                                null
-                                        )
-                                );
-                        lastSettingChangeTimestamp = -1;
-                    }
-                });
-
         setPipeline(visionSource.getSettables().getConfiguration().currentPipelineIndex);
 
         dashboardInputStreamer.setFrameDivisor(

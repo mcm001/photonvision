@@ -18,6 +18,8 @@
 package org.photonvision.vision.processes;
 
 import java.util.*;
+
+import io.javalin.websocket.WsContext;
 import org.apache.commons.lang3.tuple.Pair;
 import org.photonvision.common.configuration.CameraConfiguration;
 import org.photonvision.common.configuration.ConfigManager;
@@ -113,7 +115,10 @@ public class VisionModule {
                                         new OutgoingUIEvent<>(
                                                 UIUpdateType.BROADCAST,
                                                 "fullsettings",
-                                                ConfigManager.getInstance().getConfig().toHashMap()));
+                                                ConfigManager.getInstance().getConfig().toHashMap(),
+                                                null
+                                        )
+                                );
                         lastSettingChangeTimestamp = -1;
                     }
                 });
@@ -128,7 +133,7 @@ public class VisionModule {
 
     private void setDriverMode(boolean isDriverMode) {
         pipelineManager.setDriverMode(isDriverMode);
-        saveAndBroadcast();
+        saveAndBroadcastAll();
     }
 
     public void start() {
@@ -167,13 +172,12 @@ public class VisionModule {
                             var newNickname = (String) newPropValue;
                             logger.info("Changing nickname to " + newNickname);
                             setCameraNickname(newNickname);
-                            saveAndBroadcast();
+                            saveAndBroadcastAll();
                             return;
                         case "pipelineName": // rename current pipeline
                             logger.info("Changing nick to " + newPropValue);
                             pipelineManager.getCurrentPipelineSettings().pipelineNickname = (String) newPropValue;
-                            // TODO rename config file
-                            saveAndBroadcast();
+                            saveAndBroadcastAll();
                             return;
                         case "newPipelineInfo": // add new pipeline
                             var typeName = (Pair<String, PipelineType>) newPropValue;
@@ -184,13 +188,13 @@ public class VisionModule {
 
                             var addedSettings = pipelineManager.addPipeline(type);
                             addedSettings.pipelineNickname = name;
-                            saveAndBroadcast();
+                            saveAndBroadcastAll();
                             return;
                         case "deleteCurrPipeline":
                             var indexToDelete = pipelineManager.getCurrentPipelineIndex();
                             logger.info("Deleting current pipe at index " + indexToDelete);
                             pipelineManager.removePipeline(indexToDelete);
-                            saveAndBroadcast();
+                            saveAndBroadcastAll();
                             return;
                         case "changePipeline": // change active pipeline
                             var index = (Integer) newPropValue;
@@ -200,7 +204,7 @@ public class VisionModule {
                             }
                             logger.debug("Setting pipeline index to " + index);
                             setPipeline(index);
-                            saveAndBroadcast();
+                            saveAndBroadcastAll();
                             return;
                     }
 
@@ -304,23 +308,24 @@ public class VisionModule {
                         getStateAsCameraConfig(), visionSource.getSettables().getConfiguration().uniqueName);
     }
 
-    private void saveAndBroadcast() {
+    private void saveAndBroadcastAll() {
         saveModule();
         DataChangeService.getInstance()
                 .publishEvent(
                         new OutgoingUIEvent<>(
                                 UIUpdateType.BROADCAST,
                                 "fullsettings",
-                                ConfigManager.getInstance().getConfig().toHashMap()));
+                                ConfigManager.getInstance().getConfig().toHashMap(),
+                                null));
     }
 
-    private void saveAndBroadcastSelective(String propertyName, Object value) {
+    private void saveAndBroadcastSelective(WsContext originContext, String propertyName, Object value) {
         logger.trace("Broadcasting PSC mutation - " + propertyName + ": " + value);
         saveModule();
         DataChangeService.getInstance()
                 .publishEvent(
                         OutgoingUIEvent.wrappedOf(
-                                UIUpdateType.BROADCAST, "mutatePipeline", propertyName, value));
+                                UIUpdateType.BROADCAST, "mutatePipeline", propertyName, value, originContext));
     }
 
     private void setCameraNickname(String newName) {
@@ -337,8 +342,6 @@ public class VisionModule {
                 new MJPGFrameConsumer(visionSource.getSettables().getConfiguration().uniqueName + "-input");
         frameConsumers.add(dashboardOutputStreamer);
         frameConsumers.add(dashboardInputStreamer);
-
-        saveAndBroadcast();
     }
 
     public PhotonConfiguration.UICameraConfiguration toUICameraConfig() {

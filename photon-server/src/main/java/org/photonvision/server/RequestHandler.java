@@ -147,6 +147,12 @@ public class RequestHandler {
         ctx.status(HardwareManager.getInstance().restartDevice() ? 200 : 500);
     }
 
+    public static void factoryReset(Context ctx) {
+        ConfigManager.getInstance().deleteConfigFolder();
+
+        restartProgram(ctx);
+    }
+
     /**
     * Note that this doesn't actually restart the program itself -- instead, it relies on systemd or
     * an equivalent.
@@ -157,6 +163,7 @@ public class RequestHandler {
         if (Platform.isRaspberryPi()) {
             try {
                 new ShellExec().executeBashCommand("systemctl restart photonvision");
+                System.exit(0);
             } catch (IOException e) {
                 logger.error("Could not restart device!", e);
                 System.exit(0);

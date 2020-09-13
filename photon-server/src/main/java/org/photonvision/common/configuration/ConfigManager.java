@@ -160,7 +160,7 @@ public class ConfigManager {
 
     public void saveToDisk() {
         // Delete old configs
-        FileUtils.deleteDirectory(camerasFolder.toPath());
+        deleteConfigFolder();
 
         try {
             JacksonUtils.serialize(networkConfigFile.toPath(), config.getNetworkConfig());
@@ -342,5 +342,9 @@ public class ConfigManager {
             logger.debug("Saving to disk...");
             saveToDisk();
         }
+    }
+
+    public void deleteConfigFolder() {
+        FileUtils.deleteDirectory(camerasFolder.toPath());
     }
 }

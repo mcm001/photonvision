@@ -22,12 +22,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.util.Units;
+
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.opencv.calib3d.Calib3d;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.photonvision.common.configuration.CameraConfiguration;
 import org.photonvision.common.util.TestUtils;
+import org.photonvision.common.util.file.JacksonUtils;
 import org.photonvision.vision.calibration.CameraCalibrationCoefficients;
 import org.photonvision.vision.frame.Frame;
 import org.photonvision.vision.frame.provider.FileFrameProvider;
@@ -101,11 +110,11 @@ public class SolvePNPTest {
         pipeline.getSettings().targetModel = TargetModel.k2019DualTarget;
 
         var frameProvider =
-                new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark48in, false),
-                        TestUtils.WPI2019Image.FOV,
-                        new Rotation2d(),
-                        TestUtils.get2019LifeCamCoeffs(true));
+            new FileFrameProvider(
+                TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark48in, false),
+                TestUtils.WPI2019Image.FOV,
+                new Rotation2d(),
+                TestUtils.get2019LifeCamCoeffs(true));
 
         CVPipelineResult pipelineResult;
 
@@ -136,11 +145,11 @@ public class SolvePNPTest {
         pipeline.getSettings().targetModel = TargetModel.k2020HighGoalOuter;
 
         var frameProvider =
-                new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_224in_Left, false),
-                        TestUtils.WPI2020Image.FOV,
-                        new Rotation2d(),
-                        TestUtils.get2020LifeCamCoeffs(true));
+            new FileFrameProvider(
+                TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_224in_Left, false),
+                TestUtils.WPI2020Image.FOV,
+                new Rotation2d(),
+                TestUtils.get2020LifeCamCoeffs(true));
 
         CVPipelineResult pipelineResult = pipeline.run(frameProvider.get());
         printTestResults(pipelineResult);
@@ -173,9 +182,9 @@ public class SolvePNPTest {
     public static void main(String[] args) {
         TestUtils.loadLibraries();
         var frameProvider =
-                new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes, false),
-                        TestUtils.WPI2019Image.FOV);
+            new FileFrameProvider(
+                TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes, false),
+                TestUtils.WPI2019Image.FOV);
 
         var settings = new ReflectivePipelineSettings();
         settings.hsvHue.set(60, 100);
@@ -192,12 +201,34 @@ public class SolvePNPTest {
     private static void printTestResults(CVPipelineResult pipelineResult) {
         double fps = 1000 / pipelineResult.getLatencyMillis();
         System.out.println(
-                "Pipeline ran in " + pipelineResult.getLatencyMillis() + "ms (" + fps + " " + "fps)");
+            "Pipeline ran in " + pipelineResult.getLatencyMillis() + "ms (" + fps + " " + "fps)");
         System.out.println("Found " + pipelineResult.targets.size() + " valid targets");
         System.out.println(
-                "Found targets at "
-                        + pipelineResult.targets.stream()
-                                .map(TrackedTarget::getCameraToTarget)
-                                .collect(Collectors.toList()));
+            "Found targets at "
+                + pipelineResult.targets.stream()
+                .map(TrackedTarget::getCameraToTarget)
+                .collect(Collectors.toList()));
+    }
+
+    @Test
+    public void testGlowo() throws IOException {
+//        var configFile = Path.of(TestUtils.getResourcesFolderPath(false).toString(), "calibration", "gloworm.json");
+//        var config = JacksonUtils.deserialize(configFile, CameraConfiguration.class);
+//        var calibrations = config.calibrations;
+//        System.out.println(calibrations);
+//        var calibCoeffs = calibrations.get(1);
+        var calibCoeffs = TestUtils.get2020LifeCamCoeffs(true);
+        double apertureWidth = 1;
+        double apertureHeight = 1;
+        double[] fieldOfViewX = new double[1];
+        double[] fieldOfViewY = new double[1];
+        double[] focalLength = new double[1];
+        Point principal = new Point();
+        double[] aspectRatio = new double[1];
+        Calib3d.calibrationMatrixValues(calibCoeffs.getCameraIntrinsicsMat(), calibCoeffs.resolution,
+            apertureWidth, apertureHeight, fieldOfViewX, fieldOfViewY, focalLength, principal, aspectRatio
+        );
+        var diagFov = Math.sqrt(fieldOfViewX[0] * fieldOfViewX[0] + fieldOfViewY[0] * fieldOfViewY[0]);
+        System.out.println(diagFov);
     }
 }

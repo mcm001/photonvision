@@ -134,7 +134,7 @@ public class TestUtils {
         }
     }
 
-    private static Path getResourcesFolderPath(boolean testMode) {
+    public static Path getResourcesFolderPath(boolean testMode) {
         return Path.of("src", (testMode ? "main" : "test"), "resources").toAbsolutePath();
     }
 

@@ -106,4 +106,13 @@ public class JsonMat implements Releasable {
     public void release() {
         getAsMat().release();
     }
+
+    @Override
+    public String toString() {
+        return "JsonMat{" +
+            "rows=" + rows +
+            ", cols=" + cols +
+            ", data=" + Arrays.toString(data) +
+            '}';
+    }
 }

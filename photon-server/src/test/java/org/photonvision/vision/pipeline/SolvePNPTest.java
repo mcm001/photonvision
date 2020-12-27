@@ -210,14 +210,19 @@ public class SolvePNPTest {
                 .collect(Collectors.toList()));
     }
 
-    @Test
-    public void testGlowo() throws IOException {
+    public static Size getFOV(CameraCalibrationCoefficients calibCoeffs)  {
 //        var configFile = Path.of(TestUtils.getResourcesFolderPath(false).toString(), "calibration", "gloworm.json");
 //        var config = JacksonUtils.deserialize(configFile, CameraConfiguration.class);
 //        var calibrations = config.calibrations;
-//        System.out.println(calibrations);
-//        var calibCoeffs = calibrations.get(1);
-        var calibCoeffs = TestUtils.get2020LifeCamCoeffs(true);
+//        System.out.println(calibrations.stream().map(it -> it.resolution).collect(Collectors.toList()));
+//
+//        var calibCoeffs = calibrations.get(0);
+
+//        var calibCoeffs = TestUtils.get2020LifeCamCoeffs(true);
+
+//        var calibCoeffs = new Calibrate3dPipeTest().calibrateSquaresCommon(new Size(960,720),
+//            Path.of(TestUtils.getResourcesFolderPath(false).toString(), "calibration", "calibImgs_960x720").toFile());
+
         double apertureWidth = 1;
         double apertureHeight = 1;
         double[] fieldOfViewX = new double[1];
@@ -228,7 +233,6 @@ public class SolvePNPTest {
         Calib3d.calibrationMatrixValues(calibCoeffs.getCameraIntrinsicsMat(), calibCoeffs.resolution,
             apertureWidth, apertureHeight, fieldOfViewX, fieldOfViewY, focalLength, principal, aspectRatio
         );
-        var diagFov = Math.sqrt(fieldOfViewX[0] * fieldOfViewX[0] + fieldOfViewY[0] * fieldOfViewY[0]);
-        System.out.println(diagFov);
+        return new Size(fieldOfViewX[0], fieldOfViewY[0]);
     }
 }

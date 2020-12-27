@@ -35,6 +35,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.photonvision.common.util.TestUtils;
+import org.photonvision.vision.calibration.CameraCalibrationCoefficients;
 import org.photonvision.vision.frame.Frame;
 import org.photonvision.vision.frame.FrameStaticProperties;
 import org.photonvision.vision.opencv.CVMat;
@@ -177,6 +178,18 @@ public class Calibrate3dPipeTest {
     }
 
     @Test
+    public void calibrateSquares960x720_declan() {
+        // Pi3 and V1.3 camera
+        System.out.println((String) null);
+        String base = TestUtils.getSquaresBoardImagesPath().toAbsolutePath().toString();
+        File dir = Path.of(base, "piCam", "calibImgs_960x720").toFile();
+        Size sz = new Size(960, 720);
+        var calib = calibrateSquaresCommon(sz, dir);
+        var fov = SolvePNPTest.getFOV(calib);
+        System.out.println(fov);
+    }
+
+    @Test
     public void calibrateSquares1920x1080() {
         // Pi3 and V1.3 camera
         String base = TestUtils.getSquaresBoardImagesPath().toAbsolutePath().toString();
@@ -185,15 +198,15 @@ public class Calibrate3dPipeTest {
         calibrateSquaresCommon(sz, dir);
     }
 
-    public void calibrateSquaresCommon(Size imgRes, File rootFolder) {
-        calibrateSquaresCommon(imgRes, rootFolder, new Size(8, 8), Units.inchesToMeters(1));
+    public CameraCalibrationCoefficients calibrateSquaresCommon(Size imgRes, File rootFolder) {
+        return calibrateSquaresCommon(imgRes, rootFolder, new Size(8, 8), Units.inchesToMeters(1));
     }
 
-    public void calibrateSquaresCommon(Size imgRes, File rootFolder, Size boardDim) {
-        calibrateSquaresCommon(imgRes, rootFolder, boardDim, Units.inchesToMeters(1));
+    public CameraCalibrationCoefficients calibrateSquaresCommon(Size imgRes, File rootFolder, Size boardDim) {
+        return calibrateSquaresCommon(imgRes, rootFolder, boardDim, Units.inchesToMeters(1));
     }
 
-    public void calibrateSquaresCommon(
+    public CameraCalibrationCoefficients calibrateSquaresCommon(
             Size imgRes, File rootFolder, Size boardDim, double boardGridSize_m) {
 
         int startMatCount = CVMat.getMatCount();
@@ -219,7 +232,7 @@ public class Calibrate3dPipeTest {
                                         new FrameStaticProperties(
                                                 (int) imgRes.width, (int) imgRes.height, 67, new Rotation2d(), null)));
 
-                // TestUtils.showImage(output.outputFrame.image.getMat(), file.getName(), 1);
+//                 TestUtils.showImage(output.outputFrame.image.getMat(), file.getName(), 1);
                 output.outputFrame.release();
             }
         }
@@ -270,5 +283,7 @@ public class Calibrate3dPipeTest {
 
         // Confirm we didn't get leaky on our mat usage
         assertTrue(CVMat.getMatCount() == startMatCount);
+
+        return cal;
     }
 }

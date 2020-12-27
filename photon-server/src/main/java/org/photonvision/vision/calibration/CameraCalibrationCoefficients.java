@@ -25,6 +25,8 @@ import org.opencv.core.MatOfDouble;
 import org.opencv.core.Size;
 import org.photonvision.vision.opencv.Releasable;
 
+import java.util.Arrays;
+
 public class CameraCalibrationCoefficients implements Releasable {
     @JsonProperty("resolution")
     public final Size resolution;
@@ -79,5 +81,15 @@ public class CameraCalibrationCoefficients implements Releasable {
     public void release() {
         cameraIntrinsics.release();
         cameraExtrinsics.release();
+    }
+
+    @Override
+    public String toString() {
+        return "CameraCalibrationCoefficients{" +
+            "resolution=" + resolution +
+            ", cameraIntrinsics=" + cameraIntrinsics.toString() +
+            ", cameraExtrinsics=" + cameraExtrinsics.toString() +
+            ", standardDeviation=" + standardDeviation +
+            '}';
     }
 }

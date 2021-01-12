@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.diffplug.gradle.spotless' version '3.28.0'
+//    id 'com.diffplug.gradle.spotless' version '3.28.0'
     id 'jacoco'
 }
 
@@ -11,16 +11,16 @@ group 'org.photonvision'
 
 sourceCompatibility = 11
 
-repositories {
-    jcenter()
-    mavenCentral()
-    maven {
-        url = 'https://maven.photonvision.org/repository/internal/'
-    }
-    maven {
-        url = 'https://frcmaven.wpi.edu:443/artifactory/development'
-    }
-}
+// repositories {
+//     jcenter()
+//     mavenCentral()
+//     maven {
+//         url = 'https://maven.photonvision.org/repository/internal/'
+//     }
+//     maven {
+//         url = 'https://frcmaven.wpi.edu:443/artifactory/development'
+//     }
+// }
 
 ext {
     wpilibVersion = '2020.3.2-99-g9f4de91'
@@ -76,6 +76,8 @@ dependencies {
 
     compile 'org.slf4j:slf4j-simple:1.8.0-beta4'
 
+    compile 'edu.wpi.first.wpimath:wpimath-java:2021.1.2-9-g26584ff'
+
     // Zip
     compile 'org.zeroturnaround:zt-zip:1.14'
 
@@ -111,10 +113,10 @@ spotless {
         removeUnusedImports()
     }
     java {
-        target 'src/*/java/org/**/*.java'
+        target '**/*.java'
         licenseHeaderFile "$rootDir/LicenseHeader.txt"
 
-        targetExclude('src/main/java/org/photonvision/PhotonVersion.java')
+        targetExclude('photon-server/src/main/java/org/photonvision/PhotonVersion.java')
     }
 }
 

@@ -2,10 +2,11 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
-    id "com.diffplug.gradle.spotless" version "3.28.0"
     id 'org.hidetake.ssh' version '2.10.1'
     id "jacoco"
 }
+
+evaluationDependsOn(':photon-core')
 
 apply from: 'versioningHelper.gradle'
 
@@ -16,16 +17,16 @@ version versionString
 
 sourceCompatibility = 11
 
-repositories {
-    jcenter()
-    mavenCentral()
-    maven {
-        url = "https://maven.photonvision.org/repository/internal/"
-    }
-    maven {
-        url = 'https://frcmaven.wpi.edu:443/artifactory/development'
-    }
-}
+// repositories {
+//     jcenter()
+//     mavenCentral()
+//     maven {
+//         url = "https://maven.photonvision.org/repository/internal/"
+//     }
+//     maven {
+//         url = 'https://frcmaven.wpi.edu:443/artifactory/development'
+//     }
+// }
 
 ext {
     wpilibVersion = '2020.3.2-99-g9f4de91'
@@ -143,22 +144,6 @@ task generateJavaDocs(type: Javadoc) {
     source = sourceSets.main.allJava
     classpath = sourceSets.main.compileClasspath
     destinationDir = file("${projectDir}/build/docs")
-}
-
-spotless {
-    java {
-        googleJavaFormat()
-        paddedCell()
-        indentWithTabs(2)
-        indentWithSpaces(4)
-        removeUnusedImports()
-    }
-    java {
-        target "src/*/java/org/**/*.java"
-        licenseHeaderFile "$rootDir/LicenseHeader.txt"
-
-        targetExclude("src/main/java/org/photonvision/PhotonVersion.java")
-    }
 }
 
 run {

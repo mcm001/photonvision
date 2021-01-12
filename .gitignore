@@ -129,3 +129,4 @@ photon-server/src/main/generated/native/include/org_photonvision_raspi_PicamJNI.
 *.bin
 .gradle
 .gradle/*
+photonvision_config

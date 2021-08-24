@@ -20,6 +20,8 @@ package org.photonvision.vision.pipeline;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.Objects;
+
+import org.photonvision.common.util.numbers.DoubleCouple;
 import org.photonvision.vision.frame.FrameDivisor;
 import org.photonvision.vision.opencv.ImageFlipMode;
 import org.photonvision.vision.opencv.ImageRotationMode;
@@ -42,6 +44,8 @@ public class CVPipelineSettings implements Cloneable {
     public double cameraExposure = 50;
     public int cameraBrightness = 50;
     public int cameraGain = 50;
+    public double awbRedGain = 25;
+    public double awbBlueGain = 15;
     public int cameraVideoModeIndex = 0;
     public FrameDivisor streamingFrameDivisor = FrameDivisor.NONE;
     public boolean ledMode = false;

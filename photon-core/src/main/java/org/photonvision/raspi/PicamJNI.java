@@ -134,6 +134,8 @@ public class PicamJNI {
 
     public static native boolean setGain(int gain);
 
+    public static native boolean setAWB(float redGain, float blueGain);
+
     public static native boolean setRotation(int rotation);
 
     public static native void setShouldCopyColor(boolean shouldCopyColor);

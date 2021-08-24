@@ -49,6 +49,8 @@ export default new Vuex.Store({
                     cameraExposure: 1,
                     cameraBrightness: 2,
                     cameraGain: 3,
+                    awbRedGain: 4,
+                    awbBlueGain: 5,
                     inputImageRotationMode: 0,
                     cameraVideoModeIndex: 0,
                     streamingFrameDivisor: 0,

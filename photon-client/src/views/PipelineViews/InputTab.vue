@@ -32,6 +32,26 @@
       @input="handlePipelineData('cameraGain')"
       @rollback="e => rollback('cameraGain', e)"
     />
+    <CVslider
+      v-if="awbRedGain !== -1"
+      v-model="awbRedGain"
+      name="AWB Red Gain"
+      min="0"
+      max="100"
+      tooltip="Controls automatic white balance gain, which affects how the camera captures colors in different conditions"
+      :slider-cols="largeBox"
+      @input="handlePipelineData('cameraGain')"
+    />
+    <CVslider
+      v-if="awbBlueGain !== -1"
+      v-model="awbBlueGain"
+      name="AWB Blue Gain"
+      min="0"
+      max="100"
+      tooltip="Controls automatic white balance gain, which affects how the camera captures colors in different conditions"
+      :slider-cols="largeBox"
+      @input="handlePipelineData('cameraGain')"
+    />
     <CVselect
       v-model="inputImageRotationMode"
       name="Orientation"
@@ -62,10 +82,10 @@
 </template>
 
 <script>
-    import CVslider from '../../components/common/cv-slider'
-    import CVselect from '../../components/common/cv-select'
+import CVslider from '../../components/common/cv-slider'
+import CVselect from '../../components/common/cv-select'
 
-    const unfilteredStreamDivisors = [1, 2, 4, 6];
+const unfilteredStreamDivisors = [1, 2, 4, 6];
 
     export default {
         name: 'Input',
@@ -112,6 +132,22 @@
                 set(val) {
                     this.$store.commit("mutatePipeline", {"cameraGain": parseInt(val)});
                 }
+            },
+            awbRedGain: {
+              get() {
+                return parseInt(this.$store.getters.currentPipelineSettings.awbRedGain)
+              },
+              set(val) {
+                this.$store.commit("mutatePipeline", {"awbRedGain": parseFloat(val)});
+              }
+            },
+            awbBlueGain: {
+              get() {
+                return parseInt(this.$store.getters.currentPipelineSettings.awbBlueGain)
+              },
+              set(val) {
+                this.$store.commit("mutatePipeline", {"awbBlueGain": parseFloat(val)});
+              }
             },
             inputImageRotationMode: {
                 get() {

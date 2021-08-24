@@ -155,6 +155,15 @@ public class ZeroCopyPicamSource extends VisionSource {
         }
 
         @Override
+        public void setWhiteBalance(double redGain, double blueGain) {
+            // red/blue are 0-100, and we wanna scale to 0-8
+            redGain = redGain / 100.0 * 8.0;
+            blueGain = blueGain / 100.0 * 8.0;
+            var success = PicamJNI.setAWB((float) redGain, (float) blueGain);
+            if (!success) logger.warn("Couldn't set Pi camera white balance");
+        }
+
+        @Override
         public FPSRatedVideoMode getCurrentVideoMode() {
             return currentVideoMode;
         }

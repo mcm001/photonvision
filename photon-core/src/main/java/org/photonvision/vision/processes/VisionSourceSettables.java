@@ -49,6 +49,9 @@ public abstract class VisionSourceSettables {
 
     public abstract void setGain(int gain);
 
+    // Set white balance as a number between 0 and 100
+    public void setWhiteBalance(double redGain, double blueGain) {}
+
     public abstract VideoMode getCurrentVideoMode();
 
     public void setVideoModeInternal(int index) {

@@ -17,6 +17,7 @@
         max="100"
         step="0.1"
         @input="handlePipelineData('contourRatio')"
+        power="4"
     />
     <CVrangeSlider
         v-model="contourFullness"

@@ -76,7 +76,7 @@ export default {
     TooltippedLabel,
   },
   // eslint-disable-next-line vue/require-prop-types
-  props: ["name", "min", "max", "value", "step", "tooltip", "disabled"],
+  props: ["name", "min", "max", "value", "step", "tooltip", "disabled", "power"],
   data() {
     return {
       prependFocused: false,
@@ -90,11 +90,19 @@ export default {
         return Object.values(this.value || [0, 0]);
       },
       set(value) {
-        this.$emit("input", value);
+        this.$emit("input", this.scaleValue(value));
       },
     },
   },
   methods: {
+    scaleValue(value) {
+      if(this.power) {
+        value[0] = Math.pow(value[0], this.power) * 100;
+        value[1] = Math.pow(value[1], this.power) * 100;
+      }
+      return value;
+    },
+
     delay(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     },

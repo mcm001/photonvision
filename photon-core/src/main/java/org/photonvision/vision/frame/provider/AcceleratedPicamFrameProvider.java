@@ -19,6 +19,7 @@ package org.photonvision.vision.frame.provider;
 import org.opencv.core.Mat;
 import org.photonvision.common.util.math.MathUtils;
 import org.photonvision.raspi.PicamJNI;
+import org.photonvision.vision.camera.ZeroCopyPicamSource;
 import org.photonvision.vision.frame.Frame;
 import org.photonvision.vision.frame.FrameProvider;
 import org.photonvision.vision.opencv.CVMat;
@@ -33,7 +34,9 @@ public class AcceleratedPicamFrameProvider implements FrameProvider {
         this.settables = visionSettables;
 
         var vidMode = settables.getCurrentVideoMode();
-        var failure = PicamJNI.createCamera(vidMode.width, vidMode.height, vidMode.fps);
+        // The video mode should ALWAYS be a FPSRatedVideoMode
+        var failure = PicamJNI.createCamera(vidMode.width, vidMode.height,
+                ((ZeroCopyPicamSource.FPSRatedVideoMode) vidMode).fpsActual);
         if (failure) {
             failure = PicamJNI.destroyCamera();
             if (failure) throw new RuntimeException("Couldn't destroy Pi camera after init failure!");

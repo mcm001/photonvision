@@ -135,7 +135,18 @@ public class ZeroCopyPicamSource extends VisionSource {
         @Override
         public void setExposure(double exposure) {
             lastExposure = exposure;
-            var failure = PicamJNI.setExposure((int) Math.round(exposure));
+
+            // We use this magic formula to convert to microseconds from 0-100
+            // The output of this should mean 0 exposure -> 1ms exposure time
+            // and 100 exposure -> ~the maximum time allowed by the current FPS setting
+            // https://godbolt.org/z/qcfxbxMnx
+            // If longer exposure times are required (ie in driver mode), either the brightness/gain must
+            // be increased, or the FPS of the video mode decreased.
+             final int paddingMicrosec = 1000;
+             final double exposureMicrosec = paddingMicrosec
+                     + (exposure / 100.0) * (1e6 / getCurrentVideoMode().fps - 2 * paddingMicrosec);
+
+            var failure = PicamJNI.setExposure((int) Math.round(exposureMicrosec));
             if (failure) logger.warn("Couldn't set Pi camera exposure");
         }
 

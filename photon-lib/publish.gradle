@@ -190,3 +190,6 @@ model {
 
 publishToMavenLocal.dependsOn libraryBuild
 publish.dependsOn libraryBuild
+
+publish.dependsOn generateVendorJson
+publish.dependsOn generateVendorJson

@@ -302,7 +302,7 @@ jobs:
           name: image
           path: photonvision*.zip
 
-      - uses: eine/tip@master
+      - uses: pyTooling/Actions/releaser@r0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: 'Dev'

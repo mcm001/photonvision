@@ -322,12 +322,10 @@ jobs:
         with:
           name: jar
 
-      # Checkout code.
-      - uses: actions/checkout@v1
-
-      - run: |
-          chmod +x scripts/generatePiImage.sh
-          ./scripts/generatePiImage.sh
+      # And the image we made previously
+      - uses: actions/download-artifact@v2
+        with:
+          name: image
 
       # All we've downloaded (ideally) is the fat jar, pi jar, and image. So just upload it all
       - uses: softprops/action-gh-release@v1

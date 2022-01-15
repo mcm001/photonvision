@@ -18,7 +18,6 @@ package org.photonvision.vision.processes;
 
 import java.util.ArrayList;
 import java.util.Map;
-import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Point;
 import org.photonvision.common.dataflow.DataChangeSubscriber;
 import org.photonvision.common.dataflow.events.DataChangeEvent;
@@ -74,14 +73,13 @@ public class VisionModuleChangeSubscriber extends DataChangeSubscriber {
                         parentModule.saveAndBroadcastAll();
                         return;
                     case "newPipelineInfo": // add new pipeline
-                        var typeName = (Pair<String, PipelineType>) newPropValue;
-                        var type = typeName.getRight();
-                        var name = typeName.getLeft();
+                        var name = (String) newPropValue;
 
-                        logger.info("Adding a " + type + " pipeline with name " + name);
+                        logger.info("Adding a new Reflective pipeline with name " + name);
 
-                        var addedSettings = parentModule.pipelineManager.addPipeline(type);
+                        var addedSettings = parentModule.pipelineManager.addPipeline(PipelineType.Reflective);
                         addedSettings.pipelineNickname = name;
+
                         parentModule.saveAndBroadcastAll();
                         return;
                     case "deleteCurrPipeline":

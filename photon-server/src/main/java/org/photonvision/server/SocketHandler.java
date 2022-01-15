@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.apache.commons.lang3.tuple.Pair;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.photonvision.common.dataflow.DataChangeDestination;
 import org.photonvision.common.dataflow.DataChangeService;
@@ -38,7 +37,6 @@ import org.photonvision.common.dataflow.events.IncomingWebSocketEvent;
 import org.photonvision.common.hardware.HardwareManager;
 import org.photonvision.common.logging.LogGroup;
 import org.photonvision.common.logging.Logger;
-import org.photonvision.vision.pipeline.PipelineType;
 
 @SuppressWarnings("rawtypes")
 public class SocketHandler {
@@ -184,13 +182,12 @@ public class SocketHandler {
                                 //                                var name = (String) data.get("pipelineName");
                                 var arr = (ArrayList<Object>) entryValue;
                                 var name = (String) arr.get(0);
-                                var type = PipelineType.values()[(Integer) arr.get(1) + 2];
 
                                 var newPipelineEvent =
                                         new IncomingWebSocketEvent<>(
                                                 DataChangeDestination.DCD_ACTIVEMODULE,
                                                 "newPipelineInfo",
-                                                Pair.of(name, type),
+                                                name,
                                                 cameraIndex,
                                                 context);
                                 dcService.publishEvent(newPipelineEvent);

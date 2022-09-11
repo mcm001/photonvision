@@ -30,6 +30,7 @@ import org.photonvision.common.logging.Logger;
 
 public class PicamJNI {
     private static boolean libraryLoaded = false;
+    private static boolean enabled = false;
     private static Logger logger = new Logger(PicamJNI.class, LogGroup.Camera);
 
     public enum SensorModel {
@@ -86,6 +87,7 @@ public class PicamJNI {
 
     public static boolean isSupported() {
         return libraryLoaded
+                && enabled
                 && isVCSMSupported()
                 && getSensorModel() != SensorModel.Disconnected
                 && Platform.isRaspberryPi()

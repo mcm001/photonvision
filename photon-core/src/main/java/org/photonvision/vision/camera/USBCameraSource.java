@@ -39,8 +39,11 @@ public class USBCameraSource extends VisionSource {
     private final USBCameraSettables usbCameraSettables;
     private final USBFrameProvider usbFrameProvider;
     private final CvSink cvSink;
+    private boolean retroReflectiveMode = false;
 
     public final QuirkyCamera cameraQuirks;
+
+    
 
     public USBCameraSource(CameraConfiguration config) {
         super(config);
@@ -60,15 +63,30 @@ public class USBCameraSource extends VisionSource {
         usbFrameProvider = new USBFrameProvider(cvSink, usbCameraSettables);
 
         if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
-            // Pick a bunch of reasonable setting defaults for vision processing.
-            camera.getProperty("exposure_dynamic_framerate").set(0);
-            camera.getProperty("auto_exposure_bias").set(0);
-            camera.getProperty("image_stabilization").set(0);
-            camera.getProperty("iso_sensitivity").set(0);
-            camera.getProperty("iso_sensitivity_auto").set(0);
+
+            //Common settings
+            camera.getProperty("image_stabilization").set(0); //No image stabilization, as this will throw off odometry
+            camera.getProperty("power_line_frequency").set(2); //Assume 60Hz USA
+            camera.getProperty("scene_mode").set(0); //no presets
             camera.getProperty("exposure_metering_mode").set(0);
-            camera.getProperty("scene_mode").set(0);
-            camera.getProperty("power_line_frequency").set(2);
+            camera.getProperty("exposure_dynamic_framerate").set(0);
+
+            if(retroReflectiveMode){
+                // Pick a bunch of reasonable setting defaults for vision processing retroreflective
+                camera.getProperty("auto_exposure_bias").set(0);
+                camera.getProperty("iso_sensitivity_auto").set(0); //Disable auto ISO adjustement
+                camera.getProperty("iso_sensitivity").set(0); //Manual ISO adjustement 
+                camera.getProperty("white_balance_auto_preset").set(2); // Auto white-balance disabled
+                camera.getProperty("auto_exposure").set(1); // auto exposure disabled
+            } else {
+                // Pick a bunch of reasonable setting defaults for driver, aurco, or otherwise nice-for-humans
+                camera.getProperty("auto_exposure_bias").set(12);
+                camera.getProperty("iso_sensitivity_auto").set(1);
+                camera.getProperty("iso_sensitivity").set(1); //Manual ISO adjustement by default
+                camera.getProperty("white_balance_auto_preset").set(1); // Auto white-balance enabled
+                camera.getProperty("auto_exposure").set(0); // auto exposure enabled
+            }
+
         }
     }
 
@@ -109,8 +127,6 @@ public class USBCameraSource extends VisionSource {
             try {
                 int scaledExposure = 1;
                 if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
-                    camera.getProperty("white_balance_auto_preset").set(2); // Auto white-balance off
-                    camera.getProperty("auto_exposure").set(1); // auto exposure off
 
                     scaledExposure =
                             (int) Math.round(timeToPiCamV2RawExposure(pctToExposureTimeUs(exposure)));
@@ -180,8 +196,16 @@ public class USBCameraSource extends VisionSource {
                         modes =
                                 new VideoMode[] {
                                     new VideoMode(VideoMode.PixelFormat.kBGR, 320, 240, 90),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 320, 240, 30),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 320, 240, 15),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 320, 240,10),
                                     new VideoMode(VideoMode.PixelFormat.kBGR, 640, 480, 90),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 640, 480, 45),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 640, 480, 30),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 640, 480, 15),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 640, 480, 10),
                                     new VideoMode(VideoMode.PixelFormat.kBGR, 960, 720, 60),
+                                    new VideoMode(VideoMode.PixelFormat.kBGR, 960, 720, 10),
                                     new VideoMode(VideoMode.PixelFormat.kBGR, 1280, 720, 45),
                                     new VideoMode(VideoMode.PixelFormat.kBGR, 1920, 1080, 20),
                                 };
@@ -216,17 +240,17 @@ public class USBCameraSource extends VisionSource {
                         // and remove all the ones that are slower. This is sorted low to high.
                         // So we remove the last element (the fastest FPS) from the duplicate list,
                         // and remove all remaining elements from the final list
-                        var duplicateModes =
-                                videoModesList.stream()
-                                        .filter(
-                                                it ->
-                                                        it.height == videoMode.height
-                                                                && it.width == videoMode.width
-                                                                && it.pixelFormat == videoMode.pixelFormat)
-                                        .sorted(Comparator.comparingDouble(it -> it.fps))
-                                        .collect(Collectors.toList());
-                        duplicateModes.remove(duplicateModes.size() - 1);
-                        videoModesList.removeAll(duplicateModes);
+                        // var duplicateModes =
+                        //         videoModesList.stream()
+                        //                 .filter(
+                        //                         it ->
+                        //                                 it.height == videoMode.height
+                        //                                         && it.width == videoMode.width
+                        //                                         && it.pixelFormat == videoMode.pixelFormat)
+                        //                 .sorted(Comparator.comparingDouble(it -> it.fps))
+                        //                 .collect(Collectors.toList());
+                        // duplicateModes.remove(duplicateModes.size() - 1);
+                        // videoModesList.removeAll(duplicateModes);
                     }
                 } catch (Exception e) {
                     logger.error("Exception while enumerating video modes!", e);

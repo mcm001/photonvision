@@ -45,6 +45,12 @@ public class ZeroCopyPicamSource extends VisionSource {
 
         settables = new PicamSettables(configuration);
         frameProvider = new AcceleratedPicamFrameProvider(settables);
+
+        setLowExposureOptimizationImpl(false); 
+    }
+
+    static void setLowExposureOptimizationImpl(boolean mode){
+        //TODO - ZeroCopy does not... yet? ... have the configuration params necessary to make this work well.
     }
 
     @Override
@@ -148,6 +154,11 @@ public class ZeroCopyPicamSource extends VisionSource {
             lastExposure = exposure;
             var failure = PicamJNI.setExposure((int) Math.round(exposure));
             if (failure) logger.warn("Couldn't set Pi Camera exposure");
+        }
+
+        @Override
+        public void setLowExposureOptimization(boolean mode) {
+            setLowExposureOptimizationImpl(mode);
         }
 
         @Override

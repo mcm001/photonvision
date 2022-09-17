@@ -39,7 +39,6 @@ public class USBCameraSource extends VisionSource {
     private final USBCameraSettables usbCameraSettables;
     private final USBFrameProvider usbFrameProvider;
     private final CvSink cvSink;
-    private boolean retroReflectiveMode = false;
 
     public final QuirkyCamera cameraQuirks;
 
@@ -59,9 +58,14 @@ public class USBCameraSource extends VisionSource {
             logger.info("Quirky camera detected: " + cameraQuirks.baseName);
         }
 
+        setLowExposureOptimizationImpl(false);
+
         usbCameraSettables = new USBCameraSettables(config);
         usbFrameProvider = new USBFrameProvider(cvSink, usbCameraSettables);
 
+    }
+
+    void setLowExposureOptimizationImpl(boolean lowExposureMode){
         if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
 
             //Common settings
@@ -71,7 +75,7 @@ public class USBCameraSource extends VisionSource {
             camera.getProperty("exposure_metering_mode").set(0);
             camera.getProperty("exposure_dynamic_framerate").set(0);
 
-            if(retroReflectiveMode){
+            if(lowExposureMode){
                 // Pick a bunch of reasonable setting defaults for vision processing retroreflective
                 camera.getProperty("auto_exposure_bias").set(0);
                 camera.getProperty("iso_sensitivity_auto").set(0); //Disable auto ISO adjustement
@@ -87,6 +91,8 @@ public class USBCameraSource extends VisionSource {
                 camera.getProperty("auto_exposure").set(0); // auto exposure enabled
             }
 
+        } else {
+            //TODO - usb cameras?
         }
     }
 
@@ -120,6 +126,11 @@ public class USBCameraSource extends VisionSource {
             final double PADDING_HIGH_US = 200;
             return PADDING_LOW_US
                     + (pct_in / 100.0) * ((1e6 / (double) camera.getVideoMode().fps) - PADDING_HIGH_US);
+        }
+
+        @Override
+        public void setLowExposureOptimization(boolean mode) {
+            setLowExposureOptimizationImpl(mode);
         }
 
         @Override

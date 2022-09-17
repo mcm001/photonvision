@@ -96,13 +96,20 @@ public class USBCameraSource extends VisionSource {
 
         } else {
             //Case - this is some other USB cam. Default to wpilib's implementation
+
+            var canSetWhiteBalance = !cameraQuirks.hasQuirk(CameraQuirk.Gain);
+
             if(lowExposureMode){
                 // Pick a bunch of reasonable setting defaults for vision processing retroreflective
-                camera.setWhiteBalanceManual(4000); // Auto white-balance disabled, 4000K preset
+                if(canSetWhiteBalance){
+                    camera.setWhiteBalanceManual(4000); // Auto white-balance disabled, 4000K preset
+                }
                 this.getSettables().setExposure(50); // auto exposure disabled, put a sane default
             } else {
                 // Pick a bunch of reasonable setting defaults for driver, aurco, or otherwise nice-for-humans
-                camera.setWhiteBalanceAuto(); // Auto white-balance enabled
+                if(canSetWhiteBalance){
+                    camera.setWhiteBalanceAuto(); // Auto white-balance enabled
+                }
                 camera.setExposureAuto(); // auto exposure enabled
             }
 

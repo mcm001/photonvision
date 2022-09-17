@@ -42,8 +42,6 @@ public class USBCameraSource extends VisionSource {
 
     public final QuirkyCamera cameraQuirks;
 
-    private boolean autoExposure = false;
-
     
 
     public USBCameraSource(CameraConfiguration config) {
@@ -68,8 +66,6 @@ public class USBCameraSource extends VisionSource {
     }
 
     void setLowExposureOptimizationImpl(boolean lowExposureMode){
-        //update auto-exposure flag
-        autoExposure = !lowExposureMode;
 
         if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
             //Case, we know this is a picam. Go through v4l2-ctl interface directly
@@ -152,7 +148,7 @@ public class USBCameraSource extends VisionSource {
 
         @Override
         public void setExposure(double exposure) {
-            if(!autoExposure){
+            if(exposure >= 0.0){
                 try {
                     int scaledExposure = 1;
                     if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
@@ -196,6 +192,7 @@ public class USBCameraSource extends VisionSource {
                 logger.error("Failed to set camera gain!", e);
             }
         }
+
 
         @Override
         public VideoMode getCurrentVideoMode() {

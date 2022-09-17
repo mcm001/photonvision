@@ -108,7 +108,7 @@ public class VisionModule {
                         if (it.cameraGain == -1) it.cameraGain = 20; // Sane default
                     });
         }
-        if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
+        if (cameraQuirks.hasQuirk(CameraQuirk.AWBGain)) {
             pipelineManager.userPipelineSettings.forEach(
                     it -> {
                         if (it.cameraRedGain == -1) it.cameraRedGain = 16; // Sane defaults
@@ -362,10 +362,12 @@ public class VisionModule {
         if (!cameraQuirks.hasQuirk(CameraQuirk.Gain)) {
             settings.cameraGain = -1;
         }
-        if (!cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
+        if (!cameraQuirks.hasQuirk(CameraQuirk.AWBGain)) {
             settings.cameraRedGain = -1;
             settings.cameraBlueGain = -1;
         }
+
+        settings.cameraExposure = -1;
 
         setPipeline(PipelineManager.CAL_3D_INDEX);
     }
@@ -402,7 +404,6 @@ public class VisionModule {
 
         visionSource.getSettables().setVideoModeInternal(pipelineSettings.cameraVideoModeIndex);
         visionSource.getSettables().setBrightness(pipelineSettings.cameraBrightness);
-        visionSource.getSettables().setExposure(pipelineSettings.cameraExposure);
         visionSource.getSettables().setGain(pipelineSettings.cameraGain);
 
 
@@ -414,6 +415,15 @@ public class VisionModule {
                                             pipelineSettings.pipelineType == PipelineType.Reflective);
         visionSource.getSettables().setLowExposureOptimization(lowExposureOptimization);
 
+        if(lowExposureOptimization){
+            if (pipelineSettings.cameraExposure == -1) pipelineSettings.cameraExposure = 10; //reasonable default
+        } else {
+            //in human-friendly mode, exposure is automatic
+            pipelineSettings.cameraExposure = -1;
+        }
+        visionSource.getSettables().setExposure(pipelineSettings.cameraExposure);
+
+
         if (cameraQuirks.hasQuirk(CameraQuirk.Gain)) {
             // If the gain is disabled for some reason, re-enable it
             if (pipelineSettings.cameraGain == -1) pipelineSettings.cameraGain = 20;
@@ -421,7 +431,8 @@ public class VisionModule {
         } else {
             pipelineSettings.cameraGain = -1;
         }
-        if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
+
+        if (cameraQuirks.hasQuirk(CameraQuirk.AWBGain)) {
             // If the AWB gains are disabled for some reason, re-enable it
             if (pipelineSettings.cameraRedGain == -1) pipelineSettings.cameraRedGain = 16;
             if (pipelineSettings.cameraBlueGain == -1) pipelineSettings.cameraBlueGain = 16;

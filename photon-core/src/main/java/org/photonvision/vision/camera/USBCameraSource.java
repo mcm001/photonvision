@@ -59,10 +59,19 @@ public class USBCameraSource extends VisionSource {
             logger.info("Quirky camera detected: " + cameraQuirks.baseName);
         }
 
-        setLowExposureOptimizationImpl(false);
+        if(cameraQuirks.hasQuirk(CameraQuirk.CompletelyBroken)){
+            //set some defaults, as these should never be used.
+            logger.info("Camera " + cameraQuirks.baseName + " is not supported for PhotonVision");
+            usbCameraSettables = null;
+            usbFrameProvider = null;
+        } else {
+            //Normal init
+            setLowExposureOptimizationImpl(false);
+            usbCameraSettables = new USBCameraSettables(config);
+            usbFrameProvider = new USBFrameProvider(cvSink, usbCameraSettables);
+        }
 
-        usbCameraSettables = new USBCameraSettables(config);
-        usbFrameProvider = new USBFrameProvider(cvSink, usbCameraSettables);
+
 
     }
 

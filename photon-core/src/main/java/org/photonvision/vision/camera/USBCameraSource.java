@@ -42,6 +42,8 @@ public class USBCameraSource extends VisionSource {
 
     public final QuirkyCamera cameraQuirks;
 
+    private boolean autoExposure = false;
+
     
 
     public USBCameraSource(CameraConfiguration config) {
@@ -66,7 +68,11 @@ public class USBCameraSource extends VisionSource {
     }
 
     void setLowExposureOptimizationImpl(boolean lowExposureMode){
+        //update auto-exposure flag
+        autoExposure = !lowExposureMode;
+
         if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
+            //Case, we know this is a picam. Go through v4l2-ctl interface directly
 
             //Common settings
             camera.getProperty("image_stabilization").set(0); //No image stabilization, as this will throw off odometry
@@ -92,8 +98,19 @@ public class USBCameraSource extends VisionSource {
             }
 
         } else {
-            //TODO - usb cameras?
+            //Case - this is some other USB cam. Default to wpilib's implementation
+            if(lowExposureMode){
+                // Pick a bunch of reasonable setting defaults for vision processing retroreflective
+                camera.setWhiteBalanceManual(4000); // Auto white-balance disabled, 4000K preset
+                this.getSettables().setExposure(50); // auto exposure disabled, put a sane default
+            } else {
+                // Pick a bunch of reasonable setting defaults for driver, aurco, or otherwise nice-for-humans
+                camera.setWhiteBalanceAuto(); // Auto white-balance enabled
+                camera.setExposureAuto(); // auto exposure enabled
+            }
+
         }
+
     }
 
     @Override
@@ -113,17 +130,17 @@ public class USBCameraSource extends VisionSource {
             setVideoMode(videoModes.get(0));
         }
 
-        private int timeToPiCamV2RawExposure(double time_us) {
+        private int timeToPiCamRawExposure(double time_us) {
             int retVal =
-                    (int) Math.round(time_us / 100.0); // PiCamV2 needs exposure time in units of 100us/bit
+                    (int) Math.round(time_us / 100.0); // Pi Cam's (both v1 and v2) need exposure time in units of 100us/bit
             return Math.min(Math.max(retVal, 1), 10000); // Cap to allowable range for parameter
         }
 
         private double pctToExposureTimeUs(double pct_in) {
             // Mirror the photonvision raspicam driver's algorithm for picking an exposure time
             // from a 0-100% input
-            final double PADDING_LOW_US = 100;
-            final double PADDING_HIGH_US = 200;
+            final double PADDING_LOW_US = 10;
+            final double PADDING_HIGH_US = 10;
             return PADDING_LOW_US
                     + (pct_in / 100.0) * ((1e6 / (double) camera.getVideoMode().fps) - PADDING_HIGH_US);
         }
@@ -135,24 +152,26 @@ public class USBCameraSource extends VisionSource {
 
         @Override
         public void setExposure(double exposure) {
-            try {
-                int scaledExposure = 1;
-                if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
+            if(!autoExposure){
+                try {
+                    int scaledExposure = 1;
+                    if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
 
-                    scaledExposure =
-                            (int) Math.round(timeToPiCamV2RawExposure(pctToExposureTimeUs(exposure)));
-                    logger.debug("Setting camera raw exposure to " + Integer.toString(scaledExposure));
-                    camera.getProperty("raw_exposure_time_absolute").set(scaledExposure);
-                    camera.getProperty("raw_exposure_time_absolute").set(scaledExposure);
+                        scaledExposure =
+                                (int) Math.round(timeToPiCamRawExposure(pctToExposureTimeUs(exposure)));
+                        logger.debug("Setting camera raw exposure to " + Integer.toString(scaledExposure));
+                        camera.getProperty("raw_exposure_time_absolute").set(scaledExposure);
+                        camera.getProperty("raw_exposure_time_absolute").set(scaledExposure);
 
-                } else {
-                    scaledExposure = (int) Math.round(exposure);
-                    logger.debug("Setting camera exposure to " + Integer.toString(scaledExposure));
-                    camera.setExposureManual(scaledExposure);
-                    camera.setExposureManual(scaledExposure);
+                    } else {
+                        scaledExposure = (int) Math.round(exposure);
+                        logger.debug("Setting camera exposure to " + Integer.toString(scaledExposure));
+                        camera.setExposureManual(scaledExposure);
+                        camera.setExposureManual(scaledExposure);
+                    }
+                } catch (VideoException e) {
+                    logger.error("Failed to set camera exposure!", e);
                 }
-            } catch (VideoException e) {
-                logger.error("Failed to set camera exposure!", e);
             }
         }
 
@@ -247,6 +266,8 @@ public class USBCameraSource extends VisionSource {
 
                         videoModesList.add(videoMode);
 
+                        // TODO - do we want to trim down FPS modes? in cases where the camera has no gain control,
+                        // lower FPS might be needed to ensure total exposure is acceptable.
                         // We look for modes with the same height/width/pixelformat as this mode
                         // and remove all the ones that are slower. This is sorted low to high.
                         // So we remove the last element (the fastest FPS) from the duplicate list,

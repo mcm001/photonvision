@@ -335,7 +335,8 @@ INSTANTIATE_TEST_SUITE_P(
 //   double testHeight = std::get<2>(testArgs);
 
 //   auto targetPose = frc::Pose2d(frc::Translation2d(35_m, 0_m),
-//                                 frc::Rotation2d(units::radian_t(3.14159 / 42)));
+//                                 frc::Rotation2d(units::radian_t(3.14159 /
+//                                                                      42)));
 
 //   auto robotPose =
 //       frc::Pose2d(frc::Translation2d(units::meter_t(35 - testDist), 0.0_m),
@@ -355,7 +356,8 @@ INSTANTIATE_TEST_SUITE_P(
 //   ASSERT_TRUE(result.HasTargets());
 //   auto tgt = result.GetBestTarget();
 //   EXPECT_DOUBLE_EQ(tgt.GetYaw(), 0.0);
-//   units::meter_t distMeas = photonlib::PhotonUtils::CalculateDistanceToTarget(
+//   units::meter_t distMeas =
+//   photonlib::PhotonUtils::CalculateDistanceToTarget(
 //       units::meter_t(testHeight), units::meter_t(testDist),
 //       units::degree_t(testPitch), units::degree_t(tgt.GetPitch()));
 //   EXPECT_DOUBLE_EQ(distMeas.value(), testDist);

@@ -77,6 +77,10 @@ public class USBCameraSource extends VisionSource {
 
     void setLowExposureOptimizationImpl(boolean lowExposureMode){
 
+    }
+
+    void setLowExposureOptimizationImpl(boolean lowExposureMode){
+
         if (cameraQuirks.hasQuirk(CameraQuirk.PiCam)) {
             //Case, we know this is a picam. Go through v4l2-ctl interface directly
 

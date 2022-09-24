@@ -1,10 +1,26 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*
+ * Copyright (C) Photon Vision.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 package edu.wpi.first.math.geometry;
 
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.interpolation.Interpolatable;
@@ -71,6 +87,21 @@ public class Rotation3d implements Interpolatable<Rotation3d> {
         // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Definition
         var v = axis.times(1.0 / norm).times(Math.sin(angleRadians / 2.0));
         m_q = new Quaternion(Math.cos(angleRadians / 2.0), v.get(0, 0), v.get(1, 0), v.get(2, 0));
+    }
+
+    /**
+     * Constructs a quaternion from a 3x3, row-major direction cosine matrix
+     * https://intra.ece.ucr.edu/~farrell/AidedNavigation/D_App_Quaternions/Rot2Quat.pdf
+     *
+     * @param dcm A 3x3 direction cosine matrix
+     */
+    public Rotation3d(Matrix<N3, N3> dcm) {
+        double b1 = 0.5 * Math.sqrt(1 + dcm.get(0, 0) + dcm.get(1, 1) + dcm.get(2, 2));
+        double b2 = (dcm.get(2, 1) - dcm.get(1, 2)) / (4 * b1);
+        double b3 = (dcm.get(0, 2) - dcm.get(2, 0)) / (4 * b1);
+        double b4 = (dcm.get(1, 0) - dcm.get(0, 1)) / (4 * b1);
+
+        m_q = new Quaternion(b1, b2, b3, b4).normalize();
     }
 
     /**

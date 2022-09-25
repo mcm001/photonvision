@@ -109,6 +109,9 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
         List<TrackedTarget> targetList;
         CVPipeResult<List<DetectionResult>> tagDetectionPipeResult;
 
+        //Use the solvePNP Enabled flag to enable native pose estimation
+        aprilTagDetectionPipe.setNativePoseEstimationEnabled(settings.solvePNPEnabled);
+        
         tagDetectionPipeResult = aprilTagDetectionPipe.run(grayscalePipeResult.output);
         grayscalePipeResult.output.release();
         sumPipeNanosElapsed += tagDetectionPipeResult.nanosElapsed;
@@ -126,14 +129,6 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
             target.setCameraToTarget(correctLocationForCameraPitch(target.getCameraToTarget3d(), frameStaticProperties.cameraPitch));
             targetList.add(target);
         }
-        try{
-        Thread.sleep(500);
-        } catch(InterruptedException e) {
-
-        }
-        // if (settings.solvePNPEnabled) {
-        //     targetList = solvePNPPipe.run(targetList).output;
-        // }
 
         var fpsResult = calculateFPSPipe.run(null);
         var fps = fpsResult.output;

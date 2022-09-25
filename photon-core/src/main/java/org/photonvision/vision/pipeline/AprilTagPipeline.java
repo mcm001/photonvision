@@ -17,6 +17,13 @@
 
 package org.photonvision.vision.pipeline;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.Mat;
@@ -31,14 +38,6 @@ import org.photonvision.vision.pipe.impl.*;
 import org.photonvision.vision.pipeline.result.CVPipelineResult;
 import org.photonvision.vision.target.TrackedTarget;
 import org.photonvision.vision.target.TrackedTarget.TargetCalculationParameters;
-
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 
 @SuppressWarnings("DuplicatedCode")
 public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipelineSettings> {
@@ -59,7 +58,7 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
     @Override
     protected void setPipeParamsImpl() {
 
-        //Sanitize thread count - not supported to ahve fewer than 1 threads
+        // Sanitize thread count - not supported to ahve fewer than 1 threads
         settings.threads = Math.max(1, settings.threads);
 
         RotateImagePipe.RotateImageParams rotateImageParams =
@@ -80,7 +79,9 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
                         settings.threads,
                         settings.debug,
                         settings.refineEdges);
-        aprilTagDetectionPipe.setParams(new AprilTagDetectionPipeParams(aprilTagDetectionParams, frameStaticProperties.cameraCalibration));
+        aprilTagDetectionPipe.setParams(
+                new AprilTagDetectionPipeParams(
+                        aprilTagDetectionParams, frameStaticProperties.cameraCalibration));
 
         var solvePNPParams =
                 new SolvePNPAprilTagsPipe.SolvePNPAprilTagsPipeParams(
@@ -113,7 +114,7 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
         List<TrackedTarget> targetList;
         CVPipeResult<List<DetectionResult>> tagDetectionPipeResult;
 
-        //Use the solvePNP Enabled flag to enable native pose estimation
+        // Use the solvePNP Enabled flag to enable native pose estimation
         aprilTagDetectionPipe.setNativePoseEstimationEnabled(settings.solvePNPEnabled);
 
         tagDetectionPipeResult = aprilTagDetectionPipe.run(grayscalePipeResult.output);
@@ -130,7 +131,9 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
                             new TargetCalculationParameters(
                                     false, null, null, null, null, frameStaticProperties));
 
-            target.setCameraToTarget(correctLocationForCameraPitch(target.getCameraToTarget3d(), frameStaticProperties.cameraPitch));
+            target.setCameraToTarget(
+                    correctLocationForCameraPitch(
+                            target.getCameraToTarget3d(), frameStaticProperties.cameraPitch));
             targetList.add(target);
         }
 

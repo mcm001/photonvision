@@ -31,10 +31,12 @@ import org.photonvision.common.logging.Logger;
 
 public class AprilTagJNI {
 
-    static final boolean USE_DEBUG = false; // Development flag - should be false on release, but flip to True to read in a debug version of the library
+    static final boolean USE_DEBUG =
+            false; // Development flag - should be false on release, but flip to True to read in a debug
+    // version of the library
     static final String NATIVE_DEBUG_LIBRARY_NAME = "apriltagd";
     static final String NATIVE_RELEASE_LIBRARY_NAME = "apriltag";
-    
+
     static boolean s_libraryLoaded = false;
     static RuntimeLoader<AprilTagJNI> s_loader = null;
     private static Logger logger = new Logger(AprilTagJNI.class, LogGroup.VisionModule);
@@ -56,8 +58,8 @@ public class AprilTagJNI {
             String libFileName = System.mapLibraryName(libBaseName);
             File libFile = Path.of("lib/" + libFileName).toFile();
 
-            // Always extract the library fresh 
-            // Yes, technically, a hashing strategy should speed this up, but it's only a 
+            // Always extract the library fresh
+            // Yes, technically, a hashing strategy should speed this up, but it's only a
             // one-time, at-startup time hit. And not very big.
             URL resourceURL;
             if (Platform.isRaspberryPi()) {
@@ -74,7 +76,7 @@ public class AprilTagJNI {
                 Files.copy(in, libFile.toPath());
             }
 
-            //Actually load the library
+            // Actually load the library
             System.load(libFile.getAbsolutePath());
 
             s_libraryLoaded = true;
@@ -87,7 +89,7 @@ public class AprilTagJNI {
             ioe.printStackTrace();
         }
 
-        if(!s_libraryLoaded){
+        if (!s_libraryLoaded) {
             logger.error("Failed to load AprilTag Native Library!");
         } else {
             logger.info("AprilTag Native Library loaded successfully");
@@ -101,14 +103,43 @@ public class AprilTagJNI {
     // Destroy and free a previously created detector.
     public static native long AprilTag_Destroy(long detector);
 
-    private static native Object[] AprilTag_Detect(long detector, long imgAddr, int rows, int cols, boolean doPoseEstimation,
-        double tagWidth, double fx, double fy, double cx, double cy, int nIters);
+    private static native Object[] AprilTag_Detect(
+            long detector,
+            long imgAddr,
+            int rows,
+            int cols,
+            boolean doPoseEstimation,
+            double tagWidth,
+            double fx,
+            double fy,
+            double cx,
+            double cy,
+            int nIters);
 
     // Detect targets given a GRAY frame. Returns a pointer toa zarray
-    public static DetectionResult[] AprilTag_Detect(long detector, Mat img, boolean doPoseEstimation,
-            double tagWidth, double fx, double fy, double cx, double cy, int nIters) {
-        return (DetectionResult[]) AprilTag_Detect(detector, img.dataAddr(), img.rows(), img.cols(), doPoseEstimation,
-        tagWidth, fx, fy, cx, cy, nIters);
+    public static DetectionResult[] AprilTag_Detect(
+            long detector,
+            Mat img,
+            boolean doPoseEstimation,
+            double tagWidth,
+            double fx,
+            double fy,
+            double cx,
+            double cy,
+            int nIters) {
+        return (DetectionResult[])
+                AprilTag_Detect(
+                        detector,
+                        img.dataAddr(),
+                        img.rows(),
+                        img.cols(),
+                        doPoseEstimation,
+                        tagWidth,
+                        fx,
+                        fy,
+                        cx,
+                        cy,
+                        nIters);
     }
 
     public static void main(String[] args) {

@@ -18,7 +18,6 @@
 package org.photonvision.vision.pipe.impl;
 
 import java.util.Objects;
-
 import org.photonvision.vision.apriltag.AprilTagDetectorParams;
 import org.photonvision.vision.apriltag.AprilTagFamily;
 import org.photonvision.vision.calibration.CameraCalibrationCoefficients;
@@ -36,15 +35,14 @@ public class AprilTagDetectionPipeParams {
             boolean debug,
             boolean refineEdges,
             CameraCalibrationCoefficients cameraCalibrationCoefficients) {
-        detectorParams = new AprilTagDetectorParams(tagFamily, decimate, blur, threads, debug, refineEdges);
+        detectorParams =
+                new AprilTagDetectorParams(tagFamily, decimate, blur, threads, debug, refineEdges);
         this.cameraCalibrationCoefficients = cameraCalibrationCoefficients;
-
     }
 
     public AprilTagDetectionPipeParams(
-        AprilTagDetectorParams detectorParams,
-        CameraCalibrationCoefficients cameraCalibrationCoefficients
-    ) {
+            AprilTagDetectorParams detectorParams,
+            CameraCalibrationCoefficients cameraCalibrationCoefficients) {
         this.detectorParams = detectorParams;
         this.cameraCalibrationCoefficients = cameraCalibrationCoefficients;
     }

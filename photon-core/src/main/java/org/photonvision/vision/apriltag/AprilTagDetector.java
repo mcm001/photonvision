@@ -56,12 +56,13 @@ public class AprilTagDetector {
         }
     }
 
-    public DetectionResult[] detect(Mat grayscaleImg, CameraCalibrationCoefficients coeffs, boolean useNativePoseEst) {
-        if (m_detectorPtr == 0){
-            //Detector not set up (JNI issue? or similar?)
+    public DetectionResult[] detect(
+            Mat grayscaleImg, CameraCalibrationCoefficients coeffs, boolean useNativePoseEst) {
+        if (m_detectorPtr == 0) {
+            // Detector not set up (JNI issue? or similar?)
             // No detection is possible.
             return new DetectionResult[] {};
-        } 
+        }
 
         var cx = 0.0;
         var cy = 0.0;
@@ -69,10 +70,10 @@ public class AprilTagDetector {
         var fy = 0.0;
         var doPoseEst = false;
 
-        if(coeffs != null && useNativePoseEst){
+        if (coeffs != null && useNativePoseEst) {
             final Mat cameraMatrix = coeffs.getCameraIntrinsicsMat();
             if (cameraMatrix != null) {
-                //Camera calibration has been done, we should be able to do pose estimation
+                // Camera calibration has been done, we should be able to do pose estimation
                 cx = cameraMatrix.get(0, 2)[0];
                 cy = cameraMatrix.get(1, 2)[0];
                 fx = cameraMatrix.get(0, 0)[0];
@@ -81,9 +82,7 @@ public class AprilTagDetector {
             }
         }
 
-        return AprilTagJNI.AprilTag_Detect(m_detectorPtr, grayscaleImg,
-        doPoseEst, 0.1, fx, fy, cx, cy, 100
-        );
-
+        return AprilTagJNI.AprilTag_Detect(
+                m_detectorPtr, grayscaleImg, doPoseEst, 0.1, fx, fy, cx, cy, 100);
     }
 }

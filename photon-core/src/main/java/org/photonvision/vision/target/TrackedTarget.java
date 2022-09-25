@@ -74,15 +74,14 @@ public class TrackedTarget implements Releasable {
                 TargetCalculations.calculateYaw(
                         result.getCenterX(), params.cameraCenterPoint.x, params.horizontalFocalLength);
         Pose3d bestPose = new Pose3d();
-        if(result.getError1() <= result.getError2()) {
+        if (result.getError1() <= result.getError2()) {
             bestPose = result.getPoseResult1();
-        }
-        else {
+        } else {
             bestPose = result.getPoseResult2();
         }
 
         m_cameraToTarget3d = new Transform3d(new Pose3d(), bestPose);
-        
+
         double[] corners = result.getCorners();
         Point[] cornerPoints =
                 new Point[] {

@@ -40,7 +40,7 @@ public class AprilTagDetectionPipe
         m_detector.updateParams(params.detectorParams);
     }
 
-    public void setNativePoseEstimationEnabled(boolean enabled){
+    public void setNativePoseEstimationEnabled(boolean enabled) {
         this.useNativePoseEst = enabled;
     }
 }

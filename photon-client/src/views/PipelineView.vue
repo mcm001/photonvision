@@ -33,8 +33,8 @@
                 :color="fpsTooLow ? 'error' : 'transparent'"
                 :text-color="fpsTooLow ? 'white' : 'grey'"
               >
-                <span class="pr-1">{{ Math.round($store.state.pipelineResults.fps) }}&nbsp;FPS &ndash;</span>
-                <span v-if="!fpsTooLow">{{ Math.min(Math.round($store.state.pipelineResults.latency), 100) }} ms latency</span>
+                <span class="pr-1">{{ Math.round($store.state.pipelineResults.fps * 10.0) / 10.0 }}&nbsp;FPS &ndash;</span>
+                <span v-if="!fpsTooLow">{{ Math.min(Math.round($store.state.pipelineResults.latency), 9999) }} ms latency</span>
                 <span v-else-if="!$store.getters.currentPipelineSettings.inputShouldShow">HSV thresholds are too broad; narrow them for better performance</span>
                 <span v-else>stop viewing the color stream for better performance</span>
               </v-chip>

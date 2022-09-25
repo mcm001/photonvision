@@ -87,7 +87,7 @@ public class AprilTagJNI {
             ioe.printStackTrace();
         }
 
-        if(s_libraryLoaded){
+        if(!s_libraryLoaded){
             logger.error("Failed to load AprilTag Native Library!");
         } else {
             logger.info("AprilTag Native Library loaded successfully");

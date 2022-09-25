@@ -58,6 +58,10 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
 
     @Override
     protected void setPipeParamsImpl() {
+
+        //Sanitize thread count - not supported to ahve fewer than 1 threads
+        settings.threads = Math.max(1, settings.threads);
+
         RotateImagePipe.RotateImageParams rotateImageParams =
                 new RotateImagePipe.RotateImageParams(settings.inputImageRotationMode);
         rotateImagePipe.setParams(rotateImageParams);
@@ -111,7 +115,7 @@ public class AprilTagPipeline extends CVPipeline<CVPipelineResult, AprilTagPipel
 
         //Use the solvePNP Enabled flag to enable native pose estimation
         aprilTagDetectionPipe.setNativePoseEstimationEnabled(settings.solvePNPEnabled);
-        
+
         tagDetectionPipeResult = aprilTagDetectionPipe.run(grayscalePipeResult.output);
         grayscalePipeResult.output.release();
         sumPipeNanosElapsed += tagDetectionPipeResult.nanosElapsed;

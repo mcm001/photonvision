@@ -57,6 +57,11 @@ public class Packet {
         return size;
     }
 
+    public int getRemainingRead() {
+        // Size is 1-indexed, but readpos is zero indexed
+        return getSize() - readPos - 1;
+    }
+
     /**
      * Returns the packet data.
      *

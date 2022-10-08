@@ -123,9 +123,21 @@ public class PhotonPipelineResult {
      * @return The incoming packet.
      */
     public Packet createFromPacket(Packet packet) {
+        // Must have at _least_ 9 bytes at this point
+        if (packet.getRemainingRead() < 9) {
+            // TODO print error?
+            return packet;
+        }
+
         // Decode latency, existence of targets, and number of targets.
         latencyMillis = packet.decodeDouble();
         byte targetCount = packet.decodeByte();
+
+        // Must have at _least_ 9 bytes header + targetCount * sizeof(trackedtarget) at this point
+        if (packet.getRemainingRead() < (targetCount * PhotonTrackedTarget.PACK_SIZE_BYTES)) {
+            // TODO print error?
+            return packet;
+        }
 
         targets.clear();
 

@@ -119,6 +119,11 @@ public class PhotonTrackedTarget {
      * @return The incoming packet.
      */
     public Packet createFromPacket(Packet packet) {
+        if (packet.getRemainingRead() < (PACK_SIZE_BYTES)) {
+            // TODO print error?
+            return packet;
+        }
+
         this.yaw = packet.decodeDouble();
         this.pitch = packet.decodeDouble();
         this.area = packet.decodeDouble();

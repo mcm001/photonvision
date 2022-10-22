@@ -113,7 +113,7 @@ public class NetworkTablesManager {
     }
 
     private void setClientMode(int teamNumber) {
-        if(!isRetryingConnection) logger.info("Starting NT Client");
+        if (!isRetryingConnection) logger.info("Starting NT Client");
         ntInstance.stopServer();
 
         ntInstance.startClientTeam(teamNumber);
@@ -139,7 +139,7 @@ public class NetworkTablesManager {
             setConfig(ConfigManager.getInstance().getConfig().getNetworkConfig());
         }
 
-        if(!ntInstance.isConnected() &&  !isRetryingConnection) {
+        if (!ntInstance.isConnected() && !isRetryingConnection) {
             isRetryingConnection = true;
             logger.error(
                     "[NetworkTablesManager] Could not connect to the robot! Will retry in the background...");

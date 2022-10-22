@@ -118,14 +118,6 @@ public class NetworkTablesManager {
 
         ntInstance.startClientTeam(teamNumber);
         ntInstance.startDSClient();
-        if (ntInstance.isConnected()) {
-            logger.info("[NetworkTablesManager] Connected to the robot!");
-            isRetryingConnection = false;
-        } else if(!isRetryingConnection) {
-            isRetryingConnection = true;
-            logger.error(
-                    "[NetworkTablesManager] Could not connect to the robot! Will retry in the background...");
-        }
         broadcastVersion();
     }
 
@@ -145,6 +137,12 @@ public class NetworkTablesManager {
         if (!ntInstance.isConnected()
                 && !ConfigManager.getInstance().getConfig().getNetworkConfig().runNTServer) {
             setConfig(ConfigManager.getInstance().getConfig().getNetworkConfig());
+        }
+
+        if(!ntInstance.isConnected() &&  !isRetryingConnection) {
+            isRetryingConnection = true;
+            logger.error(
+                    "[NetworkTablesManager] Could not connect to the robot! Will retry in the background...");
         }
     }
 }

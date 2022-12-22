@@ -64,7 +64,7 @@ public class SolvePNPPipe
     }
 
     private void calculateTargetPose(TrackedTarget target) {
-        var corners = target.getTargetCorners();
+        var corners = target.getDistortedTargetCorners();
         if (corners == null
                 || corners.isEmpty()
                 || params.cameraCoefficients == null

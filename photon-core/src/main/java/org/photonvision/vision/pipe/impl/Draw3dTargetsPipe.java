@@ -189,7 +189,7 @@ public class Draw3dTargetsPipe
             }
 
             // draw corners
-            var corners = target.getTargetCorners();
+            var corners = target.getDistortedTargetCorners();
             if (corners != null && !corners.isEmpty()) {
                 for (var corner : corners) {
                     var x = corner.x / (double) params.divisor.value;

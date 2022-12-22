@@ -36,7 +36,7 @@ public class TrackedTarget implements Releasable {
 
     private MatOfPoint2f m_approximateBoundingPolygon;
 
-    private List<Point> m_targetCorners;
+    private List<Point> m_targetCornersDistorted;
 
     private Point m_targetOffsetPoint;
     private Point m_robotOffsetPoint;
@@ -98,7 +98,7 @@ public class TrackedTarget implements Releasable {
                     new Point(corners[4], corners[5]),
                     new Point(corners[6], corners[7])
                 };
-        m_targetCorners = List.of(cornerPoints);
+        m_targetCornersDistorted = List.of(cornerPoints);
         MatOfPoint contourMat = new MatOfPoint(cornerPoints);
         m_approximateBoundingPolygon = new MatOfPoint2f(cornerPoints);
         m_mainContour = new Contour(contourMat);
@@ -225,12 +225,12 @@ public class TrackedTarget implements Releasable {
         if (m_cameraRelativeRvec != null) m_cameraRelativeRvec.release();
     }
 
-    public void setCorners(List<Point> targetCorners) {
-        this.m_targetCorners = targetCorners;
+    public void setDistortedCorners(List<Point> targetCorners) {
+        this.m_targetCornersDistorted = targetCorners;
     }
 
-    public List<Point> getTargetCorners() {
-        return m_targetCorners;
+    public List<Point> getDistortedTargetCorners() {
+        return m_targetCornersDistorted;
     }
 
     public boolean hasSubContours() {

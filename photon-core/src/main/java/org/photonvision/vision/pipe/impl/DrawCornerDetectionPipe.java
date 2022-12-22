@@ -32,7 +32,7 @@ public class DrawCornerDetectionPipe
         Mat image = in.getLeft();
 
         for (var target : in.getRight()) {
-            var corners = target.getTargetCorners();
+            var corners = target.getDistortedTargetCorners();
             for (var corner : corners) {
                 Imgproc.circle(image, corner, params.dotRadius, params.dotColor);
             }

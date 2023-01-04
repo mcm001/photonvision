@@ -37,9 +37,7 @@ import edu.wpi.first.networktables.RawSubscriber;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-
 import java.util.Set;
-
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -300,12 +298,18 @@ public class PhotonCamera {
             Set<String> cameraNames = rootTable.getInstance().getTable(kTableName).getSubTables();
             if (cameraNames.isEmpty()) {
                 DriverStation.reportError(
-                    "Could not find any PhotonVision coprocessors on NetworkTables. Double check that PhotonVision is running, and that your camera is connected!", false);
+                        "Could not find any PhotonVision coprocessors on NetworkTables. Double check that PhotonVision is running, and that your camera is connected!",
+                        false);
             } else {
                 DriverStation.reportError(
-                    "PhotonVision coprocessor at path " + path + " not found on NetworkTables. Double check that your camera names match!", true);
+                        "PhotonVision coprocessor at path "
+                                + path
+                                + " not found on NetworkTables. Double check that your camera names match!",
+                        true);
                 DriverStation.reportError(
-                    "Found the following PhotonVision cameras on NetworkTables:\n" + String.join("\n", cameraNames), false);
+                        "Found the following PhotonVision cameras on NetworkTables:\n"
+                                + String.join("\n", cameraNames),
+                        false);
             }
         }
         // Check for connection status. Warn if disconnected.

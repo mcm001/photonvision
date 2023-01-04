@@ -135,7 +135,7 @@ void PhotonCamera::VerifyVersion() {
   if (versionString.empty()) {
     std::string path_ = path;
     std::vector<std::string> cameraNames =
-        rootTable->GetInstance().GetTable("photonvision").GetSubTables();
+        rootTable->GetInstance().GetTable("photonvision")->GetSubTables();
     if (cameraNames.empty()) {
       FRC_ReportError(frc::warn::Warning,
                       "Could not find any PhotonVision coprocessors on "

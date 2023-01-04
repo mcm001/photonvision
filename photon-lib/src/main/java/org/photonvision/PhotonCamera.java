@@ -300,7 +300,7 @@ public class PhotonCamera {
             Set<String> cameraNames = rootTable.getInstance().getTable(kTableName).getSubTables();
             if (cameraNames.isEmpty()) {
                 DriverStation.reportError(
-                    "Could not find any PhotonVision coprocessors on NetworkTables! Double check that photonvision is running, and that your camera is connected!", false);
+                    "Could not find any PhotonVision coprocessors on NetworkTables. Double check that PhotonVision is running, and that your camera is connected!", false);
             } else {
                 DriverStation.reportError(
                     "PhotonVision coprocessor at path " + path + " not found on NetworkTables. Double check that your camera names match!", true);

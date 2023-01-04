@@ -134,19 +134,28 @@ void PhotonCamera::VerifyVersion() {
   const std::string& versionString = versionEntry.Get("");
   if (versionString.empty()) {
     std::string path_ = path;
-    std::vector<std::string> cameraNames = rootTable->GetInstance().GetTable("photonvision").getSubTables();
+    std::vector<std::string> cameraNames =
+        rootTable->GetInstance().GetTable("photonvision").GetSubTables();
     if (cameraNames.empty()) {
-        FRC_ReportError(
-            frc::warn::Warning,
-            "Could not find any PhotonVision coprocessors on NetworkTables. Double check that PhotonVision is running, and that your camera is connected!");
+      FRC_ReportError(frc::warn::Warning,
+                      "Could not find any PhotonVision coprocessors on "
+                      "NetworkTables. Double check that PhotonVision is "
+                      "running, and that your camera is connected!");
     } else {
-        FRC_ReportError(
-            frc::warn::Warning,
-            "PhotonVision coprocessor at path {} not found on NetworkTables. Double check that your camera names match!",
-            path_);
-        FRC_ReportError(
-            frc::warn::Warning,
-            "Found the following PhotonVision cameras on NetworkTables:\n" + String.join("\n", cameraNames), false);
+      FRC_ReportError(
+          frc::warn::Warning,
+          "PhotonVision coprocessor at path {} not found on NetworkTables. "
+          "Double check that your camera names match!",
+          path_);
+
+      std::string cameraNameOutString;
+      for (unsigned int i = 0; i < cameraNames.size(); i++) {
+        cameraNameOutString += "\n" + cameraNames[i];
+      }
+      FRC_ReportError(
+          frc::warn::Warning,
+          "Found the following PhotonVision cameras on NetworkTables:{}",
+          cameraNameOutString);
     }
   } else if (!VersionMatches(versionString)) {
     FRC_ReportError(frc::warn::Warning,

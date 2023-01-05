@@ -31,8 +31,10 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.IntegerEntry;
 import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.networktables.MultiSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.RawSubscriber;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -99,6 +101,8 @@ public class PhotonCamera {
 
     Packet packet = new Packet(1);
 
+    private final MultiSubscriber m_topicNameSubscriber;
+
     /**
      * Constructs a PhotonCamera from a root table.
      *
@@ -120,6 +124,12 @@ public class PhotonCamera {
         heartbeatEntry = rootTable.getIntegerTopic("heartbeat").subscribe(-1);
         ledModeEntry = mainTable.getIntegerTopic("ledMode").getEntry(-1);
         versionEntry = mainTable.getStringTopic("version").subscribe("");
+
+        m_topicNameSubscriber =
+                new MultiSubscriber(
+                        instance,
+                        new String[] {"/photonvision/"},
+                        new PubSubOption[] {PubSubOption.topicsOnly(true)});
     }
 
     /**

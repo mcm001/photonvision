@@ -114,7 +114,7 @@ public class Draw3dTargetsPipe
                     // Distort the points so they match the image they're being overlaid on
                     distortPoints(tempMat, tempMat);
                 }
-                        
+
                 var topPoints = tempMat.toList();
 
                 dividePointList(bottomPoints);

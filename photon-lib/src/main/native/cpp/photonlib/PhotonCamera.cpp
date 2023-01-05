@@ -33,6 +33,7 @@
 namespace photonlib {
 
 constexpr const units::second_t VERSION_CHECK_INTERVAL = 5_s;
+static const std::vector<std::string_view> PHOTON_PREFIX = {"/photonvision/"};
 
 PhotonCamera::PhotonCamera(std::shared_ptr<nt::NetworkTableInstance> instance,
                            const std::string_view cameraName)
@@ -56,6 +57,7 @@ PhotonCamera::PhotonCamera(std::shared_ptr<nt::NetworkTableInstance> instance,
       pipelineIndexSubscriber(
           rootTable->GetIntegerTopic("pipelineIndex").Subscribe(-1)),
       ledModeSubscriber(mainTable->GetIntegerTopic("ledMode").Subscribe(0)),
+      m_topicNameSubscriber(*instance, PHOTON_PREFIX, {.topicsOnly = true}),
       path(rootTable->GetPath()),
       m_cameraName(cameraName) {}
 

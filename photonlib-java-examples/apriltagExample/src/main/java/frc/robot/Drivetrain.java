@@ -24,6 +24,8 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -60,18 +62,16 @@ public class Drivetrain {
     private final Encoder m_leftEncoder = new Encoder(0, 1);
     private final Encoder m_rightEncoder = new Encoder(2, 3);
 
-    private final MotorControllerGroup m_leftGroup =
-            new MotorControllerGroup(m_leftLeader, m_leftFollower);
-    private final MotorControllerGroup m_rightGroup =
-            new MotorControllerGroup(m_rightLeader, m_rightFollower);
+    private final MotorControllerGroup m_leftGroup = new MotorControllerGroup(m_leftLeader, m_leftFollower);
+    private final MotorControllerGroup m_rightGroup = new MotorControllerGroup(m_rightLeader, m_rightFollower);
 
     private final AnalogGyro m_gyro = new AnalogGyro(0);
 
     private final PIDController m_leftPIDController = new PIDController(1, 0, 0);
     private final PIDController m_rightPIDController = new PIDController(1, 0, 0);
 
-    private final DifferentialDriveKinematics m_kinematics =
-            new DifferentialDriveKinematics(Constants.DriveTrainConstants.kTrackWidth);
+    private final DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(
+            Constants.DriveTrainConstants.kTrackWidth);
 
     public PhotonCameraWrapper pcw;
 
@@ -80,9 +80,8 @@ public class Drivetrain {
      * readings. The
      * numbers used below are robot specific, and should be tuned.
      */
-    private final DifferentialDrivePoseEstimator m_poseEstimator =
-            new DifferentialDrivePoseEstimator(
-                    m_kinematics, m_gyro.getRotation2d(), 0.0, 0.0, new Pose2d());
+    private final DifferentialDrivePoseEstimator m_poseEstimator = new DifferentialDrivePoseEstimator(
+            m_kinematics, m_gyro.getRotation2d(), 0.0, 0.0, new Pose2d());
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(1, 3);
@@ -92,19 +91,19 @@ public class Drivetrain {
     private final EncoderSim m_leftEncoderSim = new EncoderSim(m_leftEncoder);
     private final EncoderSim m_rightEncoderSim = new EncoderSim(m_rightEncoder);
     private final Field2d m_fieldSim = new Field2d();
-    private final LinearSystem<N2, N2, N2> m_drivetrainSystem =
-            LinearSystemId.identifyDrivetrainSystem(1.98, 0.2, 1.5, 0.3);
-    private final DifferentialDrivetrainSim m_drivetrainSimulator =
-            new DifferentialDrivetrainSim(
-                    m_drivetrainSystem,
-                    DCMotor.getCIM(2),
-                    8,
-                    DriveTrainConstants.kTrackWidth,
-                    DriveTrainConstants.kWheelRadius,
-                    null);
+    private final LinearSystem<N2, N2, N2> m_drivetrainSystem = LinearSystemId.identifyDrivetrainSystem(1.98, 0.2, 1.5,
+            0.3);
+    private final DifferentialDrivetrainSim m_drivetrainSimulator = new DifferentialDrivetrainSim(
+            m_drivetrainSystem,
+            DCMotor.getCIM(2),
+            8,
+            DriveTrainConstants.kTrackWidth,
+            DriveTrainConstants.kWheelRadius,
+            null);
 
     /**
-     * Constructs a differential drive object. Sets the encoder distance per pulse and resets the
+     * Constructs a differential drive object. Sets the encoder distance per pulse
+     * and resets the
      * gyro.
      */
     public Drivetrain() {
@@ -138,10 +137,9 @@ public class Drivetrain {
         final double leftFeedforward = m_feedforward.calculate(speeds.leftMetersPerSecond);
         final double rightFeedforward = m_feedforward.calculate(speeds.rightMetersPerSecond);
 
-        final double leftOutput =
-                m_leftPIDController.calculate(m_leftEncoder.getRate(), speeds.leftMetersPerSecond);
-        final double rightOutput =
-                m_rightPIDController.calculate(m_rightEncoder.getRate(), speeds.rightMetersPerSecond);
+        final double leftOutput = m_leftPIDController.calculate(m_leftEncoder.getRate(), speeds.leftMetersPerSecond);
+        final double rightOutput = m_rightPIDController.calculate(m_rightEncoder.getRate(),
+                speeds.rightMetersPerSecond);
         m_leftGroup.setVoltage(leftOutput + leftFeedforward);
         m_rightGroup.setVoltage(rightOutput + rightFeedforward);
     }
@@ -150,7 +148,7 @@ public class Drivetrain {
      * Drives the robot with the given linear velocity and angular velocity.
      *
      * @param xSpeed Linear velocity in m/s.
-     * @param rot Angular velocity in rad/s.
+     * @param rot    Angular velocity in rad/s.
      */
     public void drive(double xSpeed, double rot) {
         var wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
@@ -177,25 +175,60 @@ public class Drivetrain {
 
     /** Updates the field-relative position. */
     public void updateOdometry() {
-        m_poseEstimator.update(
-                m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+        // System.out.println("Got result: " +
+        // pcw.photonCamera.getLatestResult().getTargets().size());
 
-        // Also apply vision measurements. We use 0.3 seconds in the past as an example
-        // -- on
-        // a real robot, this must be calculated based either on latency or timestamps.
-        Pair<Pose2d, Double> result =
-                pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
-        var camPose = result.getFirst();
-        var camPoseObsTime = result.getSecond();
-        if (camPose != null) {
-            m_poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
-            m_fieldSim.getObject("Cam Est Pos").setPose(camPose);
-        } else {
-            // move it way off the screen to make it disappear
-            m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new Rotation2d()));
+        var result = pcw.photonCamera.getLatestResult().getTargets();
+        var poses = new double[result.size() * 3];
+        int i = 0;
+        for (var target : result) {
+            var fieldToTag = pcw.atfl.getTagPose(target.getFiducialId());
+            if (fieldToTag.isPresent()) {
+                var j = target.getFiducialId();
+                var fieldToCamera = fieldToTag.get()
+                    .plus(target.getBestCameraToTarget().inverse());
+
+                // System.out.println("Field to tag " + i + " " + fieldToTag.get().toString());
+                // System.out.println("Camera to target " + i + " " + target.getBestCameraToTarget().toString());
+                // System.out.println("Target to camera " + i + " " + target.getBestCameraToTarget().inverse().toString());
+                // System.out.println("Field to camera " + i + " " + fieldToCamera.toPose2d().toString());
+
+                m_fieldSim.getObject("Cam Est Pos " + i).setPose(fieldToCamera.toPose2d());
+                poses[i * 3] = fieldToCamera.getTranslation().getX();
+                poses[i * 3 + 1] = fieldToCamera.getTranslation().getY();
+                poses[i * 3 + 2] = fieldToCamera.getRotation().getZ();
+
+                i++;
+            }
         }
+        SmartDashboard.putNumberArray("poseEstimates", poses);
 
-        m_fieldSim.getObject("Actual Pos").setPose(m_drivetrainSimulator.getPose());
-        m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
+        m_poseEstimator.update(
+        m_gyro.getRotation2d(), m_leftEncoder.getDistance(),
+        m_rightEncoder.getDistance());
+
+        // // Also apply vision measurements. We use 0.3 seconds in the past as an
+        // example
+        // // -- on
+        // // a real robot, this must be calculated based either on latency or
+        // timestamps.
+
+
+
+        // Pair<Pose2d, Double> result =
+        // pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
+        // var camPose = result.getFirst();
+        // var camPoseObsTime = result.getSecond();
+        // if (camPose != null) {
+        // m_poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+        // m_fieldSim.getObject("Cam Est Pos").setPose(camPose);
+        // } else {
+        // // move it way off the screen to make it disappear
+        // m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new
+        // Rotation2d()));
+        // }
+
+        // m_fieldSim.getObject("Actual Pos").setPose(m_drivetrainSimulator.getPose());
+        // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
     }
 }

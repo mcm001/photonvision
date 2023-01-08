@@ -32,8 +32,12 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
+
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
@@ -43,28 +47,33 @@ import org.photonvision.RobotPoseEstimator.PoseStrategy;
 public class PhotonCameraWrapper {
     public PhotonCamera photonCamera;
     public RobotPoseEstimator robotPoseEstimator;
+    public AprilTagFieldLayout atfl = null;
 
     public PhotonCameraWrapper() {
-        // Set up a test arena of two apriltags at the center of each driver station set
-        final AprilTag tag18 =
-                new AprilTag(
-                        18,
-                        new Pose3d(
-                                new Pose2d(
-                                        FieldConstants.length,
-                                        FieldConstants.width / 2.0,
-                                        Rotation2d.fromDegrees(180))));
-        final AprilTag tag01 =
-                new AprilTag(
-                        01,
-                        new Pose3d(new Pose2d(0.0, FieldConstants.width / 2.0, Rotation2d.fromDegrees(0.0))));
-        ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
-        atList.add(tag18);
-        atList.add(tag01);
 
         // TODO - once 2023 happens, replace this with just loading the 2023 field arrangement
-        AprilTagFieldLayout atfl =
-                new AprilTagFieldLayout(atList, FieldConstants.length, FieldConstants.width);
+        try {
+            atfl = new AprilTagFieldLayout(Path.of("src/main/deploy/2023-chargedup.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        var tags = atfl.getTags();
+        var poses = new double[tags.size() * 7];
+        var ids = new double[tags.size() * 1];
+        for(int i = 0 ; i < tags.size(); i++) {
+                var fieldToCamera = tags.get(i).pose;
+                ids[i] = tags.get(i).ID;
+                poses[i * 7] = fieldToCamera.getTranslation().getX();
+                poses[i * 7 + 1] = fieldToCamera.getTranslation().getY();
+                poses[i * 7 + 2] = fieldToCamera.getTranslation().getZ();
+                poses[i * 7 + 3] = fieldToCamera.getRotation().getQuaternion().getW();
+                poses[i * 7 + 4] = fieldToCamera.getRotation().getQuaternion().getX();
+                poses[i * 7 + 5] = fieldToCamera.getRotation().getQuaternion().getY();
+                poses[i * 7 + 6] = fieldToCamera.getRotation().getQuaternion().getZ();
+        }
+        SmartDashboard.putNumberArray("tagPose", poses);
+        SmartDashboard.putNumberArray("tagID", ids);
 
         // Forward Camera
         photonCamera =
@@ -93,7 +102,7 @@ public class PhotonCameraWrapper {
 
         double currentTime = Timer.getFPGATimestamp();
         Optional<Pair<Pose3d, Double>> result = robotPoseEstimator.update();
-        if (result.isPresent()) {
+        if (result.isPresent() && result.get() != null && result.get().getFirst() != null) {
             return new Pair<Pose2d, Double>(
                     result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
         } else {

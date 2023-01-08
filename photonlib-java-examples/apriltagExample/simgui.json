@@ -17,6 +17,9 @@
       "Shuffleboard": {
         "open": true
       },
+      "SmartDashboard": {
+        "open": true
+      },
       "photonvision": {
         "OV9281": {
           "open": true

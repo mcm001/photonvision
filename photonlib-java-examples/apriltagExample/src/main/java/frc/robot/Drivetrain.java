@@ -27,6 +27,7 @@ package frc.robot;
 import java.util.ArrayList;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
@@ -81,7 +82,9 @@ public class Drivetrain {
      * numbers used below are robot specific, and should be tuned.
      */
     private final DifferentialDrivePoseEstimator m_poseEstimator = new DifferentialDrivePoseEstimator(
-            m_kinematics, m_gyro.getRotation2d(), 0.0, 0.0, new Pose2d());
+            m_kinematics, m_gyro.getRotation2d(), 0.0, 0.0, new Pose2d(),
+            VecBuilder.fill(0.02, 0.02, 0.01),
+            VecBuilder.fill(0.1, 0.1, 0.1));
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(1, 3);
@@ -175,60 +178,40 @@ public class Drivetrain {
 
     /** Updates the field-relative position. */
     public void updateOdometry() {
-        // System.out.println("Got result: " +
-        // pcw.photonCamera.getLatestResult().getTargets().size());
+        var observation = pcw.getObservedTags();
 
-        var result = pcw.photonCamera.getLatestResult().getTargets();
-        var poses = new double[result.size() * 3];
-        int i = 0;
-        for (var target : result) {
-            var fieldToTag = pcw.atfl.getTagPose(target.getFiducialId());
-            if (fieldToTag.isPresent()) {
-                var j = target.getFiducialId();
-                var fieldToCamera = fieldToTag.get()
-                    .plus(target.getBestCameraToTarget().inverse());
-
-                // System.out.println("Field to tag " + i + " " + fieldToTag.get().toString());
-                // System.out.println("Camera to target " + i + " " + target.getBestCameraToTarget().toString());
-                // System.out.println("Target to camera " + i + " " + target.getBestCameraToTarget().inverse().toString());
-                // System.out.println("Field to camera " + i + " " + fieldToCamera.toPose2d().toString());
-
-                m_fieldSim.getObject("Cam Est Pos " + i).setPose(fieldToCamera.toPose2d());
-                poses[i * 3] = fieldToCamera.getTranslation().getX();
-                poses[i * 3 + 1] = fieldToCamera.getTranslation().getY();
-                poses[i * 3 + 2] = fieldToCamera.getRotation().getZ();
+        // Push our observations to AdvantageScope, which expects an array of poses in
+        // the form [x, y, theta]
+        {
+            int i = 0;
+            double[] poses = new double[observation.robotInFieldPoses.size() * 3];
+            for (var targetPose : observation.robotInFieldPoses) {
+                m_fieldSim.getObject("Cam Est Pos " + i).setPose(targetPose);
+                poses[i * 3] = targetPose.getTranslation().getX();
+                poses[i * 3 + 1] = targetPose.getTranslation().getY();
+                poses[i * 3 + 2] = targetPose.getRotation().getDegrees();
 
                 i++;
             }
+            if (!observation.robotInFieldPoses.isEmpty()) SmartDashboard.putNumberArray("poseEstimates", poses);
         }
-        SmartDashboard.putNumberArray("poseEstimates", poses);
 
+        // Update the pose estimator with current encoder/gyro readings
         m_poseEstimator.update(
-        m_gyro.getRotation2d(), m_leftEncoder.getDistance(),
-        m_rightEncoder.getDistance());
+                m_gyro.getRotation2d(), m_leftEncoder.getDistance(),
+                m_rightEncoder.getDistance());
 
-        // // Also apply vision measurements. We use 0.3 seconds in the past as an
-        // example
-        // // -- on
-        // // a real robot, this must be calculated based either on latency or
-        // timestamps.
+        // Add every tag we saw to the pose estimator
+        for (var robotEstimate : observation.robotInFieldPoses) {
+            System.out.println("Observation: " + robotEstimate);
+            m_poseEstimator.addVisionMeasurement(robotEstimate, observation.fpgaTimestamp);
+        }
+        System.out.println("Averaged: " + m_poseEstimator.getEstimatedPosition());
 
+        // Acutal pose is our ground truth
+        m_fieldSim.getObject("Actual Pos").setPose(m_drivetrainSimulator.getPose());
 
-
-        // Pair<Pose2d, Double> result =
-        // pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
-        // var camPose = result.getFirst();
-        // var camPoseObsTime = result.getSecond();
-        // if (camPose != null) {
-        // m_poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
-        // m_fieldSim.getObject("Cam Est Pos").setPose(camPose);
-        // } else {
-        // // move it way off the screen to make it disappear
-        // m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new
-        // Rotation2d()));
-        // }
-
-        // m_fieldSim.getObject("Actual Pos").setPose(m_drivetrainSimulator.getPose());
-        // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
+        // "Robot" is set to the pose estimator position
+        m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
     }
 }

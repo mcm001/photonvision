@@ -26,11 +26,14 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import org.photonvision.RobotPoseEstimator.PoseStrategy;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.estimator.PhotonDiffDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -81,7 +84,7 @@ public class Drivetrain {
      * readings. The
      * numbers used below are robot specific, and should be tuned.
      */
-    private final DifferentialDrivePoseEstimator m_poseEstimator = new DifferentialDrivePoseEstimator(
+    private final PhotonDiffDrivePoseEstimator m_poseEstimator = new PhotonDiffDrivePoseEstimator(
             m_kinematics, m_gyro.getRotation2d(), 0.0, 0.0, new Pose2d(),
             VecBuilder.fill(0.02, 0.02, 0.01),
             VecBuilder.fill(0.1, 0.1, 0.1));
@@ -195,6 +198,9 @@ public class Drivetrain {
             }
             if (!observation.robotInFieldPoses.isEmpty()) SmartDashboard.putNumberArray("poseEstimates", poses);
         }
+
+        pcw.robotPoseEstimator.setStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);
+        pcw.robotPoseEstimator.update();
 
         // Update the pose estimator with current encoder/gyro readings
         m_poseEstimator.update(

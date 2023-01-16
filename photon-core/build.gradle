@@ -25,6 +25,10 @@ dependencies {
     implementation 'org.zeroturnaround:zt-zip:1.14'
 
     implementation wpilibTools.deps.wpilibJava("apriltag")
+
+
+    implementation "dev.onvoid.webrtc:webrtc-java:0.7.0"
+    implementation group: "dev.onvoid.webrtc", name: "webrtc-java", version: "0.7.0", classifier: "linux-x86_64"
 }
 
 task writeCurrentVersionJava {

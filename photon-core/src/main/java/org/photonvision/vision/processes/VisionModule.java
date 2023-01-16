@@ -22,6 +22,8 @@ import edu.wpi.first.math.util.Units;
 import io.javalin.websocket.WsContext;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import org.photonvision.common.configuration.CameraConfiguration;
 import org.photonvision.common.configuration.ConfigManager;
 import org.photonvision.common.configuration.PhotonConfiguration;
@@ -41,6 +43,7 @@ import org.photonvision.vision.camera.QuirkyCamera;
 import org.photonvision.vision.camera.USBCameraSource;
 import org.photonvision.vision.frame.Frame;
 import org.photonvision.vision.frame.consumer.FileSaveFrameConsumer;
+import org.photonvision.vision.frame.consumer.RTSPFrameConsumer;
 import org.photonvision.vision.pipeline.AdvancedPipelineSettings;
 import org.photonvision.vision.pipeline.OutputStreamPipeline;
 import org.photonvision.vision.pipeline.ReflectivePipelineSettings;
@@ -82,6 +85,8 @@ public class VisionModule {
 
     SocketVideoStream inputVideoStreamer;
     SocketVideoStream outputVideoStreamer;
+
+    private RTSPFrameConsumer inputRTSPstreamer;
 
     public VisionModule(PipelineManager pipelineManager, VisionSource visionSource, int index) {
         logger =
@@ -183,6 +188,8 @@ public class VisionModule {
                 new FileSaveFrameConsumer(
                         visionSource.getSettables().getConfiguration().nickname, "output");
 
+        inputRTSPstreamer = new RTSPFrameConsumer();
+
         inputVideoStreamer = new SocketVideoStream(this.inputStreamPort);
         outputVideoStreamer = new SocketVideoStream(this.outputStreamPort);
         SocketVideoStreamManager.getInstance().addStream(inputVideoStreamer);
@@ -197,6 +204,10 @@ public class VisionModule {
         streamResultConsumers.add(
                 (frame, tgts) -> {
                     if (frame != null) outputFrameSaver.accept(frame.processedImage);
+                });
+        streamResultConsumers.add(
+                (frame, tgts) -> {
+                    if (frame != null) inputRTSPstreamer.accept(frame.colorImage);
                 });
         streamResultConsumers.add(
                 (frame, tgts) -> {

@@ -86,7 +86,7 @@ public class WebsocketVisionSource extends VisionSource {
                         var size = new Size(640, 480);
                         Imgproc.resize(payload.getLeft().getMat(), mostRecentFrame.getMat(), size);
 
-                        Imgcodecs.imwrite("yoinked.jpg", payload.getLeft().getMat());
+                        // Imgcodecs.imwrite("yoinked.jpg", payload.getLeft().getMat());
                         payload.getLeft().release();
 
                         m_lastRxSequence = payload.getRight();

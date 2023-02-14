@@ -8,6 +8,10 @@ targetCompatibility = JavaVersion.VERSION_11
 
 apply from: "${rootDir}/../../shared/examples_common.gradle"
 
+repositories {
+    mavenLocal()
+}
+
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)

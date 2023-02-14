@@ -41,7 +41,7 @@ public class NetworkManager {
 
     public void initialize(boolean shouldManage) {
         isManaged = shouldManage;
-        if (!isManaged) {
+        if (!isManaged || true) {
             return;
         }
 

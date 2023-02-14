@@ -30,10 +30,10 @@ import org.photonvision.vision.pipe.impl.HSVPipe;
 import org.photonvision.vision.pipe.impl.RotateImagePipe;
 
 public abstract class CpuImageProcessor implements FrameProvider {
-    protected class CapturedFrame {
-        CVMat colorImage;
-        FrameStaticProperties staticProps;
-        long captureTimestamp;
+    public class CapturedFrame {
+        public final CVMat colorImage;
+        public final FrameStaticProperties staticProps;
+        public final long captureTimestamp;
 
         public CapturedFrame(
                 CVMat colorImage, FrameStaticProperties staticProps, long captureTimestampNanos) {
@@ -50,7 +50,7 @@ public abstract class CpuImageProcessor implements FrameProvider {
 
     private final Object m_mutex = new Object();
 
-    abstract CapturedFrame getInputMat();
+    protected abstract CapturedFrame getInputMat();
 
     public CpuImageProcessor() {
         m_hsvPipe.setParams(

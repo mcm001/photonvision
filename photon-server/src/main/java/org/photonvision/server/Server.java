@@ -33,6 +33,10 @@ public class Server {
                             config.addStaticFiles("web", Location.CLASSPATH);
                             config.enableCorsForAllOrigins();
 
+                            config.wsFactoryConfig(wsConfig -> {
+                                wsConfig.getPolicy().setMaxBinaryMessageSize(1000000);
+                            });
+
                             config.requestLogger(
                                     (ctx, ms) ->
                                             logger.debug(

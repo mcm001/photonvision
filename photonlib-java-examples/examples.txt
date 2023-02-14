@@ -3,4 +3,6 @@ aimattarget
 getinrange
 simaimandrange
 simposeest
+simadvantagekit
+apriltagposeest
 apriltagExample

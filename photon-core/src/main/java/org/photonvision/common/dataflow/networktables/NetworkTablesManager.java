@@ -101,6 +101,8 @@ public class NetworkTablesManager {
     private void broadcastVersion() {
         kRootTable.getEntry("version").setString(PhotonVersion.versionString);
         kRootTable.getEntry("buildDate").setString(PhotonVersion.buildDate);
+        kRootTable.getEntry("dummyRobotPose").setDoubleArray(new double[]{3, 3, 30});
+        kRootTable.getEntry("dummyTag").setDoubleArray(new double[]{4, 3.5, .5, 0.1, 0, 0, 9});
     }
 
     public void setConfig(NetworkConfig config) {
@@ -116,7 +118,8 @@ public class NetworkTablesManager {
         if (!isRetryingConnection) logger.info("Starting NT Client");
         ntInstance.stopServer();
         ntInstance.startClient4("photonvision");
-        ntInstance.setServerTeam(teamNumber);
+        // ntInstance.setServerTeam(teamNumber);
+        ntInstance.setServer("localhost");
         ntInstance.startDSClient();
         broadcastVersion();
     }

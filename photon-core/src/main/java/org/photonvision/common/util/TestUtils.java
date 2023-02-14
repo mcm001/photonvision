@@ -335,8 +335,9 @@ public class TestUtils {
 
     private static final String LIFECAM_240P_CAL_FILE = "lifecam240p.json";
     private static final String LIFECAM_480P_CAL_FILE = "lifecam480p.json";
+    private static final String ADVANTAGESCOPE_CAL_FILE = "advantagescope.json";
     public static final String LIFECAM_1280P_CAL_FILE = "lifecam_1280.json";
-    public static final String LIMELIGHT_480P_CAL_FILE = "limelight_1280_720.json";
+    public static final String LIMELIGHT_720P_CAL_FILE = "limelight_1280_720.json";
 
     public static CameraCalibrationCoefficients getCoeffs(String filename, boolean testMode) {
         try {
@@ -352,6 +353,10 @@ public class TestUtils {
 
     public static CameraCalibrationCoefficients get2019LifeCamCoeffs(boolean testMode) {
         return getCoeffs(LIFECAM_240P_CAL_FILE, testMode);
+    }
+
+    public static CameraCalibrationCoefficients getAdvantageScopeCal(boolean testMode) {
+        return getCoeffs(ADVANTAGESCOPE_CAL_FILE, testMode);
     }
 
     public static CameraCalibrationCoefficients get2020LifeCamCoeffs(boolean testMode) {

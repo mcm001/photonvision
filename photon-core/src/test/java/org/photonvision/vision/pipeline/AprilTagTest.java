@@ -108,7 +108,7 @@ public class AprilTagTest {
                 new FileFrameProvider(
                         TestUtils.getApriltagImagePath(TestUtils.ApriltagTestImages.kTag_corner_1280, false),
                         TestUtils.WPI2020Image.FOV,
-                        TestUtils.getCoeffs(TestUtils.LIMELIGHT_480P_CAL_FILE, false));
+                        TestUtils.getCoeffs(TestUtils.LIMELIGHT_720P_CAL_FILE, false));
         frameProvider.requestFrameThresholdType(pipeline.getThresholdType());
 
         CVPipelineResult pipelineResult;

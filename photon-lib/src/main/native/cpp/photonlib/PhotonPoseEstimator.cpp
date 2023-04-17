@@ -63,7 +63,7 @@ PhotonPoseEstimator::PhotonPoseEstimator(frc::AprilTagFieldLayout tags,
                                          frc::Transform3d robotToCamera)
     : aprilTags(tags),
       strategy(strat),
-      camera(std::move(cam)),
+      camera(std::make_shared<PhotonCamera>(std::move(cam))),
       m_robotToCamera(robotToCamera),
       lastPose(frc::Pose3d()),
       referencePose(frc::Pose3d()),
@@ -84,8 +84,13 @@ void PhotonPoseEstimator::SetMultiTagFallbackStrategy(PoseStrategy strategy) {
 }
 
 std::optional<EstimatedRobotPose> PhotonPoseEstimator::Update() {
-  auto result = camera.GetLatestResult();
-  return Update(result);
+  if (!camera) {
+    FRC_ReportError(frc::warn::Warning, "[PhotonPoseEstimator] Missing camera!",
+                    "");
+    return std::nullopt;
+  }
+  auto result = camera->GetLatestResult();
+  return Update(result, camera->GetCameraMatrix(), camera->GetDistCoeffs());
 }
 
 std::optional<EstimatedRobotPose> PhotonPoseEstimator::Update(

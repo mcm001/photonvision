@@ -181,14 +181,22 @@ class PhotonPoseEstimator {
    */
   std::optional<EstimatedRobotPose> Update(const PhotonPipelineResult& result);
 
-  inline PhotonCamera& GetCamera() { return camera; }
+  /**
+   * Update the pose estimator.
+   */
+  std::optional<EstimatedRobotPose> Update(
+      const PhotonPipelineResult& result,
+      std::optional<cv::Mat> cameraMatrixData,
+      std::optional<cv::Mat> coeffsData);
+
+  inline std::shared_ptr<PhotonCamera> GetCamera() { return camera; }
 
  private:
   frc::AprilTagFieldLayout aprilTags;
   PoseStrategy strategy;
   PoseStrategy multiTagFallbackStrategy = LOWEST_AMBIGUITY;
 
-  PhotonCamera camera;
+  std::shared_ptr<PhotonCamera> camera;
   frc::Transform3d m_robotToCamera;
 
   frc::Pose3d lastPose;

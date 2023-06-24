@@ -49,7 +49,7 @@ public class Calibrate3dPipeline
     // For loggging
     private static final Logger logger = new Logger(Calibrate3dPipeline.class, LogGroup.General);
 
-    // Only 2 pipes needed, one for finding the board corners and one for actually calibrating
+    // Find board corners decides internally between opencv and mrgingham
     private final FindBoardCornersPipe findBoardCornersPipe = new FindBoardCornersPipe();
     private final Calibrate3dPipe calibrate3dPipe = new Calibrate3dPipe();
     private final CalculateFPSPipe calculateFPSPipe = new CalculateFPSPipe();
@@ -118,8 +118,15 @@ public class Calibrate3dPipeline
         // Check if the frame has chessboard corners
         var outputColorCVMat = new CVMat();
         inputColorMat.copyTo(outputColorCVMat.getMat());
+
+        var start = System.currentTimeMillis();
+
         var findBoardResult =
                 findBoardCornersPipe.run(Pair.of(inputColorMat, outputColorCVMat.getMat())).output;
+
+        var end = System.currentTimeMillis();
+        var dt = (end - start);
+        System.out.printf("Find corners ran in %f ms!\n", (double) dt);
 
         var fpsResult = calculateFPSPipe.run(null);
         var fps = fpsResult.output;

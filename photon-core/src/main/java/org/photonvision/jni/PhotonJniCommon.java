@@ -18,6 +18,7 @@
 package org.photonvision.jni;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -46,31 +47,32 @@ public abstract class PhotonJniCommon {
         if (logger == null) logger = new Logger(clazz, LogGroup.Camera);
 
         try {
-            File libDirectory = Path.of("lib/").toFile();
-            if (!libDirectory.exists()) {
-                Files.createDirectory(libDirectory.toPath()).toFile();
-            }
 
             // We always extract the shared object (we could hash each so, but that's a lot of work)
             var arch_name = Platform.getNativeLibraryFolderName();
-            URL resourceURL =
-                    PhotonJniCommon.class.getResource("/nativelibraries/" + arch_name + "/libmrgingham.so");
-            File libFile = Path.of("lib/libphotonlibcamera.so").toFile();
-            try (InputStream in = resourceURL.openStream()) {
-                if (libFile.exists()) Files.delete(libFile.toPath());
-                Files.copy(in, libFile.toPath());
-            } catch (Exception e) {
-                logger.error("Could not extract the native library!");
-                libraryLoaded = false;
-                return;
+            var in = clazz.getResourceAsStream("/nativelibraries/" + arch_name + "/libmrgingham_" + arch_name + System.mapLibraryName(""));
+            
+            File temp = File.createTempFile("libmrgingham", "." + System.mapLibraryName(""));
+            FileOutputStream fos = new FileOutputStream(temp);
+
+            int read = -1;
+            byte[] buffer = new byte[1024];
+            while((read = in.read(buffer)) != -1) {
+                fos.write(buffer, 0, read);
             }
-            System.load(libFile.getAbsolutePath());
+            fos.close();
+            in.close();
+
+            System.load(temp.getAbsolutePath());
 
             libraryLoaded = true;
             logger.info("Successfully loaded shared object");
+
+            
         } catch (UnsatisfiedLinkError e) {
-            logger.error("Couldn't load shared object");
+            logger.error("Couldn't load shared object", e);
             e.printStackTrace();
+            logger.error(System.getProperty("java.library.path"));
         }
     }
 

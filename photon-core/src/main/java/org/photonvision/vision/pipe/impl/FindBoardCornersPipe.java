@@ -229,7 +229,11 @@ public class FindBoardCornersPipe
 
         if (params.type == UICalibrationData.BoardType.CHESSBOARD) {
             // Reduce the image size to be much more manageable
-            Imgproc.resize(inFrame, smallerInFrame, getFindCornersImgSize(inFrame));
+            if (params.divisor != FrameDivisor.NONE) {
+                Imgproc.resize(inFrame, smallerInFrame, getFindCornersImgSize(inFrame));
+            } else {
+                smallerInFrame = inFrame;
+            }
 
             if (params.useMrginghamDetector) {
                 int gridn = (int) patternSize.width; // TODO
@@ -270,7 +274,7 @@ public class FindBoardCornersPipe
         this.imageSize = new Size(inFrame.width(), inFrame.height());
 
         // Do sub corner pix for drawing chessboard when using OpenCV
-        if (!params.useMrginghamDetector) {
+        if (!params.useMrginghamDetector || params.divisor != FrameDivisor.NONE) {
             Imgproc.cornerSubPix(
                     inFrame, outBoardCorners, getWindowSize(outBoardCorners), zeroZone, criteria);
         }

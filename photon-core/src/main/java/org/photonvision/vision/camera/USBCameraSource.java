@@ -25,6 +25,7 @@ import org.photonvision.common.configuration.CameraConfiguration;
 import org.photonvision.common.configuration.ConfigManager;
 import org.photonvision.common.logging.LogGroup;
 import org.photonvision.common.logging.Logger;
+import org.photonvision.common.util.math.MathUtils;
 import org.photonvision.vision.frame.FrameProvider;
 import org.photonvision.vision.frame.provider.USBFrameProvider;
 import org.photonvision.vision.processes.VisionSource;
@@ -184,6 +185,30 @@ public class USBCameraSource extends VisionSource {
                         logger.debug("Setting camera raw exposure to " + Integer.toString(scaledExposure));
                         camera.getProperty("raw_exposure_time_absolute").set(scaledExposure);
                         camera.getProperty("raw_exposure_time_absolute").set(scaledExposure);
+
+                        // On some versions of linux, exposure time has been renamed. Deal with it explicitly
+                        // here
+                        // The logic ends up being the same as above
+                    } else if (getAllProperties().stream()
+                            .anyMatch(it -> it.getName().equalsIgnoreCase("exposure_time_absolute"))) {
+                        scaledExposure = 
+                                (int) Math.round(pctToExposureTimeUs(exposure));
+                        logger.debug("Setting camera raw exposure to " + Integer.toString(scaledExposure));
+                        
+                        
+                        // Seems like we have to be in manual shutter mode first. Do that here
+                        {
+                            var prop= camera.getProperty("auto_exposure");
+                            var choices = prop.getChoices();
+                            for (int i=0; i < choices.length; i++) {
+                                if (choices[i].toLowerCase().contains("manual"))  {
+                                    prop.set(i);
+                                    break;
+                                }
+                            }
+                        }
+
+                        camera.getProperty("exposure_time_absolute").set(scaledExposure);
 
                     } else {
                         scaledExposure = (int) Math.round(exposure);
@@ -353,5 +378,9 @@ public class USBCameraSource extends VisionSource {
     public int hashCode() {
         return Objects.hash(
                 camera, usbCameraSettables, usbFrameProvider, cameraConfiguration, cvSink, cameraQuirks);
+    }
+
+    private List<VideoProperty> getAllProperties() {
+        return Arrays.asList(camera.enumerateProperties());
     }
 }

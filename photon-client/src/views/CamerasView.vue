@@ -84,7 +84,7 @@
                     v-model="boardType"
                     name="Board Type"
                     select-cols="7"
-                    :list="['Chessboard', 'Dot Grid']"
+                    :list="['Chessboard', 'Dot Grid', 'ChArUco']"
                     :disabled="isCalibrating"
                     tooltip="Calibration board pattern to use"
                   />
@@ -446,7 +446,7 @@ export default {
     },
     computed: {
         disallowCalibration() {
-            return !(this.calibrationData.boardType === 0 || this.calibrationData.boardType === 1) || !this.settingsValid;
+            return !(this.calibrationData.boardType === 0 || this.calibrationData.boardType === 1 || this.calibrationData.boardType === 2) || !this.settingsValid;
         },
         checkCancellation() {
             if (this.isCalibrating) {
@@ -668,8 +668,20 @@ export default {
             return ret;
         },
         downloadBoard() {
+          let board_type;
+          switch(this.boardType) {
+            case 0:
+              board_type = "chessboard"
+              break;
+            case 0:
+              board_type = "dotboard"
+              break;
+            case 0:
+              board_type = "charuco"
+              break;
+          }
           const config = {
-            type: this.boardType === 0 ? "chessboard" : "dotgrid",
+            type: board_type,
             boardWidthIn: this.boardWidth,
             boardHeightIn: this.boardHeight,
             patternSpacingIn: this.squareSizeIn
@@ -717,6 +729,9 @@ export default {
                   doc.circle(xPos, yPos, config.patternSpacingIn / 4, "F")
                 }
               }
+              break
+            case "charuco":
+              console.log("TODO!")
               break
           }
 

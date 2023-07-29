@@ -50,7 +50,8 @@ public class UICalibrationData {
 
     public enum BoardType {
         CHESSBOARD,
-        DOTBOARD
+        DOTBOARD,
+        CHARUCO
     }
 
     public static UICalibrationData fromMap(Map<String, Object> map) {

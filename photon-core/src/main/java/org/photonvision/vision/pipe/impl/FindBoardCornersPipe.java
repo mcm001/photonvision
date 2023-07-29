@@ -17,11 +17,17 @@
 
 package org.photonvision.vision.pipe.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.mrgingham.MrginghamJNI;
+import org.opencv.aruco.Aruco;
+import org.opencv.aruco.CharucoBoard;
+import org.opencv.aruco.DetectorParameters;
+import org.opencv.aruco.Dictionary;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -30,6 +36,7 @@ import org.photonvision.common.logging.Logger;
 import org.photonvision.vision.frame.FrameDivisor;
 import org.photonvision.vision.pipe.CVPipe;
 import org.photonvision.vision.pipeline.UICalibrationData;
+import org.photonvision.vision.pipeline.UICalibrationData.BoardType;
 
 public class FindBoardCornersPipe
         extends CVPipe<
@@ -84,7 +91,7 @@ public class FindBoardCornersPipe
 
         // Chessboard and dot board have different 3D points to project as a dot board has alternating
         // dots per column
-        if (params.type == UICalibrationData.BoardType.CHESSBOARD) {
+        if (params.type == BoardType.CHESSBOARD) {
             // Here we can create an NxN grid since a chessboard is rectangular
             for (int heightIdx = 0; heightIdx < patternSize.height; heightIdx++) {
                 for (int widthIdx = 0; widthIdx < patternSize.width; widthIdx++) {
@@ -93,7 +100,7 @@ public class FindBoardCornersPipe
                     objectPoints.push_back(new MatOfPoint3f(new Point3(boardXCoord, boardYCoord, 0.0)));
                 }
             }
-        } else if (params.type == UICalibrationData.BoardType.DOTBOARD) {
+        } else if (params.type == BoardType.DOTBOARD) {
             // Here we need to alternate the amount of dots per column since a dot board is not
             // rectangular and also by taking in account the grid size which should be in mm
             for (int i = 0; i < patternSize.height; i++) {
@@ -103,6 +110,40 @@ public class FindBoardCornersPipe
                                     new Point3((2 * j + i % 2) * params.gridSize, i * params.gridSize, 0.0d)));
                 }
             }
+        } else if (params.type == BoardType.CHARUCO){
+            int squaresX = 5;
+            int squaresY = 7;
+            float squareLength = (float) 37.0;
+            float markerLength = (float) 22.0;
+            int calibrationFlags = 0;
+            float aspectRatio = 1;
+            DetectorParameters detectParams = DetectorParameters.create();
+            detectParams.set_adaptiveThreshWinSizeMin(3);
+            detectParams.set_adaptiveThreshWinSizeMax(23);
+            detectParams.set_adaptiveThreshWinSizeStep(10);
+            detectParams.set_adaptiveThreshConstant(7);
+            detectParams.set_minMarkerPerimeterRate(0.03);
+            detectParams.set_maxMarkerPerimeterRate(4.0);
+            detectParams.set_polygonalApproxAccuracyRate(0.05);
+            detectParams.set_minCornerDistanceRate(10);
+            detectParams.set_minDistanceToBorder(3);
+            detectParams.set_minMarkerDistanceRate(0.05);
+            detectParams.set_cornerRefinementWinSize(5);
+            detectParams.set_cornerRefinementMaxIterations(30);
+            detectParams.set_cornerRefinementMinAccuracy(0.1);
+            detectParams.set_markerBorderBits(1);
+            detectParams.set_perspectiveRemovePixelPerCell(8);
+            detectParams.set_perspectiveRemoveIgnoredMarginPerCell(0.13);
+            detectParams.set_maxErroneousBitsInBorderRate(0.04);
+            detectParams.set_minOtsuStdDev(5.0);
+            detectParams.set_errorCorrectionRate(0.6);
+            Dictionary dictionary = Aruco.getPredefinedDictionary(0);
+            CharucoBoard charucoBoard = CharucoBoard.create(squaresX, squaresY, squareLength, markerLength, dictionary);
+            List<List<Mat>> charucoCorners = new ArrayList<>();
+            List<Mat> charucoIds = new ArrayList<>();
+            List<Mat> validImgs = new ArrayList<>();
+            Size imgSize = new Size();
+            int nFrame = 0;
         } else {
             logger.error("Can't create pattern for unknown board type " + params.type);
         }

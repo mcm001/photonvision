@@ -38,6 +38,10 @@ public class PhotonConfiguration {
     private AprilTagFieldLayout atfl;
     private HashMap<String, CameraConfiguration> cameraConfigurations;
 
+    public PhotonConfiguration() {
+        this(null, null, null, null, new HashMap<>());
+    }
+
     public PhotonConfiguration(
             HardwareConfig hardwareConfig,
             HardwareSettings hardwareSettings,

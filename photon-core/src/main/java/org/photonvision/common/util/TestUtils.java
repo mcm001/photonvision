@@ -61,11 +61,11 @@ public class TestUtils {
                     "cscorejni",
                     "apriltagjni");
 
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+        return true;
     }
 
     @SuppressWarnings("unused")

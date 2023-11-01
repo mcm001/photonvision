@@ -79,12 +79,12 @@ const fpsTooLow = computed<boolean>(() => {
     <v-divider style="border-color: white" />
     <v-row class="pl-3 pr-3 pt-3 pb-3" style="flex-wrap: nowrap; justify-content: center">
       <v-col v-show="value.includes(0)" style="max-width: 500px; display: flex; align-items: center">
-        <photon-camera-stream id="input-camera-stream" stream-type="Raw" style="width: 100%; height: auto" />
-        <iframe src="http://localhost:8889/test_input" style="overflow: hidden; height: 100%; width: 100%; border: 0"></iframe>
+        <!-- <photon-camera-stream id="input-camera-stream" stream-type="Raw" style="width: 100%; height: auto" /> -->
+        <iframe src="http://localhost:8889/test_input?controls=false" style="overflow: hidden; height: 100%; width: 100%; border: 0"></iframe>
       </v-col>
       <v-col v-show="value.includes(1)" style="max-width: 500px; display: flex; align-items: center">
-        <photon-camera-stream id="output-camera-stream" stream-type="Processed" style="width: 100%; height: auto" />
-        <iframe src="http://localhost:8889/test_output" style="overflow: hidden; height: 100%; width: 100%; border: 0"></iframe>
+        <!-- <photon-camera-stream id="output-camera-stream" stream-type="Processed" style="width: 100%; height: auto" /> -->
+        <iframe src="http://localhost:8889/test_output?controls=false&playsInline=false" style="overflow: hidden; height: 100%; width: 100%; border: 0"></iframe>
       </v-col>
     </v-row>
   </v-card>

@@ -18,6 +18,8 @@
 package org.photonvision.server;
 
 import io.javalin.Javalin;
+import io.javalin.http.HandlerType;
+import io.javalin.http.Header;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 import java.net.InetSocketAddress;
 import java.util.StringJoiner;
@@ -68,6 +70,13 @@ public class Server {
                                                                 }));
                                     });
                         });
+
+        app.before( ctx ->
+                { if (ctx.method() == HandlerType.OPTIONS) {
+                        ctx.header(Header.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+                        ctx.header(Header.ACCESS_CONTROL_ALLOW_METHODS, "true");
+                }});
+
 
         /*Web Socket Events for Data Exchange */
         var dsHandler = DataSocketHandler.getInstance();

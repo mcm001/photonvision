@@ -6,6 +6,7 @@ import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.Mat;
+import org.opencv.core.Core;
 import org.photonvision.common.util.TestUtils;
 import org.photonvision.vision.opencv.CVMat;
 
@@ -17,7 +18,9 @@ class GStreamerFrameConsumerTest {
 
     @Test
     public void testRun() throws InterruptedException {
-        var camera = new UsbCamera("source_0", "/dev/video0");
+        var camera = new UsbCamera("source_0", "/dev/video2");
+
+        System.out.println(Core.getBuildInformation());
 
         camera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
 

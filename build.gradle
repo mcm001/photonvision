@@ -21,7 +21,7 @@ apply from: "versioningHelper.gradle"
 
 ext {
     wpilibVersion = "2024.1.1-beta-2"
-    openCVversion = "4.8.0-2_photon"
+    openCVversion = "4.8.0-2"
     joglVersion = "2.4.0-rc-20200307"
     javalinVersion = "5.6.2"
     frcYear = "2024"
@@ -37,6 +37,14 @@ ext {
     if (nativeName == "macarm64") nativeName = "osxarm64";
     jniPlatform = nativeName
     println("Building for platform " + jniPlatform)
+}
+
+Dependency photonOpenCvJava(String frcYear, String version) {
+    return project.getDependencies().create("org.photonvision.thirdparty." + frcYear + ".opencv:opencv-java:" + version);
+}
+
+Dependency photonOpenCv(String frcYear, String version) {
+    return project.getDependencies().create("org.photonvision.thirdparty." + frcYear + ".opencv:opencv-cpp:" + version + ":" + jniPlatform + "@zip");
 }
 
 wpilibTools.deps.wpilibVersion = wpilibVersion

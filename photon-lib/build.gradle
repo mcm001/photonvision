@@ -38,7 +38,7 @@ dependencies {
     implementation wpilibTools.deps.wpilibJava("ntcore")
     implementation wpilibTools.deps.wpilibJava("wpilibj")
     implementation wpilibTools.deps.wpilibJava("apriltag")
-    implementation wpilibTools.deps.wpilibOpenCvJava("frc" + frcYear, openCVversion)
+    implementation photonOpenCvJava("frc" + frcYear, openCVversion)
 
     // Jackson
     implementation group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: wpi.versions.jacksonVersion.get()
@@ -166,4 +166,4 @@ testNativeConfig.dependencies.add wpilibTools.deps.wpilib("wpinet")
 testNativeConfig.dependencies.add wpilibTools.deps.wpilib("hal")
 testNativeConfig.dependencies.add wpilibTools.deps.wpilib("wpiutil")
 testNativeConfig.dependencies.add wpilibTools.deps.wpilib("wpimath")
-testNativeConfig.dependencies.add wpilibTools.deps.wpilibOpenCv("frc" + frcYear, openCVversion)
+testNativeConfig.dependencies.add photonOpenCv("frc" + frcYear, openCVversion)

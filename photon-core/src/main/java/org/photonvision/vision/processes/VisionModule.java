@@ -46,6 +46,7 @@ import org.photonvision.vision.camera.USBCameraSource;
 import org.photonvision.vision.frame.Frame;
 import org.photonvision.vision.frame.consumer.FileSaveFrameConsumer;
 import org.photonvision.vision.frame.consumer.MJPGFrameConsumer;
+import org.photonvision.vision.frame.consumer.GStreamerFrameConsumer;
 import org.photonvision.vision.pipeline.AdvancedPipelineSettings;
 import org.photonvision.vision.pipeline.OutputStreamPipeline;
 import org.photonvision.vision.pipeline.ReflectivePipelineSettings;
@@ -85,6 +86,9 @@ public class VisionModule {
 
     MJPGFrameConsumer inputVideoStreamer;
     MJPGFrameConsumer outputVideoStreamer;
+
+    GStreamerFrameConsumer gstreamerInputSender;
+    GStreamerFrameConsumer gstreamerOutputSender;
 
     public VisionModule(PipelineManager pipelineManager, VisionSource visionSource, int index) {
         logger =
@@ -166,6 +170,9 @@ public class VisionModule {
             setVisionLEDs(pipelineManager.getCurrentPipelineSettings().ledMode);
         }
 
+        gstreamerInputSender = new GStreamerFrameConsumer(640, 480, 30, 8224, "test_input");
+        gstreamerOutputSender = new GStreamerFrameConsumer(640, 480, 30, 8224, "test_output");
+
         saveAndBroadcastAll();
     }
 
@@ -201,12 +208,28 @@ public class VisionModule {
                 });
         streamResultConsumers.add(
                 (frame, tgts) -> {
-                    if (frame != null) inputVideoStreamer.accept(frame.colorImage);
+                    if (frame != null) {
+                        inputVideoStreamer.accept(frame.colorImage);
+                    }
                 });
         streamResultConsumers.add(
                 (frame, tgts) -> {
-                    if (frame != null) outputVideoStreamer.accept(frame.processedImage);
+                    if (frame != null) {
+                        outputVideoStreamer.accept(frame.processedImage);
+                    }
                 });
+        streamResultConsumers.add(
+                (frame, tgts) -> {
+                    if (frame != null) {
+                        try {
+                            gstreamerInputSender.accept(frame.colorImage);
+                            gstreamerOutputSender.accept(frame.processedImage);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
     }
 
     private class StreamRunnable extends Thread {

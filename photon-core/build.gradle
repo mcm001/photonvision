@@ -2,6 +2,22 @@ import java.nio.file.Path
 
 apply from: "${rootDir}/shared/common.gradle"
 
+ext {
+    nativeName = 'photon-core'
+    devMain = 'org.photonvision.photon-core.DevMain'
+    jniSplitSetup = {
+    }
+    splitSetup = {
+        it.tasks.withType(CppCompile) {
+            it.includes 'src/main/native/cpp'
+        }
+    }
+    exeSplitSetup = {
+    }
+}
+
+apply from: "${rootDir}/shared/jni/setupBuild.gradle"
+
 dependencies {
     // JOGL stuff (currently we only distribute for aarch64, which is Pi 4)
     implementation "org.jogamp.gluegen:gluegen-rt:$joglVersion"

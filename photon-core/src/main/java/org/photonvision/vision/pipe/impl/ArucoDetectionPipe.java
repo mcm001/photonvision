@@ -26,6 +26,7 @@ import org.opencv.core.Size;
 import org.opencv.core.TermCriteria;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.Objdetect;
+import org.photonvision.jni.ArucoNanoDetector;
 import org.photonvision.vision.aruco.ArucoDetectionResult;
 import org.photonvision.vision.aruco.PhotonArucoDetector;
 import org.photonvision.vision.opencv.CVMat;
@@ -43,8 +44,13 @@ public class ArucoDetectionPipe
 
     @Override
     protected List<ArucoDetectionResult> process(CVMat in) {
+        if (in.getMat().empty()) return List.of();
+
         var imgMat = in.getMat();
-        var detections = photonDetector.detect(imgMat);
+
+        // var detections = photonDetector.detect(imgMat);
+        var detections = ArucoNanoDetector.detect(in);
+
         // manually do corner refinement ourselves
         if (params.useCornerRefinement) {
             for (var detection : detections) {
@@ -86,7 +92,9 @@ public class ArucoDetectionPipe
                 }
             }
         }
-        return List.of(detections);
+
+        // return List.of(detections);
+        return (detections);
     }
 
     @Override

@@ -37,6 +37,7 @@ import org.photonvision.common.logging.Logger;
 import org.photonvision.common.networking.NetworkManager;
 import org.photonvision.common.util.TestUtils;
 import org.photonvision.common.util.numbers.IntegerCouple;
+import org.photonvision.jni.ArucoNanoDetector;
 import org.photonvision.raspi.LibCameraJNI;
 import org.photonvision.server.Server;
 import org.photonvision.vision.camera.FileVisionSource;
@@ -304,6 +305,13 @@ public class Main {
     public static void main(String[] args) {
         try {
             TestUtils.loadLibraries();
+            logger.info("Native libraries loaded.");
+        } catch (Exception e) {
+            logger.error("Failed to load native libraries!", e);
+        }
+
+        try {
+            ArucoNanoDetector.forceLoad();
             logger.info("Native libraries loaded.");
         } catch (Exception e) {
             logger.error("Failed to load native libraries!", e);

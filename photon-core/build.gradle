@@ -14,9 +14,9 @@ dependencies {
 
     implementation "org.xerial:sqlite-jdbc:3.41.0.0"
 
-    def arucoVer = "dev-v2024.0.1-11-g5190e06"
-    implementation "org.photonvision:photonmiscjni-jni:$arucoVer:$jniPlatform"
-    implementation "org.photonvision:photonmiscjni-java:$arucoVer"
+    def arucoVer = "dev-v2024.0.1-15-g0d7210c"
+    implementation "org.photonvision:photonaruconano-jni:$arucoVer:$jniPlatform"
+    implementation "org.photonvision:photonaruconano-java:$arucoVer"
 }
 
 task writeCurrentVersion {

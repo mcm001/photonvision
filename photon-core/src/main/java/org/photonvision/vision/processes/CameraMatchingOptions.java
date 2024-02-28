@@ -20,6 +20,9 @@ package org.photonvision.vision.processes;
 import java.util.List;
 import org.photonvision.vision.camera.CameraType;
 
+/**
+ * CameraMatchingOptions
+ */
 public class CameraMatchingOptions {
     public CameraMatchingOptions(
             boolean checkUSBPath,

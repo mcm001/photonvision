@@ -28,7 +28,7 @@ import org.photonvision.common.util.SerializationUtils;
 import org.photonvision.vision.pipeline.result.CVPipelineResult;
 import org.photonvision.vision.pipeline.result.CalibrationPipelineResult;
 
-public class UIDataPublisher implements CVPipelineResultConsumer {
+public class UIDataPublisher {
     private static final Logger logger = new Logger(UIDataPublisher.class, LogGroup.VisionModule);
 
     private final int index;
@@ -38,8 +38,7 @@ public class UIDataPublisher implements CVPipelineResultConsumer {
         this.index = index;
     }
 
-    @Override
-    public void accept(CVPipelineResult result) {
+    public void accept(CVPipelineResult result, double inputBandwidth, double outputBandwidth) {
         long now = System.currentTimeMillis();
 
         // only update the UI at 10hz
@@ -71,6 +70,9 @@ public class UIDataPublisher implements CVPipelineResultConsumer {
             multitagData.put("fiducialIDsUsed", result.multiTagResult.fiducialIDsUsed);
             dataMap.put("multitagResult", multitagData);
         }
+
+        dataMap.put("inputBandwidth", inputBandwidth);
+        dataMap.put("outputBandwidth", outputBandwidth);
 
         var uiMap = new HashMap<Integer, HashMap<String, Object>>();
         uiMap.put(index, dataMap);

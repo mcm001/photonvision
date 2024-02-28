@@ -150,11 +150,11 @@ public class VisionModule {
         uiDataConsumer = new UIDataPublisher(index);
         statusLEDsConsumer = new StatusLEDConsumer(index);
         addResultConsumer(ntConsumer);
-        addResultConsumer(uiDataConsumer);
         addResultConsumer(statusLEDsConsumer);
         addResultConsumer(
                 (result) ->
                         lastPipelineResultBestTarget = result.hasTargets() ? result.targets.get(0) : null);
+        addResultConsumer((result) -> uiDataConsumer.accept(result, getInputBandwidth(), getOutputBandwidth()));
 
         setPipeline(visionSource.getSettables().getConfiguration().currentPipelineIndex);
 
@@ -174,6 +174,14 @@ public class VisionModule {
         }
 
         saveAndBroadcastAll();
+    }
+
+    private double getOutputBandwidth() {
+        return outputVideoStreamer.getBandwidthMbps();
+    }
+
+    private double getInputBandwidth() {
+        return inputVideoStreamer.getBandwidthMbps();
     }
 
     private void createStreams() {

@@ -74,4 +74,7 @@ export interface PipelineResult {
   multitagResult?: MultitagResult;
   // Object detection class names -- empty if not doing object detection
   classNames: string[];
+  // stream bandwidths
+  inputBandwidth: number;
+  outputBandwidth: number;
 }

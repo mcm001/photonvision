@@ -11,6 +11,18 @@ const props = defineProps<{
   id: string;
 }>();
 
+const streamBandwidth = computed<string>(() => {
+  if(props.streamType === "Raw") {
+    return useStateStore().currentPipelineResults?.inputBandwidth;
+  }
+  else if(props.streamType === "Processed") {
+    return useStateStore().currentPipelineResults?.outputBandwidth;
+  } else {
+    // should never get here
+    return 0;
+  }
+});
+
 const streamSrc = computed<string>(() => {
   const port =
     useCameraSettingsStore().currentCameraSettings.stream[props.streamType === "Raw" ? "inputPort" : "outputPort"];
@@ -77,6 +89,7 @@ const handleFullscreenRequest = () => {
         class="ma-1 mr-2"
         @click="handlePopoutClick"
       />
+      <span>Data rate: {{ streamBandwidth }}</span>
     </div>
   </div>
 </template>

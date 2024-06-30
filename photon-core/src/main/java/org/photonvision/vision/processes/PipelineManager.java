@@ -235,7 +235,7 @@ public class PipelineManager {
         DataChangeService.getInstance()
                 .publishEvent(
                         new OutgoingUIEvent<>(
-                                "fullsettings", ConfigManager.getInstance().getConfig().toHashMap()));
+                                DataChangePropertyCodes.FULL_SETTINGS, ConfigManager.getInstance().getConfig().toHashMap()));
     }
 
     /**

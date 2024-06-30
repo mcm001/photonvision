@@ -472,10 +472,10 @@ public class VisionModule {
         DataChangeService.getInstance()
                 .publishEvent(
                         new OutgoingUIEvent<>(
-                                "fullsettings", ConfigManager.getInstance().getConfig().toHashMap()));
+                                DataChangePropertyCodes.FULL_SETTINGS, ConfigManager.getInstance().getConfig().toHashMap()));
     }
 
-    void saveAndBroadcastSelective(WsContext originContext, String propertyName, Object value) {
+    void saveAndBroadcastSelective(WsContext originContext, DataChangePropertyCodes propertyName, Object value) {
         logger.trace("Broadcasting PSC mutation - " + propertyName + ": " + value);
         saveModule();
 

@@ -31,6 +31,7 @@ import org.photonvision.PhotonVersion;
 import org.photonvision.common.configuration.ConfigManager;
 import org.photonvision.common.configuration.NetworkConfig;
 import org.photonvision.common.dataflow.DataChangeService;
+import org.photonvision.common.dataflow.events.DataChangePropertyCodes;
 import org.photonvision.common.dataflow.events.OutgoingUIEvent;
 import org.photonvision.common.hardware.HardwareManager;
 import org.photonvision.common.logging.LogGroup;
@@ -124,7 +125,7 @@ public class NetworkTablesManager {
             DataChangeService.getInstance()
                     .publishEvent(
                             new OutgoingUIEvent<>(
-                                    "fullsettings", ConfigManager.getInstance().getConfig().toHashMap()));
+                                    DataChangePropertyCodes.FULL_SETTINGS, ConfigManager.getInstance().getConfig().toHashMap()));
         } catch (IOException e) {
             logger.error("Error deserializing atfl!");
             logger.error(atfl_json);
@@ -150,7 +151,7 @@ public class NetworkTablesManager {
 
         map.put("ntConnectionInfo", subMap);
         DataChangeService.getInstance()
-                .publishEvent(new OutgoingUIEvent<>("networkTablesConnected", map));
+                .publishEvent(new OutgoingUIEvent<>(DataChangePropertyCodes.NT_CONNECTED, map));
     }
 
     private void broadcastVersion() {

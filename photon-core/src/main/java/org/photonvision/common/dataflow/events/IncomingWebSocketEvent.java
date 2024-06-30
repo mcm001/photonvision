@@ -26,13 +26,13 @@ public class IncomingWebSocketEvent<T> extends DataChangeEvent<T> {
     public final Integer cameraIndex;
     public final WsContext originContext;
 
-    public IncomingWebSocketEvent(DataChangeDestination destType, String propertyName, T newValue) {
+    public IncomingWebSocketEvent(DataChangeDestination destType, DataChangePropertyCodes propertyName, T newValue) {
         this(destType, propertyName, newValue, null, null);
     }
 
     public IncomingWebSocketEvent(
             DataChangeDestination destType,
-            String propertyName,
+            DataChangePropertyCodes propertyName,
             T newValue,
             Integer cameraIndex,
             WsContext originContext) {
@@ -43,7 +43,7 @@ public class IncomingWebSocketEvent<T> extends DataChangeEvent<T> {
 
     @SuppressWarnings("unchecked")
     public IncomingWebSocketEvent(
-            DataChangeDestination destType, String dataKey, HashMap<String, Object> data) {
+            DataChangeDestination destType, DataChangePropertyCodes dataKey, HashMap<String, Object> data) {
         this(destType, dataKey, (T) data.get(dataKey));
     }
 

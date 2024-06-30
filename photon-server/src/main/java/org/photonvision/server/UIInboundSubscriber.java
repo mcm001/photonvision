@@ -45,7 +45,7 @@ public class UIInboundSubscriber extends DataChangeSubscriber {
                 // Send full settings
                 var settings = ConfigManager.getInstance().getConfig().toHashMap();
                 var message =
-                        new OutgoingUIEvent<>("fullsettings", settings, incomingWSEvent.originContext);
+                        new OutgoingUIEvent<>(DataChangePropertyCodes.FULL_SETTINGS, settings, incomingWSEvent.originContext);
                 DataChangeService.getInstance().publishEvent(message);
                 Logger.sendConnectedBacklog();
                 NetworkTablesManager.getInstance().broadcastConnectedStatus();

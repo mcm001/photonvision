@@ -24,7 +24,7 @@ public class HTTPRequestEvent<T> extends DataChangeEvent<T> {
     public HTTPRequestEvent(
             DataChangeSource sourceType,
             DataChangeDestination destType,
-            String propertyName,
+            DataChangePropertyCodes propertyName,
             T newValue) {
         super(sourceType, destType, propertyName, newValue);
     }

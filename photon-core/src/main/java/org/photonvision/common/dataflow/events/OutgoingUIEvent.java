@@ -25,24 +25,24 @@ import org.photonvision.common.dataflow.DataChangeSource;
 public class OutgoingUIEvent<T> extends DataChangeEvent<T> {
     public final WsContext originContext;
 
-    public OutgoingUIEvent(String propertyName, T newValue) {
+    public OutgoingUIEvent(DataChangePropertyCodes propertyName, T newValue) {
         this(propertyName, newValue, null);
     }
 
-    public OutgoingUIEvent(String propertyName, T newValue, WsContext originContext) {
+    public OutgoingUIEvent(DataChangePropertyCodes propertyName, T newValue, WsContext originContext) {
         super(DataChangeSource.DCS_WEBSOCKET, DataChangeDestination.DCD_UI, propertyName, newValue);
         this.originContext = originContext;
     }
 
     public static OutgoingUIEvent<HashMap<String, Object>> wrappedOf(
-            String commandName, Object value) {
+            DataChangePropertyCodes commandName, Object value) {
         HashMap<String, Object> data = new HashMap<>();
-        data.put(commandName, value);
+        data.put(commandName.uiName, value);
         return new OutgoingUIEvent<>(commandName, data);
     }
 
     public static OutgoingUIEvent<HashMap<String, Object>> wrappedOf(
-            String commandName, String propertyName, Object value, WsContext originContext) {
+            DataChangePropertyCodes commandName, String propertyName, Object value, WsContext originContext) {
         HashMap<String, Object> data = new HashMap<>();
         data.put(propertyName, value);
 

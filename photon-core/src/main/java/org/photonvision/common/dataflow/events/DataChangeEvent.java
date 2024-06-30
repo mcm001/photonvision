@@ -23,13 +23,13 @@ import org.photonvision.common.dataflow.DataChangeSource;
 public class DataChangeEvent<T> {
     public final DataChangeSource sourceType;
     public final DataChangeDestination destType;
-    public final String propertyName;
+    public final DataChangePropertyCodes propertyName;
     public final T data;
 
     public DataChangeEvent(
             DataChangeSource sourceType,
             DataChangeDestination destType,
-            String propertyName,
+            DataChangePropertyCodes propertyName,
             T newValue) {
         this.sourceType = sourceType;
         this.destType = destType;

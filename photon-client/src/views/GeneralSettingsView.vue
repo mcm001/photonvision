@@ -11,10 +11,10 @@ import NeuralNetworkModelsCard from "@/components/settings/NeuralNetworkModelsCa
 <template>
   <div class="pa-3">
     <MetricsCard />
-    <NeuralNetworkModelsCard />
     <DeviceControlCard />
     <NetworkingCard />
     <LightingControlCard v-if="useSettingsStore().lighting.supported" />
     <ApriltagControlCard />
+    <NeuralNetworkModelsCard />
   </div>
 </template>

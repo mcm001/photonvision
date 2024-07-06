@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { useStateStore } from "@/stores/StateStore";
+import axios from "axios";
 
 enum ModelVersion {
   YOLO_V5,
@@ -54,26 +56,91 @@ const prettyModels = computed(() => {
   }));
 });
 
-const importNewModel = ref();
-const openImportNewModelPrompt = () => {
-  importNewModel.value.click();
-};
-
 const handleImportModel = async () => {
-  const files = importNewModel.value.files;
-  if (files.length === 0) return;
-  const uploadedModel = files[0];
+  const file = importModelFile.value;
+  if (!file) {
+    //todo: error
+    return;
+  }
 
-  // todo
-  console.log(uploadedModel);
+  const params = {
+    format: importModelFormat.value,
+    version: importModelVersion.value,
+    classes: importModelClasses.value!.split(",").map((it) => it.trim()),
+    numClasses: importModelNumClasses.value
+  };
+
+  const formData = new FormData();
+  formData.append("model", file);
+  formData.append("params", JSON.stringify(params));
+
+  useStateStore().showSnackbarMessage({
+    message: "New Software Upload in Progress...",
+    color: "secondary",
+    timeout: -1
+  });
+
+  axios
+    .post("nnModelImport", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: ({ progress }) => {
+        const uploadPercentage = (progress || 0) * 100.0;
+        if (uploadPercentage < 99.5) {
+          useStateStore().showSnackbarMessage({
+            message: "Uploading new model, " + uploadPercentage.toFixed(2) + "% complete",
+            color: "secondary",
+            timeout: -1
+          });
+        } else {
+          useStateStore().showSnackbarMessage({
+            message: "Processing new model...",
+            color: "secondary",
+            timeout: -1
+          });
+        }
+      }
+    })
+    .then((response) => {
+      useStateStore().showSnackbarMessage({
+        message: response.data.text || response.data,
+        color: "success"
+      });
+    })
+    .catch((error) => {
+      if (error.response) {
+        useStateStore().showSnackbarMessage({
+          color: "error",
+          message: error.response.data.text || error.response.data
+        });
+      } else if (error.request) {
+        useStateStore().showSnackbarMessage({
+          color: "error",
+          message: "Error while trying to process the request! The backend didn't respond."
+        });
+      } else {
+        useStateStore().showSnackbarMessage({
+          color: "error",
+          message: "An error occurred while trying to process the request."
+        });
+      }
+    });
 };
 
 const allowedFileTypes = (format: ModelFormat | null) => {
   if (format === ModelFormat.RKNN) {
     return ".rknn";
   }
+  if (format === ModelFormat.ONNX) {
+    return ".onnx";
+  }
 
   return "*";
+};
+
+const checkNumClasses = (classes: string | null): string | boolean => {
+  if (!classes) return "Class list must be a comma-seperated list!";
+  if (classes.split(",").length === importModelNumClasses.value) return true;
+  return `Expected exactly ${importModelNumClasses.value} comma-seperated numbers!`;
 };
 
 // temp things for the dialog
@@ -81,25 +148,19 @@ const showImportDialog = ref(false);
 const importModelFile = ref<File | null>(null);
 const importModelFormat = ref<ModelFormat | null>(0);
 const importModelVersion = ref<ModelVersion | null>(0);
+const importModelNumClasses = ref<int | null>(null);
 const importModelClasses = ref<string | null>(null);
 </script>
 
 <template>
   <v-card dark class="pr-6 pb-3 mb-3 mt-6" style="background-color: #006492">
-    <v-row>
-      <v-col cols="12" md="8">
-        <v-card-title>NN Models</v-card-title>
-      </v-col>
-      <v-col>
-        <v-btn color="secondary" @click="() => (showImportDialog = true)">
-          <v-icon left class="open-icon"> mdi-import </v-icon>
-          <span class="open-label">Import New Model</span>
-        </v-btn>
-
-        <!-- TODO (Matt): Only accepts *rknn files -->
-        <!-- <input ref="importNewModel" type="file" accept=".rknn" style="display: none" @change="importModel" /> -->
-      </v-col>
-    </v-row>
+    <div style="display: flex; flex-wrap: wrap">
+      <v-card-title>NN Models</v-card-title>
+      <v-btn style="margin-left: auto" class="mt-4" color="secondary" @click="() => (showImportDialog = true)">
+        <v-icon left class="open-icon"> mdi-import </v-icon>
+        <span class="open-label">Import New Model</span>
+      </v-btn>
+    </div>
 
     <v-data-table
       dense
@@ -129,7 +190,8 @@ const importModelClasses = ref<string | null>(null);
         <v-card-title>Import New Model</v-card-title>
         <v-card-text>
           Upload and apply previously saved or exported PhotonVision settings to this device
-          <v-row class="mt-6 ml-4">
+
+          <div>
             <pv-select
               v-model="importModelFormat"
               label="Model File Format"
@@ -146,29 +208,37 @@ const importModelClasses = ref<string | null>(null);
               :select-cols="8"
               style="width: 100%"
             />
-
+            <pv-number-input
+              v-model="importModelNumClasses"
+              label="Num classes"
+              tooltip="Number of classes this model was trained for. This must exactly match the number used during training!"
+              :label-cols="4"
+            />
             <pv-input
               v-model="importModelClasses"
               label="Class names"
-              tooltip="Enter the Team Number or the IP address of the NetworkTables Server"
+              tooltip="Enter a comma-seperated list of classes. Must have exactly as many classes as this model was trained for!"
+              placeholder="apple, note, red robot"
+              :input-cols="8"
+              :rules="[(v) => checkNumClasses(v)]"
             />
-          </v-row>
+          </div>
 
-          <v-row class="mt-3">
+          <div class="mt-3">
             <v-file-input
               v-model="importModelFile"
               label="Upload Model File"
               :accept="allowedFileTypes(importModelFormat)"
             />
-          </v-row>
+          </div>
           <v-row
-            class="mt-12 ml-8 mr-8 mb-1"
+            class="mt-8 ml-6 mr-6 mb-1"
             style="display: flex; align-items: center; justify-content: center"
             align="center"
           >
             <v-btn color="secondary" :disabled="importModelFile === null" @click="handleImportModel">
               <v-icon left class="open-icon"> mdi-import </v-icon>
-              <span class="open-label">Import Settings</span>
+              <span class="open-label">Import Model</span>
             </v-btn>
           </v-row>
         </v-card-text>

@@ -61,6 +61,12 @@ public class RequestHandler {
     private static final Logger logger = new Logger(RequestHandler.class, LogGroup.WebServer);
 
     private static final ObjectMapper kObjectMapper = new ObjectMapper();
+    
+    public static void onNnModelImport(Context ctx) throws InterruptedException {
+        logger.info("Got new model!" + ctx.formParam("params"));
+        Thread.sleep(2500);
+        ctx.status(200);
+    }
 
     public static void onSettingsImportRequest(Context ctx) {
         var file = ctx.uploadedFile("data");

@@ -29,22 +29,22 @@ import org.photonvision.utils.PacketUtils;
 public class PhotonTrackedTarget implements ProtobufSerializable {
     private static final int MAX_CORNERS = 8;
 
-    private final double yaw;
-    private final double pitch;
-    private final double area;
-    private final double skew;
-    private final int fiducialId;
-    private final int classId;
-    private final float objDetectConf;
-    private final Transform3d bestCameraToTarget;
-    private final Transform3d altCameraToTarget;
-    private final double poseAmbiguity;
+    public final double yaw;
+    public final double pitch;
+    public final double area;
+    public final double skew;
+    public final int fiducialId;
+    public final int classId;
+    public final float objDetectConf;
+    public final Transform3d bestCameraToTarget;
+    public final Transform3d altCameraToTarget;
+    public final double poseAmbiguity;
 
     // Corners from the min-area rectangle bounding the target
-    private final List<TargetCorner> minAreaRectCorners;
+    public final List<TargetCorner> minAreaRectCorners;
 
     // Corners from whatever corner detection method was used
-    private final List<TargetCorner> detectedCorners;
+    public final List<TargetCorner> detectedCorners;
 
     /** Construct a tracked target, given exactly 4 corners */
     public PhotonTrackedTarget(

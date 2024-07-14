@@ -23,9 +23,10 @@ import java.util.List;
 import org.photonvision.targeting.proto.PhotonPipelineResultProto;
 import org.photonvision.targeting.serde.APacketSerde;
 import org.photonvision.targeting.serde.APhotonStructSerde;
+import org.photonvision.targeting.serde.PhotonStructSerializable;
 
 /** Represents a pipeline result from a PhotonCamera. */
-public class PhotonPipelineResult implements ProtobufSerializable {
+public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructSerializable {
     private static boolean HAS_WARNED = false;
 
     // Frame capture metadata

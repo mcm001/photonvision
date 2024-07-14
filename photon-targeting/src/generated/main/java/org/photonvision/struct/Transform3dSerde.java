@@ -28,12 +28,12 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PhotonPipelineMetadata
+ * Auto-generated serialization & deserialization helper for Transform3d
  */
-public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
+public class Transform3dSerde implements PacketSerde<Transform3d> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "2a7039527bda14d13028a1b9282d40a2";
+    public static final String MESSAGE_VERSION = "040c70b37dfd2e190070060ba58c49ac";
 
     @Override
     public int getMaxByteSize() {
@@ -42,28 +42,12 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
     }
 
     @Override
-    public void pack(Packet packet, PhotonPipelineMetadata value) {
-        // field sequenceID is of intrinsic type int64
-        packet.encode((long) value.sequenceID);
-    
-        // field captureTimestampMicros is of intrinsic type int64
-        packet.encode((long) value.captureTimestampMicros);
-    
-        // field publishTimestampMicros is of intrinsic type int64
-        packet.encode((long) value.publishTimestampMicros);
+    public void pack(Packet packet, Transform3d value) {
     }
 
     @Override
-    public PhotonPipelineMetadata unpack(Packet packet) {
-        var ret = new PhotonPipelineMetadata();
-        // sequenceID is of intrinsic type int64
-        ret.sequenceID = packet.decodeLong();
-    
-        // captureTimestampMicros is of intrinsic type int64
-        ret.captureTimestampMicros = packet.decodeLong();
-    
-        // publishTimestampMicros is of intrinsic type int64
-        ret.publishTimestampMicros = packet.decodeLong();
+    public Transform3d unpack(Packet packet) {
+        var ret = new Transform3d();
 
         return ret;
     }

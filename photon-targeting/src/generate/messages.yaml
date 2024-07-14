@@ -8,9 +8,61 @@
   - name: publishTimestampMicros
     type: int64
 
+- name: Transform3d
+  shimmed: True
+  java_decode_shim: PacketUtils.unpackTransform3d
+  java_encode_shim: PacketUtils.packTransform3d
+  fields: []
+
+- name: TargetCorner
+  fields:
+  - name: cx
+    type: float64
+  - name: cy
+    type: float64
+
+- name: PhotonTrackedTarget
+  fields:
+  - name: yaw
+    type: float64
+  - name: pitch
+    type: float64
+  - name: area
+    type: float64
+  - name: skew
+    type: float64
+  - name: fiducialId
+    type: int32
+  - name: objDetectConf
+    type: float32
+  - name: bestCameraToTarget
+    type: Transform3d
+  - name: altCameraToTarget
+    type: Transform3d
+  - name: poseAmbiguity
+    type: float64
+  - name: minAreaRectCorners
+    type: TargetCorner
+    vla: True
+  - name: detectedCorners
+    type: TargetCorner
+    vla: True
+
+- name: MultiTargetPNPResult
+  fields:
+  - name: fiducialIDsUsed
+    type: int16
+    vla: True
+
+
 - name: PhotonPipelineResult
   fields:
   - name: metadata
     type: PhotonPipelineMetadata
-  - name: ntRecieveTimestampMicros
-    type: int64
+  - name: targets
+    type: PhotonTrackedTarget
+    vla: True
+  - name: multiTagResult
+    type: MultiTargetPNPResult
+    optional: True
+    

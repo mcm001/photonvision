@@ -21,19 +21,19 @@ package org.photonvision.struct;
 
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
+import org.photonvision.utils.PacketUtils;
 
 // Assume that the base class lives here and we can import it
 import org.photonvision.targeting.*;
 
 
 /**
- * This is a test
+ * Auto-generated serialization & deserialization helper for {{name}}
  */
 public class {{ name }}Serde implements PacketSerde<{{name}}> {
+    
+    // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "{{ message_hash }}";
-
-    {% for field in fields %}public {{ type_map[field.type].java_type }} {{ field.name }};
-    {% endfor %}
 
     @Override
     public int getMaxByteSize() {
@@ -43,34 +43,52 @@ public class {{ name }}Serde implements PacketSerde<{{name}}> {
 
     @Override
     public void pack(Packet packet, {{ name }} value) {
-        {% for field in fields -%} 
-            {%- if field.type | is_intrinsic -%}
-        // {{ field.name }} is of intrinsic type {{ field.type }}
-        packet.encode(({{type_map[field.type].java_type}}) value.{{field.name}});
-            {%- else -%}
-        // {{ field.name }} is of non-intrinsic type {{ field.type }}
-        {{ field.type }}.photonStruct.pack(packet, value.{{field.name}});
-            {%- endif %}
-        {%- if not loop.last %}
-        {% endif -%} 
-        {% endfor -%}
+{%- for field in fields -%} 
+    {%- if field.type | is_intrinsic %}
+        // field {{ field.name }} is of intrinsic type {{ field.type }}
+        packet.encode(({{ type_map[field.type].java_type }}) value.{{ field.name }});
+    {%- elif field.type | is_shimmed %}
+        // field is shimmed!
+        {{ get_message_by_name(field.type).java_encode_shim }}(packet, value.{{ field.name }});
+    {%- elif field.optional == True %}
+        // {{ field.name }} is optional! it better not be a VLA too
+        packet.encodeOptional(value.{{ field.name }});
+    {%- elif field.vla == True %}
+        // {{ field.name }} is a VLA!
+        packet.encodeList(value.{{ field.name }});
+    {%- else %}
+        // field {{ field.name }} is of non-intrinsic type {{ field.type }}
+        {{ field.type }}.photonStruct.pack(packet, value.{{ field.name }});
+    {%- endif %}
+    {%- if not loop.last %}
+    {% endif -%} 
+{% endfor%}
     }
 
     @Override
     public {{ name }} unpack(Packet packet) {
         var ret = new {{ name }}();
-        
-        {% for field in fields -%} 
-            {%- if field.type | is_intrinsic -%}
+
+{%- for field in fields -%} 
+    {%- if field.type | is_intrinsic %}
         // {{ field.name }} is of intrinsic type {{ field.type }}
-        ret.{{field.name}} = packet.{{type_map[field.type].java_decode_method}}();
-            {%- else -%}
+        ret.{{field.name}} = packet.{{ type_map[field.type].java_decode_method }}();
+    {%- elif field.type | is_shimmed %}
+        // field is shimmed!
+        ret.{{ field.name }} = {{ get_message_by_name(field.type).java_decode_shim }}(packet);
+    {%- elif field.optional == True %}
+        // {{ field.name }} is optional! it better not be a VLA too
+        value.{{ field.name }} = packet.decodeOptional({{ field.type }}.photonStruct);
+    {%- elif field.vla == True %}
+        // {{ field.name }} is a VLA!
+        value.{{ field.name }} = packet.decodeList({{ field.type }}.photonStruct);
+    {%- else %}
         // {{ field.name }} is of non-intrinsic type {{ field.type }}
         ret.{{field.name}} = {{ field.type }}.photonStruct.unpack(packet);
-            {%- endif %}
-        {%- if not loop.last %}
-        {% endif -%} 
-        {% endfor %}
+    {%- endif %}
+    {%- if not loop.last %}
+    {% endif -%} 
+{% endfor%}
 
         return ret;
     }

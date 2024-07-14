@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -21,6 +22,10 @@ class SerdeField(TypedDict):
 class MessageType(TypedDict):
     name: str
     fields: List[SerdeField]
+    # will be 'shim' if shimmed, and the shims will be set
+    shimmed: bool 
+    java_decode_shim: str
+    java_encode_shim: str
 
 
 def yaml_to_dict(path: str):
@@ -37,23 +42,67 @@ data_types = yaml_to_dict("src/generate/message_data_types.yaml")
 
 
 # Helper to check if we need to use our own decoder
-def is_intrinsic_type(type_str):
+def is_intrinsic_type(type_str: str):
     ret = type_str in data_types.keys()
     return ret
 
+# Deal with shimmed types
+def get_shimmed_filter(message_db):
+    def is_shimmed(message_name: str):
+        message = get_message_by_name(message_db, message_name)
+        return 'shimmed' in message and message['shimmed'] == True
+    return is_shimmed
+
+def get_message_by_name(message_db: List[MessageType], message_name: str):
+    try:
+        return next(message for message in message_db if message['name'] == message_name)
+    except StopIteration as e:
+        raise Exception("Could not find " + message_name) from e
+
+
+def get_field_by_name(message: MessageType, field_name: str):
+    return next(f for f in message['fields'] if f['name'] == field_name)
+
+
+def get_message_hash(message_db: List[MessageType], message: MessageType):
+    """
+    Calculate a unique message hash via MD5 sum. This is a very similar approach to rosmsg, documented:
+    http://wiki.ros.org/ROS/Technical%20Overview#Message_serialization_and_msg_MD5_sums
+
+    For non-intrinsic (user-defined) types, replace its type-string with the md5sum of the submessage definition
+    """
+    
+    print(f"Hashing {message['name']}")
+
+    print(message)
+    
+    # replace the non-intrinsic typename with its hash
+    modified_message = copy.deepcopy(message)
+    fields_to_hash = [field for field in modified_message['fields'] if not is_intrinsic_type(field['type'])]
+
+    print("Sub-message-IDs")
+    for field in fields_to_hash:
+        sub_message = get_message_by_name(message_db, field['type'])
+        subhash = get_message_hash(message_db, sub_message)
+        print(f"{field['name']}: {subhash.hexdigest()}")
+
+        # change the type to be our new md5sum
+        field['type'] = subhash.hexdigest()
+
+    # base case: message is all intrinsic types
+    # Hash a comments-stripped version for message integrity checking
+    cleaned_yaml = yaml.dump(modified_message, default_flow_style=False).strip()
+    message_hash = hashlib.md5(cleaned_yaml.encode("ascii"))
+    return message_hash
 
 def parse_yaml():
     config = yaml_to_dict("src/generate/messages.yaml")
 
-    # Hash a comments-stripped version for message integrity checking
-    cleaned_yaml = yaml.dump(config, default_flow_style=False).strip()
-    message_hash = hashlib.md5(cleaned_yaml.encode("ascii"))
-
-    return config, message_hash
+    return config
 
 
 def generate_photon_messages(output_root, template_root):
-    messages, message_hash = parse_yaml()
+    messages = parse_yaml()
 
     env = Environment(
         loader=FileSystemLoader(str(template_root)),
@@ -62,6 +111,7 @@ def generate_photon_messages(output_root, template_root):
     )
 
     env.filters["is_intrinsic"] = is_intrinsic_type
+    env.filters["is_shimmed"] = get_shimmed_filter(messages)
 
     # add our custom types
     extended_data_types = data_types.copy()
@@ -76,12 +126,18 @@ def generate_photon_messages(output_root, template_root):
     root_path = Path(output_root) / "main/java/org/photonvision/struct"
     template = env.get_template("Message.java.jinja")
 
+    template.globals['get_message_by_name'] = lambda name: get_message_by_name(messages, name)
+
     root_path.mkdir(parents=True, exist_ok=True)
 
     for message in messages:
+        message = cast(MessageType, message)
         java_name = f"{message['name']}Serde.java"
 
+        message_hash = get_message_hash(messages, message)
+
         output_file = root_path / java_name
+        print(message)
         output_file.write_text(
             template.render(
                 message,

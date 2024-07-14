@@ -28,12 +28,12 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PhotonPipelineMetadata
+ * Auto-generated serialization & deserialization helper for TargetCorner
  */
-public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
+public class TargetCornerSerde implements PacketSerde<TargetCorner> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "2a7039527bda14d13028a1b9282d40a2";
+    public static final String MESSAGE_VERSION = "08ed462ead622f0eda749410cf936558";
 
     @Override
     public int getMaxByteSize() {
@@ -42,28 +42,22 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
     }
 
     @Override
-    public void pack(Packet packet, PhotonPipelineMetadata value) {
-        // field sequenceID is of intrinsic type int64
-        packet.encode((long) value.sequenceID);
+    public void pack(Packet packet, TargetCorner value) {
+        // field cx is of intrinsic type float64
+        packet.encode((double) value.cx);
     
-        // field captureTimestampMicros is of intrinsic type int64
-        packet.encode((long) value.captureTimestampMicros);
-    
-        // field publishTimestampMicros is of intrinsic type int64
-        packet.encode((long) value.publishTimestampMicros);
+        // field cy is of intrinsic type float64
+        packet.encode((double) value.cy);
     }
 
     @Override
-    public PhotonPipelineMetadata unpack(Packet packet) {
-        var ret = new PhotonPipelineMetadata();
-        // sequenceID is of intrinsic type int64
-        ret.sequenceID = packet.decodeLong();
+    public TargetCorner unpack(Packet packet) {
+        var ret = new TargetCorner();
+        // cx is of intrinsic type float64
+        ret.cx = packet.decodeDouble();
     
-        // captureTimestampMicros is of intrinsic type int64
-        ret.captureTimestampMicros = packet.decodeLong();
-    
-        // publishTimestampMicros is of intrinsic type int64
-        ret.publishTimestampMicros = packet.decodeLong();
+        // cy is of intrinsic type float64
+        ret.cy = packet.decodeDouble();
 
         return ret;
     }

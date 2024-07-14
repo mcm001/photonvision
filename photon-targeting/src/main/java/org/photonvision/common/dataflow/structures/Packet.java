@@ -17,6 +17,14 @@
 
 package org.photonvision.common.dataflow.structures;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.management.RuntimeErrorException;
+
+import org.photonvision.targeting.serde.PhotonStructSerializable;
+
 /** A packet that holds byte-packed data to be sent over NetworkTables. */
 public class Packet {
     // Size of the packet.
@@ -134,6 +142,32 @@ public class Packet {
         packetData[writePos++] = (byte) ((data >> 16) & 0xff);
         packetData[writePos++] = (byte) ((data >> 8) & 0xff);
         packetData[writePos++] = (byte) (data & 0xff);
+    }
+
+    /**
+     * Encode a list of serializable structs. Lists are stored as [uint8 length, [length many] data structs]
+     * @param <T>
+     * @param data
+     */
+    public <T extends PhotonStructSerializable<T>> void encodeList(List<T> data) {
+        byte size = (byte)data.size(); 
+        if (size > Byte.MAX_VALUE) {
+            throw new RuntimeException("Array too long! Got " + size);
+        }
+
+        // length byte
+        encode(size);
+
+        for (var f : data) {
+            f.getSerde().pack(this, f);
+        }
+    }
+
+    public <T extends PhotonStructSerializable<T>> void encodeOptional(Optional<T> data) {
+        encode(data.isPresent());
+        if (data.isPresent()) {
+            data.get().getSerde().pack(this, data.get());
+        }
     }
 
     /**
@@ -274,5 +308,31 @@ public class Packet {
             return 0;
         }
         return (short) ((0xff & packetData[readPos++]) << 8 | (0xff & packetData[readPos++]));
+    }
+
+    /**
+     * Decode a list of serializable structs. Lists are stored as [uint8 length, [length many] data structs]. Because java sucks, we need to take the serde ref directly
+     * @param <T>
+     * @param data
+     */
+    public <T extends PhotonStructSerializable<T>> List<T> decodeList(PacketSerde<T> serde) {
+        byte length = decodeByte();
+
+        var ret = new ArrayList<T>();
+        ret.ensureCapacity(length);
+
+        for (int i = 0; i < length; i++) {
+            ret.add(serde.unpack(this));
+        }
+
+        return ret;
+    }
+
+    public <T extends PhotonStructSerializable<T>> Optional<T> decodeOptional(PacketSerde<T> serde) {
+        var present = decodeBoolean();
+        if (present) {
+            return Optional.of(serde.unpack(this));
+        }
+        return Optional.empty();
     }
 }

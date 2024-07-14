@@ -21,20 +21,19 @@ package org.photonvision.struct;
 
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
+import org.photonvision.utils.PacketUtils;
 
 // Assume that the base class lives here and we can import it
 import org.photonvision.targeting.*;
 
 
 /**
- * This is a test
+ * Auto-generated serialization & deserialization helper for PhotonPipelineResult
  */
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
-    public static final String MESSAGE_VERSION = "4cca7b1cbb9038ed8b11e69ef7f759cb";
-
-    public PhotonPipelineMetadata metadata;
-    public long ntRecieveTimestampMicros;
     
+    // Message definition md5sum. See photon_packet.adoc for details
+    public static final String MESSAGE_VERSION = "4a6a668e1a258213975bec40c7f847ca";
 
     @Override
     public int getMaxByteSize() {
@@ -44,19 +43,27 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
 
     @Override
     public void pack(Packet packet, PhotonPipelineResult value) {
-        // metadata is of non-intrinsic type PhotonPipelineMetadata
+        // field metadata is of non-intrinsic type PhotonPipelineMetadata
         PhotonPipelineMetadata.photonStruct.pack(packet, value.metadata);
-        // ntRecieveTimestampMicros is of intrinsic type int64
-        packet.encode((long) value.ntRecieveTimestampMicros);}
+    
+        // targets is a VLA!
+        packet.encodeList(value.targets);
+    
+        // multiTagResult is optional! it better not be a VLA too
+        packet.encodeOptional(value.multiTagResult);
+    }
 
     @Override
     public PhotonPipelineResult unpack(Packet packet) {
         var ret = new PhotonPipelineResult();
-        
         // metadata is of non-intrinsic type PhotonPipelineMetadata
         ret.metadata = PhotonPipelineMetadata.photonStruct.unpack(packet);
-        // ntRecieveTimestampMicros is of intrinsic type int64
-        ret.ntRecieveTimestampMicros = packet.decodeLong();
+    
+        // targets is a VLA!
+        value.targets = packet.decodeList(PhotonTrackedTarget.photonStruct);
+    
+        // multiTagResult is optional! it better not be a VLA too
+        value.multiTagResult = packet.decodeOptional(MultiTargetPNPResult.photonStruct);
 
         return ret;
     }

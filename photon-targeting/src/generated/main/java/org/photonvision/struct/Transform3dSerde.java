@@ -34,6 +34,7 @@ public class Transform3dSerde implements PacketSerde<Transform3d> {
     
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "040c70b37dfd2e190070060ba58c49ac";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [], \"java_decode_shim\": \"PacketUtils.unpackTransform3d\", \"java_encode_shim\": \"PacketUtils.packTransform3d\", \"name\": \"Transform3d\", \"shimmed\": true}";
 
     @Override
     public int getMaxByteSize() {

@@ -48,8 +48,21 @@
     type: TargetCorner
     vla: True
 
+- name: PnpResult
+  fields:
+  - name: best
+    type: Transform3d
+  - name: alt
+    type: Transform3d
+  - name: bestReprojErr
+    type: float64
+  - name: altReprojErr
+    type: float64
+
 - name: MultiTargetPNPResult
   fields:
+  - name: estimatedPose
+    type: PnpResult
   - name: fiducialIDsUsed
     type: int16
     vla: True

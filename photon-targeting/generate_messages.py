@@ -72,19 +72,13 @@ def get_message_hash(message_db: List[MessageType], message: MessageType):
     For non-intrinsic (user-defined) types, replace its type-string with the md5sum of the submessage definition
     """
     
-    print(f"Hashing {message['name']}")
-
-    print(message)
-    
     # replace the non-intrinsic typename with its hash
     modified_message = copy.deepcopy(message)
     fields_to_hash = [field for field in modified_message['fields'] if not is_intrinsic_type(field['type'])]
 
-    print("Sub-message-IDs")
     for field in fields_to_hash:
         sub_message = get_message_by_name(message_db, field['type'])
         subhash = get_message_hash(message_db, sub_message)
-        print(f"{field['name']}: {subhash.hexdigest()}")
 
         # change the type to be our new md5sum
         field['type'] = subhash.hexdigest()
@@ -137,11 +131,11 @@ def generate_photon_messages(output_root, template_root):
         message_hash = get_message_hash(messages, message)
 
         output_file = root_path / java_name
-        print(message)
         output_file.write_text(
             template.render(
                 message,
                 type_map=extended_data_types,
+                message_str=message,
                 message_hash=message_hash.hexdigest(),
             ),
             encoding="utf-8",

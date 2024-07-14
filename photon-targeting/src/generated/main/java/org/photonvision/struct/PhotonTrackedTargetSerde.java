@@ -34,6 +34,7 @@ public class PhotonTrackedTargetSerde implements PacketSerde<PhotonTrackedTarget
     
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "c92de331a3306a55f1daaa046fb02efd";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"yaw\", \"type\": \"float64\"}, {\"name\": \"pitch\", \"type\": \"float64\"}, {\"name\": \"area\", \"type\": \"float64\"}, {\"name\": \"skew\", \"type\": \"float64\"}, {\"name\": \"fiducialId\", \"type\": \"int32\"}, {\"name\": \"objDetectConf\", \"type\": \"float32\"}, {\"name\": \"bestCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": \"altCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": \"poseAmbiguity\", \"type\": \"float64\"}, {\"name\": \"minAreaRectCorners\", \"type\": \"TargetCorner\", \"vla\": true}, {\"name\": \"detectedCorners\", \"type\": \"TargetCorner\", \"vla\": true}], \"name\": \"PhotonTrackedTarget\"}";
 
     @Override
     public int getMaxByteSize() {

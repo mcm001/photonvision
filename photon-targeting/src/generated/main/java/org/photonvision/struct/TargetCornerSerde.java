@@ -34,6 +34,7 @@ public class TargetCornerSerde implements PacketSerde<TargetCorner> {
     
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "08ed462ead622f0eda749410cf936558";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"cx\", \"type\": \"float64\"}, {\"name\": \"cy\", \"type\": \"float64\"}], \"name\": \"TargetCorner\"}";
 
     @Override
     public int getMaxByteSize() {

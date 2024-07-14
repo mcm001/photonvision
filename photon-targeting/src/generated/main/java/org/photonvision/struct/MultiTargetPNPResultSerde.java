@@ -33,7 +33,8 @@ import org.photonvision.targeting.*;
 public class MultiTargetPNPResultSerde implements PacketSerde<MultiTargetPNPResult> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "889d0e3e304b4aad96a41b7540bf21a6";
+    public static final String MESSAGE_VERSION = "deebf77b7b5ac263f3846c079129a1d5";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"estimatedPose\", \"type\": \"PnpResult\"}, {\"name\": \"fiducialIDsUsed\", \"type\": \"int16\", \"vla\": true}], \"name\": \"MultiTargetPNPResult\"}";
 
     @Override
     public int getMaxByteSize() {
@@ -43,6 +44,9 @@ public class MultiTargetPNPResultSerde implements PacketSerde<MultiTargetPNPResu
 
     @Override
     public void pack(Packet packet, MultiTargetPNPResult value) {
+        // field estimatedPose is of non-intrinsic type PnpResult
+        PnpResult.photonStruct.pack(packet, value.estimatedPose);
+    
         // field fiducialIDsUsed is of intrinsic type int16
         packet.encode((short) value.fiducialIDsUsed);
     }
@@ -50,6 +54,9 @@ public class MultiTargetPNPResultSerde implements PacketSerde<MultiTargetPNPResu
     @Override
     public MultiTargetPNPResult unpack(Packet packet) {
         var ret = new MultiTargetPNPResult();
+        // estimatedPose is of non-intrinsic type PnpResult
+        ret.estimatedPose = PnpResult.photonStruct.unpack(packet);
+    
         // fiducialIDsUsed is of intrinsic type int16
         ret.fiducialIDsUsed = packet.decodeShort();
 

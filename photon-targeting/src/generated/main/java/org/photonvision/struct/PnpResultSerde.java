@@ -28,13 +28,13 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PhotonPipelineMetadata
+ * Auto-generated serialization & deserialization helper for PnpResult
  */
-public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
+public class PnpResultSerde implements PacketSerde<PnpResult> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "2a7039527bda14d13028a1b9282d40a2";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"sequenceID\", \"type\": \"int64\"}, {\"name\": \"captureTimestampMicros\", \"type\": \"int64\"}, {\"name\": \"publishTimestampMicros\", \"type\": \"int64\"}], \"name\": \"PhotonPipelineMetadata\"}";
+    public static final String MESSAGE_VERSION = "b7c48af31bdc3812df8bcb569d9500e6";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}], \"name\": \"PnpResult\"}";
 
     @Override
     public int getMaxByteSize() {
@@ -43,28 +43,34 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
     }
 
     @Override
-    public void pack(Packet packet, PhotonPipelineMetadata value) {
-        // field sequenceID is of intrinsic type int64
-        packet.encode((long) value.sequenceID);
+    public void pack(Packet packet, PnpResult value) {
+        // field is shimmed!
+        PacketUtils.packTransform3d(packet, value.best);
     
-        // field captureTimestampMicros is of intrinsic type int64
-        packet.encode((long) value.captureTimestampMicros);
+        // field is shimmed!
+        PacketUtils.packTransform3d(packet, value.alt);
     
-        // field publishTimestampMicros is of intrinsic type int64
-        packet.encode((long) value.publishTimestampMicros);
+        // field bestReprojErr is of intrinsic type float64
+        packet.encode((double) value.bestReprojErr);
+    
+        // field altReprojErr is of intrinsic type float64
+        packet.encode((double) value.altReprojErr);
     }
 
     @Override
-    public PhotonPipelineMetadata unpack(Packet packet) {
-        var ret = new PhotonPipelineMetadata();
-        // sequenceID is of intrinsic type int64
-        ret.sequenceID = packet.decodeLong();
+    public PnpResult unpack(Packet packet) {
+        var ret = new PnpResult();
+        // field is shimmed!
+        ret.best = PacketUtils.unpackTransform3d(packet);
     
-        // captureTimestampMicros is of intrinsic type int64
-        ret.captureTimestampMicros = packet.decodeLong();
+        // field is shimmed!
+        ret.alt = PacketUtils.unpackTransform3d(packet);
     
-        // publishTimestampMicros is of intrinsic type int64
-        ret.publishTimestampMicros = packet.decodeLong();
+        // bestReprojErr is of intrinsic type float64
+        ret.bestReprojErr = packet.decodeDouble();
+    
+        // altReprojErr is of intrinsic type float64
+        ret.altReprojErr = packet.decodeDouble();
 
         return ret;
     }

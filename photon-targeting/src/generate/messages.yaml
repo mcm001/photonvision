@@ -12,6 +12,5 @@
   fields:
   - name: metadata
     type: PhotonPipelineMetadata
-  - name: targets
+  - name: ntRecieveTimestampMicros
     type: int64
-    list_len: VLA

@@ -30,7 +30,7 @@ import org.photonvision.targeting.*;
  * This is a test
  */
 public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
-    public static final String MESSAGE_VERSION = "f56288343555bd5202b4ca38be0b8b1a";
+    public static final String MESSAGE_VERSION = "4cca7b1cbb9038ed8b11e69ef7f759cb";
 
     public long sequenceID;
     public long captureTimestampMicros;
@@ -45,18 +45,24 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
 
     @Override
     public void pack(Packet packet, PhotonPipelineMetadata value) {
-        // explicitly cast to avoid accidentally encoding the wrong thing
+        // sequenceID is of intrinsic type int64
         packet.encode((long) value.sequenceID);
+        // captureTimestampMicros is of intrinsic type int64
         packet.encode((long) value.captureTimestampMicros);
-        packet.encode((long) value.publishTimestampMicros);
-    }
+        // publishTimestampMicros is of intrinsic type int64
+        packet.encode((long) value.publishTimestampMicros);}
 
     @Override
     public PhotonPipelineMetadata unpack(Packet packet) {
         var ret = new PhotonPipelineMetadata();
+        
+        // sequenceID is of intrinsic type int64
         ret.sequenceID = packet.decodeLong();
+        // captureTimestampMicros is of intrinsic type int64
         ret.captureTimestampMicros = packet.decodeLong();
+        // publishTimestampMicros is of intrinsic type int64
         ret.publishTimestampMicros = packet.decodeLong();
+
         return ret;
     }
 }

@@ -27,15 +27,17 @@ def yaml_to_dict(path: str):
     yaml_file_path = os.path.join(script_dir, path)
 
     with open(yaml_file_path, "r") as file:
-        file_dict: List[MessageType] = yaml.safe_load(file)
-
-    # Print for testing
-    print(file_dict)
+        file_dict: dict = yaml.safe_load(file)
 
     return file_dict
 
 
 data_types = yaml_to_dict("src/generate/message_data_types.yaml")
+
+# Helper to check if we need to use our own decoder
+def is_intrinsic_type(type_str):
+    ret = type_str in data_types.keys()
+    return ret
 
 def parse_yaml():
     config = yaml_to_dict("src/generate/messages.yaml")
@@ -43,7 +45,6 @@ def parse_yaml():
     # Hash a comments-stripped version for message integrity checking
     cleaned_yaml = yaml.dump(config, default_flow_style=False).strip()
     message_hash = hashlib.md5(cleaned_yaml.encode("ascii"))
-    print(message_hash)
 
     return config, message_hash
 
@@ -57,11 +58,13 @@ def generate_photon_messages(output_root, template_root):
         # keep_trailing_newline=False,
     )
 
+    env.filters['is_intrinsic'] = is_intrinsic_type
 
     # add our custom types
+    extended_data_types = data_types.copy()
     for message in messages:
         name = message['name']
-        data_types[name] = {
+        extended_data_types[name] = {
             'len': -1,
             'java_type': name,
             'cpp_type': name,
@@ -77,7 +80,7 @@ def generate_photon_messages(output_root, template_root):
         
 
         output_file = root_path / java_name
-        output_file.write_text(template.render(message, type_map=data_types, message_hash=message_hash.hexdigest()), encoding="utf-8")
+        output_file.write_text(template.render(message, type_map=extended_data_types, message_hash=message_hash.hexdigest()), encoding="utf-8")
 
 
 

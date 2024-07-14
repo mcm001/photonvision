@@ -1,6 +1,7 @@
 package org.photonvision.targeting;
 
 import org.photonvision.struct.PhotonPacketSerdeStruct;
+import org.photonvision.struct.PhotonPipelineMetadataSerde;
 
 public class PhotonPipelineMetadata {
     // Mirror of the heartbeat entry -- monotonically increasing
@@ -46,5 +47,5 @@ public class PhotonPipelineMetadata {
         return sequenceID;
     }
 
-    PhotonPipelineResultMetadataSerde serde = new PhotonPipelineResultMetadataSerde();
+    public static final PhotonPipelineMetadataSerde photonStruct = new PhotonPipelineMetadataSerde();
 }

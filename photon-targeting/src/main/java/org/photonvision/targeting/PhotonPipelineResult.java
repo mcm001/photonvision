@@ -29,16 +29,16 @@ public class PhotonPipelineResult implements ProtobufSerializable {
     private static boolean HAS_WARNED = false;
 
     // Frame capture metadata
-    public final PhotonPipelineMetadata metadata;
+    public PhotonPipelineMetadata metadata;
 
     // Targets to store.
-    public final List<PhotonTrackedTarget> targets = new ArrayList<>();
+    public List<PhotonTrackedTarget> targets = new ArrayList<>();
 
     // Multi-tag result
-    final MultiTargetPNPResult multiTagResult;
+    public MultiTargetPNPResult multiTagResult;
 
     // HACK: Since we don't trust NT time sync, keep track of when we got this packet into robot code
-    long ntRecieveTimestampMicros = -1;
+    public long ntRecieveTimestampMicros = -1;
 
     /** Constructs an empty pipeline result. */
     public PhotonPipelineResult() {

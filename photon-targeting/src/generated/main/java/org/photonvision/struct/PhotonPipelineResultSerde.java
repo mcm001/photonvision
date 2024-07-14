@@ -30,10 +30,10 @@ import org.photonvision.targeting.*;
  * This is a test
  */
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
-    public static final String MESSAGE_VERSION = "f56288343555bd5202b4ca38be0b8b1a";
+    public static final String MESSAGE_VERSION = "4cca7b1cbb9038ed8b11e69ef7f759cb";
 
     public PhotonPipelineMetadata metadata;
-    public long targets;
+    public long ntRecieveTimestampMicros;
     
 
     @Override
@@ -44,16 +44,20 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
 
     @Override
     public void pack(Packet packet, PhotonPipelineResult value) {
-        // explicitly cast to avoid accidentally encoding the wrong thing
-        packet.encode((PhotonPipelineMetadata) value.metadata);
-        packet.encode((long) value.targets);
-    }
+        // metadata is of non-intrinsic type PhotonPipelineMetadata
+        PhotonPipelineMetadata.photonStruct.pack(packet, value.metadata);
+        // ntRecieveTimestampMicros is of intrinsic type int64
+        packet.encode((long) value.ntRecieveTimestampMicros);}
 
     @Override
     public PhotonPipelineResult unpack(Packet packet) {
         var ret = new PhotonPipelineResult();
-        ret.metadata = packet.();
-        ret.targets = packet.decodeLong();
+        
+        // metadata is of non-intrinsic type PhotonPipelineMetadata
+        ret.metadata = PhotonPipelineMetadata.photonStruct.unpack(packet);
+        // ntRecieveTimestampMicros is of intrinsic type int64
+        ret.ntRecieveTimestampMicros = packet.decodeLong();
+
         return ret;
     }
 }

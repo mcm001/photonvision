@@ -22,6 +22,7 @@ import edu.wpi.first.util.protobuf.ProtobufSerializable;
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
 import org.photonvision.targeting.proto.PNPResultProto;
+import org.photonvision.targeting.serde.PhotonStructSerializable;
 import org.photonvision.utils.PacketUtils;
 
 /**
@@ -33,7 +34,7 @@ import org.photonvision.utils.PacketUtils;
  * <p>Note that the coordinate frame of these transforms depends on the implementing solvePnP
  * method.
  */
-public class PNPResult implements ProtobufSerializable {
+public class PNPResult implements ProtobufSerializable, PhotonStructSerializable<PNPResult> {
     /**
      * If this result is valid. A false value indicates there was an error in estimation, and this
      * result should not be used.
@@ -44,22 +45,22 @@ public class PNPResult implements ProtobufSerializable {
      * The best-fit transform. The coordinate frame of this transform depends on the method which gave
      * this result.
      */
-    public final Transform3d best;
+    public Transform3d best;
 
     /** Reprojection error of the best solution, in pixels */
-    public final double bestReprojErr;
+    public double bestReprojErr;
 
     /**
      * Alternate, ambiguous solution from solvepnp. If no alternate solution is found, this is equal
      * to the best solution.
      */
-    public final Transform3d alt;
+    public Transform3d alt;
 
     /** If no alternate solution is found, this is bestReprojErr */
-    public final double altReprojErr;
+    public double altReprojErr;
 
     /** If no alternate solution is found, this is 0 */
-    public final double ambiguity;
+    public double ambiguity;
 
     /** An empty (invalid) result. */
     public PNPResult() {
@@ -183,4 +184,13 @@ public class PNPResult implements ProtobufSerializable {
 
     public static final APacketSerde serde = new APacketSerde();
     public static final PNPResultProto proto = new PNPResultProto();
+    
+    // TODO!
+    public static final APacketSerde photonStruct = null;
+
+    @Override
+    public PacketSerde<PNPResult> getSerde() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+    }
 }

@@ -23,17 +23,18 @@ import java.util.List;
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
 import org.photonvision.targeting.proto.MultiTargetPNPResultProto;
+import org.photonvision.targeting.serde.PhotonStructSerializable;
 
-public class MultiTargetPNPResult implements ProtobufSerializable {
+public class MultiTargetPNPResult implements ProtobufSerializable, PhotonStructSerializable<MultiTargetPNPResult> {
     // Seeing 32 apriltags at once seems like a sane limit
     private static final int MAX_IDS = 32;
 
     public PNPResult estimatedPose = new PNPResult();
-    public List<Integer> fiducialIDsUsed = List.of();
+    public List<Short> fiducialIDsUsed = List.of();
 
     public MultiTargetPNPResult() {}
 
-    public MultiTargetPNPResult(PNPResult results, List<Integer> ids) {
+    public MultiTargetPNPResult(PNPResult results, List<Short> ids) {
         estimatedPose = results;
         fiducialIDsUsed = ids;
     }
@@ -95,9 +96,9 @@ public class MultiTargetPNPResult implements ProtobufSerializable {
         @Override
         public MultiTargetPNPResult unpack(Packet packet) {
             var results = PNPResult.serde.unpack(packet);
-            var ids = new ArrayList<Integer>(MAX_IDS);
+            var ids = new ArrayList<Short>(MAX_IDS);
             for (int i = 0; i < MAX_IDS; i++) {
-                int targetId = packet.decodeShort();
+                var targetId = packet.decodeShort();
                 if (targetId > -1) ids.add(targetId);
             }
             return new MultiTargetPNPResult(results, ids);
@@ -106,4 +107,13 @@ public class MultiTargetPNPResult implements ProtobufSerializable {
 
     public static final APacketSerde serde = new APacketSerde();
     public static final MultiTargetPNPResultProto proto = new MultiTargetPNPResultProto();
+    
+    // tODO!
+    public static final APacketSerde photonStruct = null;
+
+    @Override
+    public PacketSerde<MultiTargetPNPResult> getSerde() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+    }
 }

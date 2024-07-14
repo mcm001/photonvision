@@ -49,6 +49,10 @@ def is_intrinsic_type(type_str: str):
 # Deal with shimmed types
 def get_shimmed_filter(message_db):
     def is_shimmed(message_name: str):
+        # We don't (yet) support shimming intrinsic types
+        if is_intrinsic_type(message_name):
+            return False
+
         message = get_message_by_name(message_db, message_name)
         return 'shimmed' in message and message['shimmed'] == True
     return is_shimmed
@@ -82,7 +86,7 @@ def get_message_hash(message_db: List[MessageType], message: MessageType):
 
         # change the type to be our new md5sum
         field['type'] = subhash.hexdigest()
-
+    
     # base case: message is all intrinsic types
     # Hash a comments-stripped version for message integrity checking
     cleaned_yaml = yaml.dump(modified_message, default_flow_style=False).strip()
@@ -125,6 +129,11 @@ def generate_photon_messages(output_root, template_root):
     root_path.mkdir(parents=True, exist_ok=True)
 
     for message in messages:
+        
+        # don't generate shimmed types
+        if get_shimmed_filter(messages)(message['name']):
+            continue
+
         message = cast(MessageType, message)
         java_name = f"{message['name']}Serde.java"
 

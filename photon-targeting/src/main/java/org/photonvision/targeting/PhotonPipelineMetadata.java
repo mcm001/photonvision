@@ -1,9 +1,10 @@
 package org.photonvision.targeting;
 
-import org.photonvision.struct.PhotonPacketSerdeStruct;
+import org.photonvision.common.dataflow.structures.PacketSerde;
 import org.photonvision.struct.PhotonPipelineMetadataSerde;
+import org.photonvision.targeting.serde.PhotonStructSerializable;
 
-public class PhotonPipelineMetadata {
+public class PhotonPipelineMetadata implements PhotonStructSerializable<PhotonPipelineMetadata> {
     // Mirror of the heartbeat entry -- monotonically increasing
     public long sequenceID;
 
@@ -48,4 +49,10 @@ public class PhotonPipelineMetadata {
     }
 
     public static final PhotonPipelineMetadataSerde photonStruct = new PhotonPipelineMetadataSerde();
+
+    @Override
+    public PacketSerde<PhotonPipelineMetadata> getSerde() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+    }
 }

@@ -24,9 +24,10 @@ import java.util.List;
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
 import org.photonvision.targeting.proto.PhotonTrackedTargetProto;
+import org.photonvision.targeting.serde.PhotonStructSerializable;
 import org.photonvision.utils.PacketUtils;
 
-public class PhotonTrackedTarget implements ProtobufSerializable {
+public class PhotonTrackedTarget implements ProtobufSerializable, PhotonStructSerializable<PhotonTrackedTarget> {
     private static final int MAX_CORNERS = 8;
 
     public final double yaw;
@@ -306,4 +307,13 @@ public class PhotonTrackedTarget implements ProtobufSerializable {
 
     public static final APacketSerde serde = new APacketSerde();
     public static final PhotonTrackedTargetProto proto = new PhotonTrackedTargetProto();
+
+    // TODO!
+    public static final APacketSerde photonStruct = null;
+
+    @Override
+    public PacketSerde<PhotonTrackedTarget> getSerde() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+    }
 }

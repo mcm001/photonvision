@@ -144,9 +144,23 @@ public class Packet {
         packetData[writePos++] = (byte) (data & 0xff);
     }
 
+    public void encode(List<Short> data) {
+        byte size = (byte)data.size(); 
+        if (size > Byte.MAX_VALUE) {
+            throw new RuntimeException("Array too long! Got " + size);
+        }
+
+        // length byte
+        encode(size);
+
+        for (var f : data) {
+            encode(f);
+        }
+    }
+
     /**
      * Encode a list of serializable structs. Lists are stored as [uint8 length, [length many] data structs]
-     * @param <T>
+     * @param <T> the class this list will be packing
      * @param data
      */
     public <T extends PhotonStructSerializable<T>> void encodeList(List<T> data) {
@@ -334,5 +348,18 @@ public class Packet {
             return Optional.of(serde.unpack(this));
         }
         return Optional.empty();
+    }
+
+    public List<Short> decodeShortList() {
+        byte length = decodeByte();
+
+        var ret = new ArrayList<Short>();
+        ret.ensureCapacity(length);
+
+        for (int i = 0; i < length; i++) {
+            ret.add(decodeShort());
+        }
+
+        return ret;
     }
 }

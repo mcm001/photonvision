@@ -28,13 +28,13 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PnpResult
+ * Auto-generated serialization & deserialization helper for PNPResult
  */
-public class PnpResultSerde implements PacketSerde<PnpResult> {
+public class PNPResultSerde implements PacketSerde<PNPResult> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "b7c48af31bdc3812df8bcb569d9500e6";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}], \"name\": \"PnpResult\"}";
+    public static final String MESSAGE_VERSION = "cc56541eb36b8fbad8a70f511440f3a4";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"comment\": \"This is a comment\", \"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}, {\"name\": \"ambiguity\", \"type\": \"float64\"}], \"name\": \"PNPResult\"}";
 
     @Override
     public int getMaxByteSize() {
@@ -43,7 +43,7 @@ public class PnpResultSerde implements PacketSerde<PnpResult> {
     }
 
     @Override
-    public void pack(Packet packet, PnpResult value) {
+    public void pack(Packet packet, PNPResult value) {
         // field is shimmed!
         PacketUtils.packTransform3d(packet, value.best);
     
@@ -55,11 +55,15 @@ public class PnpResultSerde implements PacketSerde<PnpResult> {
     
         // field altReprojErr is of intrinsic type float64
         packet.encode((double) value.altReprojErr);
+    
+        // field ambiguity is of intrinsic type float64
+        packet.encode((double) value.ambiguity);
     }
 
     @Override
-    public PnpResult unpack(Packet packet) {
-        var ret = new PnpResult();
+    public PNPResult unpack(Packet packet) {
+        var ret = new PNPResult();
+
         // field is shimmed!
         ret.best = PacketUtils.unpackTransform3d(packet);
     
@@ -71,6 +75,9 @@ public class PnpResultSerde implements PacketSerde<PnpResult> {
     
         // altReprojErr is of intrinsic type float64
         ret.altReprojErr = packet.decodeDouble();
+    
+        // ambiguity is of intrinsic type float64
+        ret.ambiguity = packet.decodeDouble();
 
         return ret;
     }

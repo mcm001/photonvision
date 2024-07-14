@@ -22,12 +22,13 @@ import java.util.Objects;
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
 import org.photonvision.targeting.proto.TargetCornerProto;
+import org.photonvision.targeting.serde.PhotonStructSerializable;
 
 /**
  * Represents a point in an image at the corner of the minimum-area bounding rectangle, in pixels.
  * Origin at the top left, plus-x to the right, plus-y down.
  */
-public class TargetCorner implements ProtobufSerializable {
+public class TargetCorner implements ProtobufSerializable, PhotonStructSerializable<TargetCorner> {
     public final double x;
     public final double y;
 
@@ -74,4 +75,12 @@ public class TargetCorner implements ProtobufSerializable {
 
     public static final APacketSerde serde = new APacketSerde();
     public static final TargetCornerProto proto = new TargetCornerProto();
+
+    public static final APacketSerde photonStruct = null;
+
+    @Override
+    public PacketSerde<TargetCorner> getSerde() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+    }
 }

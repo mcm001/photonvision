@@ -20,13 +20,16 @@ package org.photonvision.targeting;
 import edu.wpi.first.util.protobuf.ProtobufSerializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.photonvision.common.dataflow.structures.PacketSerde;
 import org.photonvision.targeting.proto.PhotonPipelineResultProto;
 import org.photonvision.targeting.serde.APacketSerde;
 import org.photonvision.targeting.serde.APhotonStructSerde;
 import org.photonvision.targeting.serde.PhotonStructSerializable;
 
 /** Represents a pipeline result from a PhotonCamera. */
-public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructSerializable {
+public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructSerializable<PhotonPipelineResult> {
     private static boolean HAS_WARNED = false;
 
     // Frame capture metadata
@@ -36,7 +39,7 @@ public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructS
     public List<PhotonTrackedTarget> targets = new ArrayList<>();
 
     // Multi-tag result
-    public MultiTargetPNPResult multiTagResult;
+    public Optional<MultiTargetPNPResult> multiTagResult;
 
     // HACK: Since we don't trust NT time sync, keep track of when we got this packet into robot code
     public long ntRecieveTimestampMicros = -1;
@@ -96,7 +99,7 @@ public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructS
             MultiTargetPNPResult result) {
         this.metadata = metadata;
         this.targets.addAll(targets);
-        this.multiTagResult = result;
+        this.multiTagResult = Optional.of(result);
     }
 
     /**
@@ -152,7 +155,7 @@ public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructS
      * Return the latest multi-target result. Be sure to check
      * getMultiTagResult().estimatedPose.isPresent before using the pose estimate!
      */
-    public MultiTargetPNPResult getMultiTagResult() {
+    public Optional<MultiTargetPNPResult> getMultiTagResult() {
         return multiTagResult;
     }
 
@@ -221,4 +224,10 @@ public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructS
     public static final APacketSerde serde = new APacketSerde();
     public static final APhotonStructSerde photonStruct = new APhotonStructSerde();
     public static final PhotonPipelineResultProto proto = new PhotonPipelineResultProto();
+
+    @Override
+    public PacketSerde<PhotonPipelineResult> getSerde() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+    }
 }

@@ -33,8 +33,8 @@ import org.photonvision.targeting.*;
 public class TargetCornerSerde implements PacketSerde<TargetCorner> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "08ed462ead622f0eda749410cf936558";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"cx\", \"type\": \"float64\"}, {\"name\": \"cy\", \"type\": \"float64\"}], \"name\": \"TargetCorner\"}";
+    public static final String MESSAGE_VERSION = "22b1ff7551d10215af6fb3672fe4eda8";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"x\", \"type\": \"float64\"}, {\"name\": \"y\", \"type\": \"float64\"}], \"name\": \"TargetCorner\"}";
 
     @Override
     public int getMaxByteSize() {
@@ -44,21 +44,22 @@ public class TargetCornerSerde implements PacketSerde<TargetCorner> {
 
     @Override
     public void pack(Packet packet, TargetCorner value) {
-        // field cx is of intrinsic type float64
-        packet.encode((double) value.cx);
+        // field x is of intrinsic type float64
+        packet.encode((double) value.x);
     
-        // field cy is of intrinsic type float64
-        packet.encode((double) value.cy);
+        // field y is of intrinsic type float64
+        packet.encode((double) value.y);
     }
 
     @Override
     public TargetCorner unpack(Packet packet) {
         var ret = new TargetCorner();
-        // cx is of intrinsic type float64
-        ret.cx = packet.decodeDouble();
+
+        // x is of intrinsic type float64
+        ret.x = packet.decodeDouble();
     
-        // cy is of intrinsic type float64
-        ret.cy = packet.decodeDouble();
+        // y is of intrinsic type float64
+        ret.y = packet.decodeDouble();
 
         return ret;
     }

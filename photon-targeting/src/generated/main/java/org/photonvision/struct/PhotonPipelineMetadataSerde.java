@@ -57,6 +57,7 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
     @Override
     public PhotonPipelineMetadata unpack(Packet packet) {
         var ret = new PhotonPipelineMetadata();
+
         // sequenceID is of intrinsic type int64
         ret.sequenceID = packet.decodeLong();
     

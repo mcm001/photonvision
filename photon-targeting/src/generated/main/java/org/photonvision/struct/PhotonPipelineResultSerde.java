@@ -33,7 +33,7 @@ import org.photonvision.targeting.*;
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "047d6310563d9c38a8463888258ed1c3";
+    public static final String MESSAGE_VERSION = "18cd7e00c8a312f35a3b560909028f70";
     public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"metadata\", \"type\": \"PhotonPipelineMetadata\"}, {\"name\": \"targets\", \"type\": \"PhotonTrackedTarget\", \"vla\": true}, {\"name\": \"multiTagResult\", \"optional\": true, \"type\": \"MultiTargetPNPResult\"}], \"name\": \"PhotonPipelineResult\"}";
 
     @Override
@@ -47,7 +47,7 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
         // field metadata is of non-intrinsic type PhotonPipelineMetadata
         PhotonPipelineMetadata.photonStruct.pack(packet, value.metadata);
     
-        // targets is a VLA!
+        // targets is a custom VLA!
         packet.encodeList(value.targets);
     
         // multiTagResult is optional! it better not be a VLA too
@@ -57,14 +57,15 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
     @Override
     public PhotonPipelineResult unpack(Packet packet) {
         var ret = new PhotonPipelineResult();
+
         // metadata is of non-intrinsic type PhotonPipelineMetadata
         ret.metadata = PhotonPipelineMetadata.photonStruct.unpack(packet);
     
-        // targets is a VLA!
-        value.targets = packet.decodeList(PhotonTrackedTarget.photonStruct);
+        // targets is a custom VLA!
+        ret.targets = packet.decodeList(PhotonTrackedTarget.photonStruct);
     
         // multiTagResult is optional! it better not be a VLA too
-        value.multiTagResult = packet.decodeOptional(MultiTargetPNPResult.photonStruct);
+        ret.multiTagResult = packet.decodeOptional(MultiTargetPNPResult.photonStruct);
 
         return ret;
     }

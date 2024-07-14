@@ -573,7 +573,7 @@ public class PhotonCameraSim implements AutoCloseable {
      * @param receiveTimestamp The (sim) timestamp when this result was read by NT in microseconds
      */
     public void submitProcessedFrame(PhotonPipelineResult result, long receiveTimestamp) {
-        ts.latencyMillisEntry.set(result.getLatencyMillis(), receiveTimestamp);
+        ts.latencyMillisEntry.set(result.metadata.getLatencyMillis(), receiveTimestamp);
 
         ts.resultPublisher.set(result, result.getPacketSize());
 

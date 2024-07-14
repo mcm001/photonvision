@@ -16,9 +16,9 @@
 
 - name: TargetCorner
   fields:
-  - name: cx
+  - name: x
     type: float64
-  - name: cy
+  - name: y
     type: float64
 
 - name: PhotonTrackedTarget
@@ -48,21 +48,24 @@
     type: TargetCorner
     vla: True
 
-- name: PnpResult
+- name: PNPResult
   fields:
   - name: best
     type: Transform3d
+    comment: "This is a comment"
   - name: alt
     type: Transform3d
   - name: bestReprojErr
     type: float64
   - name: altReprojErr
     type: float64
+  - name: ambiguity
+    type: float64
 
 - name: MultiTargetPNPResult
   fields:
   - name: estimatedPose
-    type: PnpResult
+    type: PNPResult
   - name: fiducialIDsUsed
     type: int16
     vla: True

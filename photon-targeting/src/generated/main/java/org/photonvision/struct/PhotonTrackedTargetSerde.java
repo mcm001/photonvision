@@ -33,7 +33,7 @@ import org.photonvision.targeting.*;
 public class PhotonTrackedTargetSerde implements PacketSerde<PhotonTrackedTarget> {
     
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "c92de331a3306a55f1daaa046fb02efd";
+    public static final String MESSAGE_VERSION = "bc26b76ea1520b42d776972512362b11";
     public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"yaw\", \"type\": \"float64\"}, {\"name\": \"pitch\", \"type\": \"float64\"}, {\"name\": \"area\", \"type\": \"float64\"}, {\"name\": \"skew\", \"type\": \"float64\"}, {\"name\": \"fiducialId\", \"type\": \"int32\"}, {\"name\": \"objDetectConf\", \"type\": \"float32\"}, {\"name\": \"bestCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": \"altCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": \"poseAmbiguity\", \"type\": \"float64\"}, {\"name\": \"minAreaRectCorners\", \"type\": \"TargetCorner\", \"vla\": true}, {\"name\": \"detectedCorners\", \"type\": \"TargetCorner\", \"vla\": true}], \"name\": \"PhotonTrackedTarget\"}";
 
     @Override
@@ -71,16 +71,17 @@ public class PhotonTrackedTargetSerde implements PacketSerde<PhotonTrackedTarget
         // field poseAmbiguity is of intrinsic type float64
         packet.encode((double) value.poseAmbiguity);
     
-        // minAreaRectCorners is a VLA!
+        // minAreaRectCorners is a custom VLA!
         packet.encodeList(value.minAreaRectCorners);
     
-        // detectedCorners is a VLA!
+        // detectedCorners is a custom VLA!
         packet.encodeList(value.detectedCorners);
     }
 
     @Override
     public PhotonTrackedTarget unpack(Packet packet) {
         var ret = new PhotonTrackedTarget();
+
         // yaw is of intrinsic type float64
         ret.yaw = packet.decodeDouble();
     
@@ -108,11 +109,11 @@ public class PhotonTrackedTargetSerde implements PacketSerde<PhotonTrackedTarget
         // poseAmbiguity is of intrinsic type float64
         ret.poseAmbiguity = packet.decodeDouble();
     
-        // minAreaRectCorners is a VLA!
-        value.minAreaRectCorners = packet.decodeList(TargetCorner.photonStruct);
+        // minAreaRectCorners is a custom VLA!
+        ret.minAreaRectCorners = packet.decodeList(TargetCorner.photonStruct);
     
-        // detectedCorners is a VLA!
-        value.detectedCorners = packet.decodeList(TargetCorner.photonStruct);
+        // detectedCorners is a custom VLA!
+        ret.detectedCorners = packet.decodeList(TargetCorner.photonStruct);
 
         return ret;
     }

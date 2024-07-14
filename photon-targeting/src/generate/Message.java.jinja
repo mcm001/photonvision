@@ -30,7 +30,7 @@ import org.photonvision.targeting.*;
  * This is a test
  */
 public class {{ name }}Serde implements PacketSerde<{{name}}> {
-    
+    public static final String MESSAGE_VERSION = "{{ message_hash }}";
 
     {% for field in fields %}public {{ type_map[field.type].java_type }} {{ field.name }};
     {% endfor %}

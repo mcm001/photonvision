@@ -30,7 +30,7 @@ import org.photonvision.targeting.*;
  * This is a test
  */
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
-    
+    public static final String MESSAGE_VERSION = "f56288343555bd5202b4ca38be0b8b1a";
 
     public PhotonPipelineMetadata metadata;
     public long targets;

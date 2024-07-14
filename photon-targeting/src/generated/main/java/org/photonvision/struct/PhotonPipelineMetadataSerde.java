@@ -30,7 +30,7 @@ import org.photonvision.targeting.*;
  * This is a test
  */
 public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
-    
+    public static final String MESSAGE_VERSION = "f56288343555bd5202b4ca38be0b8b1a";
 
     public long sequenceID;
     public long captureTimestampMicros;

@@ -42,8 +42,7 @@ def parse_yaml():
 
     # Hash a comments-stripped version for message integrity checking
     cleaned_yaml = yaml.dump(config, default_flow_style=False).strip()
-    message_hash = hashlib.md5(cleaned_yaml.encode("ascii")).digest()
-    message_hash = list(message_hash)
+    message_hash = hashlib.md5(cleaned_yaml.encode("ascii"))
     print(message_hash)
 
     return config, message_hash
@@ -78,7 +77,7 @@ def generate_photon_messages(output_root, template_root):
         
 
         output_file = root_path / java_name
-        output_file.write_text(template.render(message, type_map=data_types), encoding="utf-8")
+        output_file.write_text(template.render(message, type_map=data_types, message_hash=message_hash.hexdigest()), encoding="utf-8")
 
 
 

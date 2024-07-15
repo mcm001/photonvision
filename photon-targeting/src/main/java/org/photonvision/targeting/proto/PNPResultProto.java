@@ -46,10 +46,6 @@ public class PNPResultProto implements Protobuf<PNPResult, ProtobufPNPResult> {
 
     @Override
     public PNPResult unpack(ProtobufPNPResult msg) {
-        if (!msg.getIsPresent()) {
-            return new PNPResult();
-        }
-
         return new PNPResult(
                 Transform3d.proto.unpack(msg.getBest()),
                 Transform3d.proto.unpack(msg.getAlt()),
@@ -64,7 +60,6 @@ public class PNPResultProto implements Protobuf<PNPResult, ProtobufPNPResult> {
         Transform3d.proto.pack(msg.getMutableAlt(), value.alt);
         msg.setAmbiguity(value.ambiguity)
                 .setBestReprojErr(value.bestReprojErr)
-                .setAltReprojErr(value.altReprojErr)
-                .setIsPresent(value.isPresent);
+                .setAltReprojErr(value.altReprojErr);
     }
 }

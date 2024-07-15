@@ -21,15 +21,14 @@ import edu.wpi.first.util.protobuf.ProtobufSerializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.photonvision.common.dataflow.structures.PacketSerde;
+import org.photonvision.struct.PhotonPipelineResultSerde;
 import org.photonvision.targeting.proto.PhotonPipelineResultProto;
-import org.photonvision.targeting.serde.APacketSerde;
-import org.photonvision.targeting.serde.APhotonStructSerde;
 import org.photonvision.targeting.serde.PhotonStructSerializable;
 
 /** Represents a pipeline result from a PhotonCamera. */
-public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructSerializable<PhotonPipelineResult> {
+public class PhotonPipelineResult
+        implements ProtobufSerializable, PhotonStructSerializable<PhotonPipelineResult> {
     private static boolean HAS_WARNED = false;
 
     // Frame capture metadata
@@ -108,10 +107,11 @@ public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructS
      * @return The size of the packet needed to store this pipeline result.
      */
     public int getPacketSize() {
-        return Double.BYTES // latency
-                + 1 // target count
-                + targets.size() * PhotonTrackedTarget.serde.getMaxByteSize()
-                + MultiTargetPNPResult.serde.getMaxByteSize();
+        throw new RuntimeException("TODO");
+        // return Double.BYTES // latency
+        //         + 1 // target count
+        //         + targets.size() * PhotonTrackedTarget.serde.getMaxByteSize()
+        //         + MultiTargetPNPResult.serde.getMaxByteSize();
     }
 
     /**
@@ -221,8 +221,7 @@ public class PhotonPipelineResult implements ProtobufSerializable, PhotonStructS
                 + "]";
     }
 
-    public static final APacketSerde serde = new APacketSerde();
-    public static final APhotonStructSerde photonStruct = new APhotonStructSerde();
+    public static final PhotonPipelineResultSerde photonStruct = new PhotonPipelineResultSerde();
     public static final PhotonPipelineResultProto proto = new PhotonPipelineResultProto();
 
     @Override

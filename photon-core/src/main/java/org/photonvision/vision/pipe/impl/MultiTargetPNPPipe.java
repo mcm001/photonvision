@@ -56,10 +56,10 @@ public class MultiTargetPNPPipe
 
     private MultiTargetPNPResult calculateCameraInField(List<TrackedTarget> targetList) {
         // Find tag IDs that exist in the tag layout
-        var tagIDsUsed = new ArrayList<Integer>();
+        var tagIDsUsed = new ArrayList<Short>();
         for (var target : targetList) {
             int id = target.getFiducialId();
-            if (params.atfl.getTagPose(id).isPresent()) tagIDsUsed.add(id);
+            if (params.atfl.getTagPose(id).isPresent()) tagIDsUsed.add((short) id);
         }
 
         // Only run with multiple targets

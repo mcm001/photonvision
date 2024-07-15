@@ -20,9 +20,6 @@ package org.photonvision.common.dataflow.structures;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.management.RuntimeErrorException;
-
 import org.photonvision.targeting.serde.PhotonStructSerializable;
 
 /** A packet that holds byte-packed data to be sent over NetworkTables. */
@@ -145,7 +142,7 @@ public class Packet {
     }
 
     public void encode(List<Short> data) {
-        byte size = (byte)data.size(); 
+        byte size = (byte) data.size();
         if (size > Byte.MAX_VALUE) {
             throw new RuntimeException("Array too long! Got " + size);
         }
@@ -159,12 +156,14 @@ public class Packet {
     }
 
     /**
-     * Encode a list of serializable structs. Lists are stored as [uint8 length, [length many] data structs]
+     * Encode a list of serializable structs. Lists are stored as [uint8 length, [length many] data
+     * structs]
+     *
      * @param <T> the class this list will be packing
      * @param data
      */
     public <T extends PhotonStructSerializable<T>> void encodeList(List<T> data) {
-        byte size = (byte)data.size(); 
+        byte size = (byte) data.size();
         if (size > Byte.MAX_VALUE) {
             throw new RuntimeException("Array too long! Got " + size);
         }
@@ -325,7 +324,9 @@ public class Packet {
     }
 
     /**
-     * Decode a list of serializable structs. Lists are stored as [uint8 length, [length many] data structs]. Because java sucks, we need to take the serde ref directly
+     * Decode a list of serializable structs. Lists are stored as [uint8 length, [length many] data
+     * structs]. Because java sucks, we need to take the serde ref directly
+     *
      * @param <T>
      * @param data
      */

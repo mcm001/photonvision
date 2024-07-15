@@ -31,7 +31,7 @@ import org.photonvision.targeting.*;
  * Auto-generated serialization & deserialization helper for {{name}}
  */
 public class {{ name }}Serde implements PacketSerde<{{name}}> {
-    
+
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "{{ message_hash }}";
     public static final String MESSAGE_FORMAT = "{{ message_str | tojson | replace('"','\\"') }}";
@@ -44,7 +44,7 @@ public class {{ name }}Serde implements PacketSerde<{{name}}> {
 
     @Override
     public void pack(Packet packet, {{ name }} value) {
-{%- for field in fields -%} 
+{%- for field in fields -%}
     {%- if field.type | is_shimmed %}
         // field is shimmed!
         {{ get_message_by_name(field.type).java_encode_shim }}(packet, value.{{ field.name }});
@@ -65,14 +65,14 @@ public class {{ name }}Serde implements PacketSerde<{{name}}> {
         {{ field.type }}.photonStruct.pack(packet, value.{{ field.name }});
     {%- endif %}
     {%- if not loop.last %}
-    {% endif -%} 
+    {% endif -%}
 {% endfor%}
     }
 
     @Override
     public {{ name }} unpack(Packet packet) {
         var ret = new {{ name }}();
-{% for field in fields -%} 
+{% for field in fields -%}
     {%- if field.type | is_shimmed %}
         // field is shimmed!
         ret.{{ field.name }} = {{ get_message_by_name(field.type).java_decode_shim }}(packet);
@@ -93,7 +93,7 @@ public class {{ name }}Serde implements PacketSerde<{{name}}> {
         ret.{{field.name}} = {{ field.type }}.photonStruct.unpack(packet);
     {%- endif %}
     {%- if not loop.last %}
-    {% endif -%} 
+    {% endif -%}
 {% endfor%}
 
         return ret;

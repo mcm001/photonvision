@@ -419,8 +419,8 @@ public class PhotonPoseEstimator {
             PhotonPipelineResult result,
             Optional<Matrix<N3, N3>> cameraMatrixOpt,
             Optional<Matrix<N8, N1>> distCoeffsOpt) {
-        if (result.getMultiTagResult().estimatedPose.isPresent) {
-            var best_tf = result.getMultiTagResult().estimatedPose.best;
+        if (result.getMultiTagResult().isPresent()) {
+            var best_tf = result.getMultiTagResult().get().estimatedPose.best;
             var best =
                     new Pose3d()
                             .plus(best_tf) // field-to-camera

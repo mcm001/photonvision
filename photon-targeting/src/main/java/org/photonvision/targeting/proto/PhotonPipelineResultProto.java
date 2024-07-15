@@ -59,10 +59,16 @@ public class PhotonPipelineResultProto
     @Override
     public void pack(ProtobufPhotonPipelineResult msg, PhotonPipelineResult value) {
         PhotonTrackedTarget.proto.pack(msg.getMutableTargets(), value.getTargets());
-        MultiTargetPNPResult.proto.pack(msg.getMutableMultiTargetResult(), value.getMultiTagResult());
 
-        msg.setSequenceId(value.getSequenceID());
-        msg.setCaptureTimestampMicros(value.getCaptureTimestampMicros());
-        msg.setNtPublishTimestampMicros(value.getPublishTimestampMicros());
+        if (value.getMultiTagResult().isPresent()) {
+            MultiTargetPNPResult.proto.pack(
+                    msg.getMutableMultiTargetResult(), value.getMultiTagResult().get());
+        } else {
+            msg.clearMultiTargetResult();
+        }
+
+        msg.setSequenceId(value.metadata.getSequenceID());
+        msg.setCaptureTimestampMicros(value.metadata.getCaptureTimestampMicros());
+        msg.setNtPublishTimestampMicros(value.metadata.getPublishTimestampMicros());
     }
 }

@@ -49,9 +49,9 @@ public class MultiTargetPNPResultProto
 
     @Override
     public MultiTargetPNPResult unpack(ProtobufMultiTargetPNPResult msg) {
-        ArrayList<Integer> fidIdsUsed = new ArrayList<>(msg.getFiducialIdsUsed().length());
+        ArrayList<Short> fidIdsUsed = new ArrayList<>(msg.getFiducialIdsUsed().length());
         for (var packedFidId : msg.getFiducialIdsUsed()) {
-            fidIdsUsed.add(packedFidId);
+            fidIdsUsed.add(packedFidId.shortValue());
         }
 
         return new MultiTargetPNPResult(PNPResult.proto.unpack(msg.getEstimatedPose()), fidIdsUsed);

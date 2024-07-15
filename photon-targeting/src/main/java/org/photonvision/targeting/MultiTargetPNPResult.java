@@ -18,14 +18,14 @@
 package org.photonvision.targeting;
 
 import edu.wpi.first.util.protobuf.ProtobufSerializable;
-import java.util.ArrayList;
 import java.util.List;
-import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
+import org.photonvision.struct.MultiTargetPNPResultSerde;
 import org.photonvision.targeting.proto.MultiTargetPNPResultProto;
 import org.photonvision.targeting.serde.PhotonStructSerializable;
 
-public class MultiTargetPNPResult implements ProtobufSerializable, PhotonStructSerializable<MultiTargetPNPResult> {
+public class MultiTargetPNPResult
+        implements ProtobufSerializable, PhotonStructSerializable<MultiTargetPNPResult> {
     // Seeing 32 apriltags at once seems like a sane limit
     private static final int MAX_IDS = 32;
 
@@ -72,48 +72,13 @@ public class MultiTargetPNPResult implements ProtobufSerializable, PhotonStructS
                 + "]";
     }
 
-    public static final class APacketSerde implements PacketSerde<MultiTargetPNPResult> {
-        @Override
-        public int getMaxByteSize() {
-            // PNPResult + MAX_IDS possible targets (arbitrary upper limit that should never be hit,
-            // ideally)
-            return PNPResult.serde.getMaxByteSize() + (Short.BYTES * MAX_IDS);
-        }
-
-        @Override
-        public void pack(Packet packet, MultiTargetPNPResult result) {
-            PNPResult.serde.pack(packet, result.estimatedPose);
-
-            for (int i = 0; i < MAX_IDS; i++) {
-                if (i < result.fiducialIDsUsed.size()) {
-                    packet.encode((short) result.fiducialIDsUsed.get(i).byteValue());
-                } else {
-                    packet.encode((short) -1);
-                }
-            }
-        }
-
-        @Override
-        public MultiTargetPNPResult unpack(Packet packet) {
-            var results = PNPResult.serde.unpack(packet);
-            var ids = new ArrayList<Short>(MAX_IDS);
-            for (int i = 0; i < MAX_IDS; i++) {
-                var targetId = packet.decodeShort();
-                if (targetId > -1) ids.add(targetId);
-            }
-            return new MultiTargetPNPResult(results, ids);
-        }
-    }
-
-    public static final APacketSerde serde = new APacketSerde();
     public static final MultiTargetPNPResultProto proto = new MultiTargetPNPResultProto();
-    
+
     // tODO!
-    public static final APacketSerde photonStruct = null;
+    public static final MultiTargetPNPResultSerde photonStruct = new MultiTargetPNPResultSerde();
 
     @Override
     public PacketSerde<MultiTargetPNPResult> getSerde() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+        return photonStruct;
     }
 }

@@ -81,4 +81,3 @@
   - name: multiTagResult
     type: MultiTargetPNPResult
     optional: True
-    

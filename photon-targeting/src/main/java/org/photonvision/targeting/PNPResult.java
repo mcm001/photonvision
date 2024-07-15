@@ -182,9 +182,8 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
         }
     }
 
-    public static final APacketSerde serde = new APacketSerde();
     public static final PNPResultProto proto = new PNPResultProto();
-    
+
     // TODO!
     public static final APacketSerde photonStruct = null;
 

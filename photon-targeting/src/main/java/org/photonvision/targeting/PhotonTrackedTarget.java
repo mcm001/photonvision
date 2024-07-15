@@ -19,33 +19,32 @@ package org.photonvision.targeting;
 
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.util.protobuf.ProtobufSerializable;
-import java.util.ArrayList;
 import java.util.List;
-import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
+import org.photonvision.struct.PhotonTrackedTargetSerde;
 import org.photonvision.targeting.proto.PhotonTrackedTargetProto;
 import org.photonvision.targeting.serde.PhotonStructSerializable;
-import org.photonvision.utils.PacketUtils;
 
-public class PhotonTrackedTarget implements ProtobufSerializable, PhotonStructSerializable<PhotonTrackedTarget> {
+public class PhotonTrackedTarget
+        implements ProtobufSerializable, PhotonStructSerializable<PhotonTrackedTarget> {
     private static final int MAX_CORNERS = 8;
 
-    public final double yaw;
-    public final double pitch;
-    public final double area;
-    public final double skew;
-    public final int fiducialId;
-    public final int classId;
-    public final float objDetectConf;
-    public final Transform3d bestCameraToTarget;
-    public final Transform3d altCameraToTarget;
-    public final double poseAmbiguity;
+    public double yaw;
+    public double pitch;
+    public double area;
+    public double skew;
+    public int fiducialId;
+    public int classId;
+    public float objDetectConf;
+    public Transform3d bestCameraToTarget;
+    public Transform3d altCameraToTarget;
+    public double poseAmbiguity;
 
     // Corners from the min-area rectangle bounding the target
-    public final List<TargetCorner> minAreaRectCorners;
+    public List<TargetCorner> minAreaRectCorners;
 
     // Corners from whatever corner detection method was used
-    public final List<TargetCorner> detectedCorners;
+    public List<TargetCorner> detectedCorners;
 
     /** Construct a tracked target, given exactly 4 corners */
     public PhotonTrackedTarget(
@@ -79,6 +78,10 @@ public class PhotonTrackedTarget implements ProtobufSerializable, PhotonStructSe
         this.minAreaRectCorners = minAreaRectCorners;
         this.detectedCorners = detectedCorners;
         this.poseAmbiguity = ambiguity;
+    }
+
+    public PhotonTrackedTarget() {
+        // TODO Auto-generated constructor stub
     }
 
     public double getYaw() {
@@ -236,80 +239,9 @@ public class PhotonTrackedTarget implements ProtobufSerializable, PhotonStructSe
                 + '}';
     }
 
-    public static final class APacketSerde implements PacketSerde<PhotonTrackedTarget> {
-        @Override
-        public int getMaxByteSize() {
-            return Double.BYTES * (5 + 7 + 2 * 4 + 1 + 1 + 4 + 7 + 2 * MAX_CORNERS);
-        }
-
-        @Override
-        public void pack(Packet packet, PhotonTrackedTarget value) {
-            packet.encode(value.yaw);
-            packet.encode(value.pitch);
-            packet.encode(value.area);
-            packet.encode(value.skew);
-            packet.encode(value.fiducialId);
-            packet.encode(value.classId);
-            packet.encode(value.objDetectConf);
-            PacketUtils.packTransform3d(packet, value.bestCameraToTarget);
-            PacketUtils.packTransform3d(packet, value.altCameraToTarget);
-            packet.encode(value.poseAmbiguity);
-
-            for (int i = 0; i < 4; i++) {
-                TargetCorner.serde.pack(packet, value.minAreaRectCorners.get(i));
-            }
-
-            packet.encode((byte) Math.min(value.detectedCorners.size(), Byte.MAX_VALUE));
-            for (TargetCorner targetCorner : value.detectedCorners) {
-                TargetCorner.serde.pack(packet, targetCorner);
-            }
-        }
-
-        @Override
-        public PhotonTrackedTarget unpack(Packet packet) {
-            var yaw = packet.decodeDouble();
-            var pitch = packet.decodeDouble();
-            var area = packet.decodeDouble();
-            var skew = packet.decodeDouble();
-            var fiducialId = packet.decodeInt();
-            var classId = packet.decodeInt();
-            var objDetectConf = packet.decodeFloat();
-            Transform3d best = PacketUtils.unpackTransform3d(packet);
-            Transform3d alt = PacketUtils.unpackTransform3d(packet);
-            double ambiguity = packet.decodeDouble();
-
-            var minAreaRectCorners = new ArrayList<TargetCorner>(4);
-            for (int i = 0; i < 4; i++) {
-                minAreaRectCorners.add(TargetCorner.serde.unpack(packet));
-            }
-
-            var len = packet.decodeByte();
-            var detectedCorners = new ArrayList<TargetCorner>(len);
-            for (int i = 0; i < len; i++) {
-                detectedCorners.add(TargetCorner.serde.unpack(packet));
-            }
-
-            return new PhotonTrackedTarget(
-                    yaw,
-                    pitch,
-                    area,
-                    skew,
-                    fiducialId,
-                    classId,
-                    objDetectConf,
-                    best,
-                    alt,
-                    ambiguity,
-                    minAreaRectCorners,
-                    detectedCorners);
-        }
-    }
-
-    public static final APacketSerde serde = new APacketSerde();
     public static final PhotonTrackedTargetProto proto = new PhotonTrackedTargetProto();
 
-    // TODO!
-    public static final APacketSerde photonStruct = null;
+    public static final PhotonTrackedTargetSerde photonStruct = new PhotonTrackedTargetSerde();
 
     @Override
     public PacketSerde<PhotonTrackedTarget> getSerde() {

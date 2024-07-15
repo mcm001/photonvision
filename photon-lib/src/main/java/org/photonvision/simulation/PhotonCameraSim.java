@@ -524,8 +524,8 @@ public class PhotonCameraSim implements AutoCloseable {
         // var tagLayout = cam.getAprilTagFieldLayout();
         var visibleLayoutTags = VisionEstimation.getVisibleLayoutTags(detectableTgts, tagLayout);
         if (visibleLayoutTags.size() > 1) {
-            List<Integer> usedIDs =
-                    visibleLayoutTags.stream().map(t -> t.ID).sorted().collect(Collectors.toList());
+            List<Short> usedIDs =
+                    visibleLayoutTags.stream().map(t -> (short) t.ID).sorted().collect(Collectors.toList());
             var pnpResult =
                     VisionEstimation.estimateCamPosePNP(
                             prop.getIntrinsics(),

@@ -23,21 +23,21 @@ import org.photonvision.common.dataflow.structures.PacketSerde;
 
 public class PacketPublisher<T> implements AutoCloseable {
     public final RawPublisher publisher;
-    private final PacketSerde<T> serde;
+    private final PacketSerde<T> photonStruct;
 
-    public PacketPublisher(RawPublisher publisher, PacketSerde<T> serde) {
+    public PacketPublisher(RawPublisher publisher, PacketSerde<T> photonStruct) {
         this.publisher = publisher;
-        this.serde = serde;
+        this.photonStruct = photonStruct;
     }
 
     public void set(T value, int byteSize) {
         var packet = new Packet(byteSize);
-        serde.pack(packet, value);
+        photonStruct.pack(packet, value);
         publisher.set(packet.getData());
     }
 
     public void set(T value) {
-        set(value, serde.getMaxByteSize());
+        set(value, photonStruct.getMaxByteSize());
     }
 
     @Override

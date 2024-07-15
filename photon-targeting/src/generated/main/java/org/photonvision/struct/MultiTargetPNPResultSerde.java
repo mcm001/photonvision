@@ -31,7 +31,7 @@ import org.photonvision.targeting.*;
  * Auto-generated serialization & deserialization helper for MultiTargetPNPResult
  */
 public class MultiTargetPNPResultSerde implements PacketSerde<MultiTargetPNPResult> {
-    
+
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "466b8584f2ae3f7b798ed2e8f7c5a23e";
     public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"estimatedPose\", \"type\": \"PNPResult\"}, {\"name\": \"fiducialIDsUsed\", \"type\": \"int16\", \"vla\": true}], \"name\": \"MultiTargetPNPResult\"}";
@@ -46,7 +46,7 @@ public class MultiTargetPNPResultSerde implements PacketSerde<MultiTargetPNPResu
     public void pack(Packet packet, MultiTargetPNPResult value) {
         // field estimatedPose is of non-intrinsic type PNPResult
         PNPResult.photonStruct.pack(packet, value.estimatedPose);
-    
+
         // fiducialIDsUsed is a intrinsic VLA!
         packet.encode(value.fiducialIDsUsed);
     }
@@ -57,7 +57,7 @@ public class MultiTargetPNPResultSerde implements PacketSerde<MultiTargetPNPResu
 
         // estimatedPose is of non-intrinsic type PNPResult
         ret.estimatedPose = PNPResult.photonStruct.unpack(packet);
-    
+
         // fiducialIDsUsed is a custom VLA!
         ret.fiducialIDsUsed = packet.decodeShortList();
 

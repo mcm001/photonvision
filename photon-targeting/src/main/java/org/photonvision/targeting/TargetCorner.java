@@ -29,12 +29,16 @@ import org.photonvision.targeting.serde.PhotonStructSerializable;
  * Origin at the top left, plus-x to the right, plus-y down.
  */
 public class TargetCorner implements ProtobufSerializable, PhotonStructSerializable<TargetCorner> {
-    public final double x;
-    public final double y;
+    public double x;
+    public double y;
 
     public TargetCorner(double cx, double cy) {
         this.x = cx;
         this.y = cy;
+    }
+
+    public TargetCorner() {
+        this(0, 0);
     }
 
     @Override
@@ -73,9 +77,9 @@ public class TargetCorner implements ProtobufSerializable, PhotonStructSerializa
         }
     }
 
-    public static final APacketSerde serde = new APacketSerde();
     public static final TargetCornerProto proto = new TargetCornerProto();
 
+    // TODO
     public static final APacketSerde photonStruct = null;
 
     @Override

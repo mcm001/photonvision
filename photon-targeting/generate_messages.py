@@ -23,7 +23,7 @@ class MessageType(TypedDict):
     name: str
     fields: List[SerdeField]
     # will be 'shim' if shimmed, and the shims will be set
-    shimmed: bool 
+    shimmed: bool
     java_decode_shim: str
     java_encode_shim: str
 
@@ -46,6 +46,7 @@ def is_intrinsic_type(type_str: str):
     ret = type_str in data_types.keys()
     return ret
 
+
 # Deal with shimmed types
 def get_shimmed_filter(message_db):
     def is_shimmed(message_name: str):
@@ -54,18 +55,22 @@ def get_shimmed_filter(message_db):
             return False
 
         message = get_message_by_name(message_db, message_name)
-        return 'shimmed' in message and message['shimmed'] == True
+        return "shimmed" in message and message["shimmed"] == True
+
     return is_shimmed
+
 
 def get_message_by_name(message_db: List[MessageType], message_name: str):
     try:
-        return next(message for message in message_db if message['name'] == message_name)
+        return next(
+            message for message in message_db if message["name"] == message_name
+        )
     except StopIteration as e:
         raise Exception("Could not find " + message_name) from e
 
 
 def get_field_by_name(message: MessageType, field_name: str):
-    return next(f for f in message['fields'] if f['name'] == field_name)
+    return next(f for f in message["fields"] if f["name"] == field_name)
 
 
 def get_message_hash(message_db: List[MessageType], message: MessageType):
@@ -75,23 +80,28 @@ def get_message_hash(message_db: List[MessageType], message: MessageType):
 
     For non-intrinsic (user-defined) types, replace its type-string with the md5sum of the submessage definition
     """
-    
+
     # replace the non-intrinsic typename with its hash
     modified_message = copy.deepcopy(message)
-    fields_to_hash = [field for field in modified_message['fields'] if not is_intrinsic_type(field['type'])]
+    fields_to_hash = [
+        field
+        for field in modified_message["fields"]
+        if not is_intrinsic_type(field["type"])
+    ]
 
     for field in fields_to_hash:
-        sub_message = get_message_by_name(message_db, field['type'])
+        sub_message = get_message_by_name(message_db, field["type"])
         subhash = get_message_hash(message_db, sub_message)
 
         # change the type to be our new md5sum
-        field['type'] = subhash.hexdigest()
-    
+        field["type"] = subhash.hexdigest()
+
     # base case: message is all intrinsic types
     # Hash a comments-stripped version for message integrity checking
     cleaned_yaml = yaml.dump(modified_message, default_flow_style=False).strip()
     message_hash = hashlib.md5(cleaned_yaml.encode("ascii"))
     return message_hash
+
 
 def parse_yaml():
     config = yaml_to_dict("src/generate/messages.yaml")
@@ -124,14 +134,16 @@ def generate_photon_messages(output_root, template_root):
     root_path = Path(output_root) / "main/java/org/photonvision/struct"
     template = env.get_template("Message.java.jinja")
 
-    template.globals['get_message_by_name'] = lambda name: get_message_by_name(messages, name)
+    template.globals["get_message_by_name"] = lambda name: get_message_by_name(
+        messages, name
+    )
 
     root_path.mkdir(parents=True, exist_ok=True)
 
     for message in messages:
-        
+
         # don't generate shimmed types
-        if get_shimmed_filter(messages)(message['name']):
+        if get_shimmed_filter(messages)(message["name"]):
             continue
 
         message = cast(MessageType, message)

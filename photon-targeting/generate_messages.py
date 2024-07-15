@@ -3,15 +3,13 @@
 import argparse
 import copy
 import hashlib
-import json
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, TypedDict, cast
+from typing import List, TypedDict, cast
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
-from jinja2.environment import Template
 
 
 class SerdeField(TypedDict):

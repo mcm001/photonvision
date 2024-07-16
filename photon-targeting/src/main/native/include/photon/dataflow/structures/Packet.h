@@ -114,7 +114,7 @@ class Packet {
     if (src.size() > 127) {
       // bad stuff lol; we need to give up
     }
-    Pack<int8_t>(src.size());
+    Pack<uint8_t>(src.size());
     for (const auto& t : src) {
       Pack(src);
     }
@@ -130,7 +130,7 @@ class Packet {
 
   template <typename T>
   std::vector<T> UnpackList() {
-    auto len = Unpack<int8_t>();
+    auto len = Unpack<uint8_t>();
 
     std::vector<T> ret {};
     ret.resize(len);

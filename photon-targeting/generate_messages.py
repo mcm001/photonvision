@@ -146,6 +146,8 @@ def generate_photon_messages(output_root, template_root):
 
         message = cast(MessageType, message)
         java_name = f"{message['name']}Serde.java"
+        cpp_header_name = f"{message['name']}Serde.h"
+        cpp_source_name = f"{message['name']}Serde.cpp"
 
         message_hash = get_message_hash(messages, message)
 

@@ -39,7 +39,7 @@ wpi::Protobuf<photon::MultiTargetPNPResult>::Unpack(
   }
 
   return photon::MultiTargetPNPResult{
-      wpi::UnpackProtobuf<photon::PNPResult>(m->estimated_pose()),
+      wpi::UnpackProtobuf<photon::PnpResult>(m->estimated_pose()),
       fiducialIdsUsed};
 }
 

@@ -28,12 +28,12 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PhotonPipelineResult
+ * Auto-generated serialization/deserialization helper for PhotonPipelineResult
  */
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
 
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "18cd7e00c8a312f35a3b560909028f70";
+    public static final String MESSAGE_VERSION = "2907c1243dbac2f215886d81f0c33156";
     public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"metadata\", \"type\": \"PhotonPipelineMetadata\"}, {\"name\": \"targets\", \"type\": \"PhotonTrackedTarget\", \"vla\": true}, {\"name\": \"multiTagResult\", \"optional\": true, \"type\": \"MultiTargetPNPResult\"}], \"name\": \"PhotonPipelineResult\"}";
 
     @Override

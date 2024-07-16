@@ -20,13 +20,13 @@
 #include <frc/geometry/Transform3d.h>
 #include <wpi/SmallVector.h>
 
-#include "PNPResult.h"
+#include "PnpResult.h"
 #include "photon/dataflow/structures/Packet.h"
 
 namespace photon {
 class MultiTargetPNPResult {
  public:
-  PNPResult result;
+  PnpResult result;
   wpi::SmallVector<int16_t, 32> fiducialIdsUsed;
 
   bool operator==(const MultiTargetPNPResult& other) const;

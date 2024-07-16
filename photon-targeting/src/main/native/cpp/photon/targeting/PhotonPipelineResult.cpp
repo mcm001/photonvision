@@ -37,52 +37,52 @@ bool PhotonPipelineResult::operator==(const PhotonPipelineResult& other) const {
          targets == other.targets && multitagResult == other.multitagResult;
 }
 
-Packet& operator<<(Packet& packet, const PhotonPipelineResult& result) {
-  // Encode latency and number of targets.
-  packet << result.sequenceID
-         << static_cast<int64_t>(result.captureTimestamp.value())
-         << static_cast<int64_t>(result.publishTimestamp.value())
-         << static_cast<int8_t>(result.targets.size());
+// Packet& operator<<(Packet& packet, const PhotonPipelineResult& result) {
+//   // Encode latency and number of targets.
+//   packet << result.sequenceID
+//          << static_cast<int64_t>(result.captureTimestamp.value())
+//          << static_cast<int64_t>(result.publishTimestamp.value())
+//          << static_cast<int8_t>(result.targets.size());
 
-  // Encode the information of each target.
-  for (auto& target : result.targets) packet << target;
+//   // Encode the information of each target.
+//   for (auto& target : result.targets) packet << target;
 
-  packet << result.multitagResult;
-  // Return the packet
-  return packet;
-}
+//   packet << result.multitagResult;
+//   // Return the packet
+//   return packet;
+// }
 
-Packet& operator>>(Packet& packet, PhotonPipelineResult& result) {
-  // Decode latency, existence of targets, and number of targets.
-  int64_t sequenceID = 0;
-  int64_t capTS = 0;
-  int64_t pubTS = 0;
-  int8_t targetCount = 0;
-  std::vector<PhotonTrackedTarget> targets;
-  MultiTargetPNPResult multitagResult;
+// Packet& operator>>(Packet& packet, PhotonPipelineResult& result) {
+//   // Decode latency, existence of targets, and number of targets.
+//   int64_t sequenceID = 0;
+//   int64_t capTS = 0;
+//   int64_t pubTS = 0;
+//   int8_t targetCount = 0;
+//   std::vector<PhotonTrackedTarget> targets;
+//   MultiTargetPNPResult multitagResult;
 
-  packet >> sequenceID >> capTS >> pubTS >> targetCount;
+//   packet >> sequenceID >> capTS >> pubTS >> targetCount;
 
-  targets.clear();
-  targets.reserve(targetCount);
+//   targets.clear();
+//   targets.reserve(targetCount);
 
-  // Decode the information of each target.
-  for (int i = 0; i < targetCount; ++i) {
-    PhotonTrackedTarget target;
-    packet >> target;
-    targets.push_back(target);
-  }
+//   // Decode the information of each target.
+//   for (int i = 0; i < targetCount; ++i) {
+//     PhotonTrackedTarget target;
+//     packet >> target;
+//     targets.push_back(target);
+//   }
 
-  packet >> multitagResult;
+//   packet >> multitagResult;
 
-  units::microsecond_t captureTS =
-      units::microsecond_t{static_cast<double>(capTS)};
-  units::microsecond_t publishTS =
-      units::microsecond_t{static_cast<double>(pubTS)};
+//   units::microsecond_t captureTS =
+//       units::microsecond_t{static_cast<double>(capTS)};
+//   units::microsecond_t publishTS =
+//       units::microsecond_t{static_cast<double>(pubTS)};
 
-  result = PhotonPipelineResult{sequenceID, captureTS, publishTS, targets,
-                                multitagResult};
+//   result = PhotonPipelineResult{sequenceID, captureTS, publishTS, targets,
+//                                 multitagResult};
 
-  return packet;
-}
+//   return packet;
+// }
 }  // namespace photon

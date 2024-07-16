@@ -28,13 +28,13 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PNPResult
+ * Auto-generated serialization/deserialization helper for PnpResult
  */
-public class PNPResultSerde implements PacketSerde<PNPResult> {
+public class PnpResultSerde implements PacketSerde<PnpResult> {
 
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "cc56541eb36b8fbad8a70f511440f3a4";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"comment\": \"This is a comment\", \"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}, {\"name\": \"ambiguity\", \"type\": \"float64\"}], \"name\": \"PNPResult\"}";
+    public static final String MESSAGE_VERSION = "0b10917f9ab3e165edec8dc0deb306e5";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"comment\": \"This is a comment\", \"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}, {\"name\": \"ambiguity\", \"type\": \"float64\"}], \"name\": \"PnpResult\"}";
 
     @Override
     public int getMaxByteSize() {
@@ -43,7 +43,7 @@ public class PNPResultSerde implements PacketSerde<PNPResult> {
     }
 
     @Override
-    public void pack(Packet packet, PNPResult value) {
+    public void pack(Packet packet, PnpResult value) {
         // field is shimmed!
         PacketUtils.packTransform3d(packet, value.best);
     
@@ -61,8 +61,8 @@ public class PNPResultSerde implements PacketSerde<PNPResult> {
     }
 
     @Override
-    public PNPResult unpack(Packet packet) {
-        var ret = new PNPResult();
+    public PnpResult unpack(Packet packet) {
+        var ret = new PnpResult();
 
         // field is shimmed!
         ret.best = PacketUtils.unpackTransform3d(packet);

@@ -29,12 +29,12 @@ public class MultiTargetPNPResult
     // Seeing 32 apriltags at once seems like a sane limit
     private static final int MAX_IDS = 32;
 
-    public PNPResult estimatedPose = new PNPResult();
+    public PnpResult estimatedPose = new PnpResult();
     public List<Short> fiducialIDsUsed = List.of();
 
     public MultiTargetPNPResult() {}
 
-    public MultiTargetPNPResult(PNPResult results, List<Short> ids) {
+    public MultiTargetPNPResult(PnpResult results, List<Short> ids) {
         estimatedPose = results;
         fiducialIDsUsed = ids;
     }

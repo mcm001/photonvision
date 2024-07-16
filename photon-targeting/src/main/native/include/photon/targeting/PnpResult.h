@@ -23,12 +23,7 @@
 
 namespace photon {
 
-class PNPResult {
- public:
-  // This could be wrapped in an std::optional, but chose to do it this way to
-  // mirror Java
-  bool isPresent{false};
-
+struct PnpResult {
   frc::Transform3d best{};
   double bestReprojErr{0};
 
@@ -37,9 +32,9 @@ class PNPResult {
 
   double ambiguity{0};
 
-  bool operator==(const PNPResult& other) const;
+  bool operator==(const PnpResult& other) const;
 
-  friend Packet& operator<<(Packet& packet, const PNPResult& target);
-  friend Packet& operator>>(Packet& packet, PNPResult& target);
+  friend Packet& operator<<(Packet& packet, const PnpResult& target);
+  friend Packet& operator>>(Packet& packet, PnpResult& target);
 };
 }  // namespace photon

@@ -28,7 +28,7 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for TargetCorner
+ * Auto-generated serialization/deserialization helper for TargetCorner
  */
 public class TargetCornerSerde implements PacketSerde<TargetCorner> {
 

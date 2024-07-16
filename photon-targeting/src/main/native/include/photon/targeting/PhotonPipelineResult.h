@@ -99,7 +99,7 @@ class PhotonPipelineResult {
    * Be sure to check getMultiTagResult().estimatedPose.isPresent before using
    * the pose estimate!
    */
-  const MultiTargetPNPResult& MultiTagResult() const { return multitagResult; }
+  const std::optional<MultiTargetPNPResult>& MultiTagResult() const { return multitagResult; }
 
   /**
    * The number of non-empty frames processed by this camera since boot. Useful
@@ -143,7 +143,7 @@ class PhotonPipelineResult {
   units::microsecond_t ntRecieveTimestamp = -1_s;
 
   wpi::SmallVector<PhotonTrackedTarget, 10> targets;
-  MultiTargetPNPResult multitagResult;
+  std::optional<MultiTargetPNPResult> multitagResult;
   inline static bool HAS_WARNED = false;
 };
 }  // namespace photon

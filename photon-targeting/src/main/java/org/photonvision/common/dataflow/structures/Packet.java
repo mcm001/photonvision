@@ -328,7 +328,7 @@ public class Packet {
      * structs]. Because java sucks, we need to take the serde ref directly
      *
      * @param <T>
-     * @param data
+     * @param serde
      */
     public <T extends PhotonStructSerializable<T>> List<T> decodeList(PacketSerde<T> serde) {
         byte length = decodeByte();

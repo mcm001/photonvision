@@ -16,10 +16,10 @@
  */
 
 #include "gtest/gtest.h"
-#include "photon/targeting/PNPResult.h"
+#include "photon/targeting/PnpResult.h"
 
 // TODO
-TEST(PNPResultTest, Equality) {}
+TEST(PnpResultTest, Equality) {}
 
 // TODO
-TEST(PNPResultTest, Inequality) {}
+TEST(PnpResultTest, Inequality) {}

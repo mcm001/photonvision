@@ -34,7 +34,7 @@ import org.photonvision.utils.PacketUtils;
  * <p>Note that the coordinate frame of these transforms depends on the implementing solvePnP
  * method.
  */
-public class PNPResult implements ProtobufSerializable, PhotonStructSerializable<PNPResult> {
+public class PnpResult implements ProtobufSerializable, PhotonStructSerializable<PnpResult> {
     /**
      * If this result is valid. A false value indicates there was an error in estimation, and this
      * result should not be used.
@@ -63,7 +63,7 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
     public double ambiguity;
 
     /** An empty (invalid) result. */
-    public PNPResult() {
+    public PnpResult() {
         this.isPresent = false;
         this.best = new Transform3d();
         this.alt = new Transform3d();
@@ -72,11 +72,11 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
         this.altReprojErr = 0;
     }
 
-    public PNPResult(Transform3d best, double bestReprojErr) {
+    public PnpResult(Transform3d best, double bestReprojErr) {
         this(best, best, 0, bestReprojErr, bestReprojErr);
     }
 
-    public PNPResult(
+    public PnpResult(
             Transform3d best,
             Transform3d alt,
             double ambiguity,
@@ -112,7 +112,7 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        PNPResult other = (PNPResult) obj;
+        PnpResult other = (PnpResult) obj;
         if (isPresent != other.isPresent) return false;
         if (best == null) {
             if (other.best != null) return false;
@@ -146,14 +146,14 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
                 + "]";
     }
 
-    public static final class APacketSerde implements PacketSerde<PNPResult> {
+    public static final class APacketSerde implements PacketSerde<PnpResult> {
         @Override
         public int getMaxByteSize() {
             return 1 + (Double.BYTES * 7 * 2) + (Double.BYTES * 3);
         }
 
         @Override
-        public void pack(Packet packet, PNPResult value) {
+        public void pack(Packet packet, PnpResult value) {
             packet.encode(value.isPresent);
 
             if (value.isPresent) {
@@ -166,11 +166,11 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
         }
 
         @Override
-        public PNPResult unpack(Packet packet) {
+        public PnpResult unpack(Packet packet) {
             var present = packet.decodeBoolean();
 
             if (!present) {
-                return new PNPResult();
+                return new PnpResult();
             }
 
             var best = PacketUtils.unpackTransform3d(packet);
@@ -178,7 +178,7 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
             var bestEr = packet.decodeDouble();
             var altEr = packet.decodeDouble();
             var ambiguity = packet.decodeDouble();
-            return new PNPResult(best, alt, ambiguity, bestEr, altEr);
+            return new PnpResult(best, alt, ambiguity, bestEr, altEr);
         }
     }
 
@@ -188,7 +188,7 @@ public class PNPResult implements ProtobufSerializable, PhotonStructSerializable
     public static final APacketSerde photonStruct = null;
 
     @Override
-    public PacketSerde<PNPResult> getSerde() {
+    public PacketSerde<PnpResult> getSerde() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
     }

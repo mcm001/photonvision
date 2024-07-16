@@ -180,7 +180,7 @@ public class PhotonPipelineResultTest {
                                                 new TargetCorner(5, 6),
                                                 new TargetCorner(7, 8)))),
                         new MultiTargetPNPResult(
-                                new PNPResult(
+                                new PnpResult(
                                         new Transform3d(new Translation3d(1, 2, 3), new Rotation3d(1, 2, 3)), 0.1),
                                 List.of((short) 1, (short) 2, (short) 3)));
         b =
@@ -232,7 +232,7 @@ public class PhotonPipelineResultTest {
                                                 new TargetCorner(5, 6),
                                                 new TargetCorner(7, 8)))),
                         new MultiTargetPNPResult(
-                                new PNPResult(
+                                new PnpResult(
                                         new Transform3d(new Translation3d(1, 2, 3), new Rotation3d(1, 2, 3)), 0.1),
                                 List.of((short) 1, (short) 2, (short) 3)));
         assertEquals(a, b);
@@ -387,7 +387,7 @@ public class PhotonPipelineResultTest {
                                                 new TargetCorner(5, 6),
                                                 new TargetCorner(7, 8)))),
                         new MultiTargetPNPResult(
-                                new PNPResult(
+                                new PnpResult(
                                         new Transform3d(new Translation3d(1, 8, 3), new Rotation3d(1, 2, 3)), 0.1),
                                 List.of((short) 3, (short) 4, (short) 7)));
         b =
@@ -439,7 +439,7 @@ public class PhotonPipelineResultTest {
                                                 new TargetCorner(5, 6),
                                                 new TargetCorner(7, 8)))),
                         new MultiTargetPNPResult(
-                                new PNPResult(
+                                new PnpResult(
                                         new Transform3d(new Translation3d(1, 2, 3), new Rotation3d(1, 2, 3)), 0.1),
                                 List.of((short) 1, (short) 2, (short) 3)));
         assertNotEquals(a, b);

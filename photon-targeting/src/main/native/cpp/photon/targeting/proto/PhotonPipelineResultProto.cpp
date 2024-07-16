@@ -63,5 +63,6 @@ void wpi::Protobuf<photon::PhotonPipelineResult>::Pack(
     wpi::PackProtobuf(m->add_targets(), t);
   }
 
-  wpi::PackProtobuf(m->mutable_multi_target_result(), value.multitagResult);
+  // TODO this is dumb and bad
+  wpi::PackProtobuf(m->mutable_multi_target_result(), *value.multitagResult);
 }

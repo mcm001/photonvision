@@ -28,7 +28,7 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PhotonPipelineMetadata
+ * Auto-generated serialization/deserialization helper for PhotonPipelineMetadata
  */
 public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
 

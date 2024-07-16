@@ -48,7 +48,7 @@
     type: TargetCorner
     vla: True
 
-- name: PNPResult
+- name: PnpResult
   fields:
   - name: best
     type: Transform3d
@@ -65,7 +65,7 @@
 - name: MultiTargetPNPResult
   fields:
   - name: estimatedPose
-    type: PNPResult
+    type: PnpResult
   - name: fiducialIDsUsed
     type: int16
     vla: True

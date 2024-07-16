@@ -28,7 +28,7 @@ import org.photonvision.targeting.*;
 
 
 /**
- * Auto-generated serialization & deserialization helper for PhotonTrackedTarget
+ * Auto-generated serialization/deserialization helper for PhotonTrackedTarget
  */
 public class PhotonTrackedTargetSerde implements PacketSerde<PhotonTrackedTarget> {
 

@@ -55,7 +55,7 @@ import org.photonvision.estimation.RotTrlTransform3d;
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.estimation.VisionEstimation;
 import org.photonvision.targeting.MultiTargetPNPResult;
-import org.photonvision.targeting.PNPResult;
+import org.photonvision.targeting.PnpResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -420,7 +420,7 @@ public class PhotonCameraSim implements AutoCloseable {
             // projected target can't be detected, skip to next
             if (!(canSeeCorners(noisyTargetCorners) && areaPercent >= minTargetAreaPercent)) continue;
 
-            var pnpSim = new PNPResult();
+            var pnpSim = new PnpResult();
             if (tgt.fiducialID >= 0 && tgt.getFieldVertices().size() == 4) { // single AprilTag solvePNP
                 pnpSim =
                         OpenCVHelp.solvePNP_SQUARE(

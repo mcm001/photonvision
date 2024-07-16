@@ -129,14 +129,12 @@ def generate_photon_messages(output_root, template_root):
             "cpp_type": name,
         }
 
-    root_path = Path(output_root) / "main/java/org/photonvision/struct"
-    template = env.get_template("Message.java.jinja")
-
-    template.globals["get_message_by_name"] = lambda name: get_message_by_name(
-        messages, name
-    )
-
-    root_path.mkdir(parents=True, exist_ok=True)
+    java_output_dir = Path(output_root) / "main/java/org/photonvision/struct"
+    java_output_dir.mkdir(parents=True, exist_ok=True)
+    cpp_header_dir = Path(output_root) / "main/native/cpp/photon"
+    cpp_header_dir.mkdir(parents=True, exist_ok=True)
+    cpp_source_dir = Path(output_root) / "main/native/include/photon"
+    cpp_source_dir.mkdir(parents=True, exist_ok=True)
 
     for message in messages:
 
@@ -145,22 +143,37 @@ def generate_photon_messages(output_root, template_root):
             continue
 
         message = cast(MessageType, message)
+
         java_name = f"{message['name']}Serde.java"
         cpp_header_name = f"{message['name']}Serde.h"
         cpp_source_name = f"{message['name']}Serde.cpp"
 
+        java_template = env.get_template("Message.java.jinja")
+        cpp_header_template = env.get_template("ThingSerde.h.jinja")
+        cpp_source_template = env.get_template("ThingSerde.cpp.jinja")
+
         message_hash = get_message_hash(messages, message)
 
-        output_file = root_path / java_name
-        output_file.write_text(
-            template.render(
-                message,
-                type_map=extended_data_types,
-                message_str=message,
-                message_hash=message_hash.hexdigest(),
-            ),
-            encoding="utf-8",
-        )
+        for output_name, template, output_folder in [
+            [java_name, java_template, java_output_dir],
+            [cpp_header_name, cpp_header_template, cpp_header_dir],
+            [cpp_source_name, cpp_source_template, cpp_source_dir],
+        ]:
+            # Hack in our message getter
+            template.globals["get_message_by_name"] = lambda name: get_message_by_name(
+                messages, name
+            )
+
+            output_file = output_folder / output_name
+            output_file.write_text(
+                template.render(
+                    message,
+                    type_map=extended_data_types,
+                    message_str=message,
+                    message_hash=message_hash.hexdigest(),
+                ),
+                encoding="utf-8",
+            )
 
 
 def main(argv):

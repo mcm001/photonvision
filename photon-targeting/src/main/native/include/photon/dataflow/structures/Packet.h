@@ -48,6 +48,27 @@ concept PhotonStructSerializable = requires(Packet& packet, const T& value) {
   { Struct<typename std::remove_cvref_t<T>>::Pack(packet, value) } -> std::same_as<void>;
 };
 
+// template <typename T>
+// photon::Struct<std::optional<T>> OptionalPhotonStruct {
+//   static std::string_view GetSchemaHash();
+//   static std::string_view GetSchema();
+
+//   void Pack(photon::Packet& packet, const T& value) {
+//     packet.Pack<bool>(src.has_value());
+//     if (src) {
+//       packet.Pack<T>(*src);
+//     }
+//   }
+//   T Unpack(photon::Packet& packet) {
+//     bool present = packet.Unpack<bool>();
+//     if (present) {
+//       return packet.Unpack<T>();
+//     }
+//     return std::nullopt;
+//   }
+// };
+
+
 /**
  * A packet that holds byte-packed data to be sent over NetworkTables.
  */
@@ -81,32 +102,11 @@ class Packet {
    */
   inline size_t GetDataSize() const { return packetData.size(); }
 
-  /**
-   * Adds a value to the data buffer. This should only be used with PODs.
-   * @tparam T The data type.
-   * @param src The data source.
-   * @return A reference to the current object.
-   */
-  template <typename T>
-  void Pack(T src) {
-    packetData.resize(packetData.size() + sizeof(T));
-    std::memcpy(packetData.data() + writePos, &src, sizeof(T));
-
-    if constexpr (std::endian::native == std::endian::little) {
-      // Reverse to big endian for network conventions.
-      std::reverse(packetData.data() + writePos,
-                   packetData.data() + writePos + sizeof(T));
-    }
-
-    writePos += sizeof(T);
-  }
-
-  template <typename T>
-  void PackOptional(const std::optional<T>& src) {
-    Pack<bool>(src.has_value());
-    if (src) {
-      Pack(*src);
-    }
+  template <typename T, typename... I>
+  requires wpi::StructSerializable<T, I...>
+  inline void Pack(const T& value) {
+    wpi::PackStruct(packetData, value);
+    writePos += wpi::GetStructSize<T, I...>();
   }
 
   template <typename T>
@@ -122,66 +122,21 @@ class Packet {
 
   template <typename T, typename... I>
   requires wpi::StructSerializable<T, I...>
-  inline void PackStruct(const T& value) {
-    wpi::PackStruct(packetData, value);
-    writePos += wpi::GetStructSize<T, I...>();
-  }
-
-  /**
-   * Extracts a value to the provided destination.
-   * @tparam T The type of value to extract.
-   * @param value The value to extract.
-   * @return A reference to the current object.
-   */
-  template <typename T>
-  void Unpack(T& value) {
-
-    if (!packetData.empty()) {
-      std::memcpy(&value, packetData.data() + readPos, sizeof(T));
-
-      if constexpr (std::endian::native == std::endian::little) {
-        // Reverse to little endian for host.
-        uint8_t& raw = reinterpret_cast<uint8_t&>(value);
-        std::reverse(&raw, &raw + sizeof(T));
-      }
-    }
-
-    readPos += sizeof(T);
-  }
-
-  template <typename T>
-  T Unpack() {
-    T t {};
-    Unpack<T>(t);
-    return t;
-  }
-
-  // TODO: try to make this the same function using sfinae/requires magic
-  template <typename T>
-  std::optional<T> UnpackOptional() {
-    bool present = Unpack<bool>();
-    if (present) {
-      return Unpack<T>();
-    }
-    return std::nullopt;
+  inline T Unpack() {
+    T ret = wpi::UnpackStruct<T, I...>(packetData);
+    readPos += wpi::GetStructSize<T, I...>();
+    return ret;
   }
 
   template <typename T>
   std::vector<T> UnpackList() {
     auto len = Unpack<int8_t>();
+
     std::vector<T> ret {};
     ret.resize(len);
     for (int i = 0; i < len; i++) {
       Unpack<T>(ret[i]);
     }
-    return ret;
-  }
-
-  template <typename T, typename... I>
-  requires wpi::StructSerializable<T, I...>
-  inline T UnpackStruct() {
-    T ret = wpi::UnpackStruct<T, I...>(packetData);
-    readPos += wpi::GetStructSize<T, I...>();
     return ret;
   }
 

@@ -17,26 +17,37 @@
 
 #include "photon/struct/{{ name }}Serde.h"
 
-using StructType = photon::Struct<photon::{{ name }}>;
+// TODO: include headers from other messages for template resolution
 
-void StructType::Pack(photon::Packet& packet, const photon::{{ name }}& value) {
+// For namespacing dependant structserializable types
+using namespace photon;
 
-    packet.Pack<frc::Transform3d>(value.best);
-    packet.Pack<frc::Transform3d>(value.alt);
-    packet.Pack<double>(value.bestReprojErr);
-    packet.Pack<double>(value.altReprojErr);
-    packet.Pack<double>(value.ambiguity);
+using StructType = ::photon::Struct<{{ name }}>;
 
+void StructType::Pack(Packet& packet, const {{ name }}& value) {
+{%- for field in fields -%}
+    {%- if field.type | is_shimmed -%}
+    packet.Pack<{{ get_message_by_name(field.type).cpp_type }}>(value.{{ field.name }});
+    {%- else -%}
+    packet.Pack<{{ type_map[field.type].cpp_type }}>(value.{{ field.name }});
+    {%- endif -%}
+    {%- if not loop.last %}
+    {% endif -%}
+{% endfor %}
 }
 
-photon::{{ name }} StructType::Unpack(photon::Packet& packet) {
-    photon::{{ name }} ret;
+{{ name }} StructType::Unpack(Packet& packet) {
+    {{ name }} ret;
 
-    ret.best = packet.Unpack<frc::Transform3d>();
-    ret.alt = packet.Unpack<frc::Transform3d>();
-    ret.bestReprojErr = packet.Unpack<double>();
-    ret.altReprojErr = packet.Unpack<double>();
-    ret.ambiguity = packet.Unpack<double>();
+    {% for field in fields -%}
+    {%- if field.type | is_shimmed -%}
+    ret.{{ field.name}} = packet.Unpack<{{ get_message_by_name(field.type).cpp_type }}>();
+    {%- else -%}
+    ret.{{ field.name}} = packet.Unpack<{{ type_map[field.type].cpp_type }}>();
+    {%- endif -%}
+    {%- if not loop.last %}
+    {% endif -%}
+{% endfor %}
 
     return ret;
 }

@@ -25,7 +25,7 @@
 template <>
 struct WPILIB_DLLEXPORT photon::Struct<photon::PhotonTrackedTarget> {
   static constexpr std::string_view GetSchemaHash() {
-    return "bc26b76ea1520b42d776972512362b11";
+    return "6105e981fb254a5ded6d09e4e7098a8f";
   }
 
   static constexpr std::string_view GetSchema() {
@@ -36,4 +36,4 @@ struct WPILIB_DLLEXPORT photon::Struct<photon::PhotonTrackedTarget> {
   static void Pack(photon::Packet& packet, const photon::PhotonTrackedTarget& value);
 };
 
-static_assert(photon::PhotonStructSerializable<photon::PnpResult>);
+static_assert(photon::PhotonStructSerializable<photon::PhotonTrackedTarget>);

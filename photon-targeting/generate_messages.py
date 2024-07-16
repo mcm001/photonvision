@@ -131,9 +131,9 @@ def generate_photon_messages(output_root, template_root):
 
     java_output_dir = Path(output_root) / "main/java/org/photonvision/struct"
     java_output_dir.mkdir(parents=True, exist_ok=True)
-    cpp_header_dir = Path(output_root) / "main/native/cpp/photon"
+    cpp_header_dir = Path(output_root) / "main/native/include/photon/struct/"
     cpp_header_dir.mkdir(parents=True, exist_ok=True)
-    cpp_source_dir = Path(output_root) / "main/native/include/photon"
+    cpp_source_dir = Path(output_root) / "main/native/cpp/photon/struct/"
     cpp_source_dir.mkdir(parents=True, exist_ok=True)
 
     for message in messages:

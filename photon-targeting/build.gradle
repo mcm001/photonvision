@@ -25,11 +25,11 @@ model {
             sources {
                 cpp {
                     source {
-                        srcDirs 'src/main/native/cpp', "$buildDir/generated/source/proto/main/cpp"
+                        srcDirs 'src/main/native/cpp', "$buildDir/generated/source/proto/main/cpp", 'src/generated/main/native/cpp'
                         include '**/*.cpp', '**/*.cc'
                     }
                     exportedHeaders {
-                        srcDirs 'src/main/native/include', "$buildDir/generated/source/proto/main/cpp"
+                        srcDirs 'src/main/native/include', "$buildDir/generated/source/proto/main/cpp", 'src/generated/main/native/include'
                         if (project.hasProperty('generatedHeaders')) {
                             srcDir generatedHeaders
                         }

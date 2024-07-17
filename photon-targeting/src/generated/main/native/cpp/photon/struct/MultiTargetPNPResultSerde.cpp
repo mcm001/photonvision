@@ -17,20 +17,18 @@
 
 #include "photon/struct/MultiTargetPNPResultSerde.h"
 
-// For namespacing dependant structserializable types
-using namespace photon;
+// TODO: include headers from other messages for template resolution
 
-using StructType = ::photon::Struct<MultiTargetPNPResult>;
+using StructType = photon::Struct<MultiTargetPNPResult>;
 
-void StructType::Pack(Packet& packet, const MultiTargetPNPResult& value) {packet.Pack<PnpResult>(value.estimatedPose);
+void StructType::Pack(Packet& packet, const MultiTargetPNPResult& value) {
+    packet.Pack<photon::PnpResult>(value.estimatedPose);
     packet.Pack<int16_t>(value.fiducialIDsUsed);
 }
 
 MultiTargetPNPResult StructType::Unpack(Packet& packet) {
-    MultiTargetPNPResult ret;
-
-    ret.estimatedPose = packet.Unpack<PnpResult>();
-    ret.fiducialIDsUsed = packet.Unpack<int16_t>();
-
-    return ret;
+    return MultiTargetPNPResult_PhotonStruct {
+        .estimatedPose = packet.Unpack<photon::PnpResult>(),
+        .fiducialIDsUsed = packet.Unpack<int16_t>(),
+    };
 }

@@ -24,6 +24,8 @@ class MessageType(TypedDict):
     shimmed: bool
     java_decode_shim: str
     java_encode_shim: str
+    # C++ helpers
+    cpp_include: str
 
 
 def yaml_to_dict(path: str):
@@ -56,6 +58,15 @@ def get_shimmed_filter(message_db):
         return "shimmed" in message and message["shimmed"] == True
 
     return is_shimmed
+
+
+def get_qualified_cpp_name(message_db: List[MessageType], message_name: str):
+    """
+    Get the full name of the type encoded. Eg:
+      std::optional<photon::TargetCorner>
+      std::array<frc::Transform3d>
+    """
+    pass
 
 
 def get_message_by_name(message_db: List[MessageType], message_name: str):
@@ -101,6 +112,23 @@ def get_message_hash(message_db: List[MessageType], message: MessageType):
     return message_hash
 
 
+def get_includes(db, message: MessageType) -> str:
+    includes = []
+    for field in message["fields"]:
+        if not is_intrinsic_type(field['type']):
+            field_msg = get_message_by_name(db, field['type'])
+
+            if 'shimmed' in field_msg and field_msg['shimmed'] == True:
+                includes.append(field_msg['cpp_include'])
+            else:
+                # must be a photon type.
+                includes.append(f'"photon/targeting/{field_msg['name']}.h"')
+
+    print(f"For type {message['name']}")
+    print(set(includes))
+    return sorted(set(includes))
+
+
 def parse_yaml():
     config = yaml_to_dict("src/generate/messages.yaml")
 
@@ -126,7 +154,7 @@ def generate_photon_messages(output_root, template_root):
         extended_data_types[name] = {
             "len": -1,
             "java_type": name,
-            "cpp_type": name,
+            "cpp_type": "photon::" + name,
         }
 
     java_output_dir = Path(output_root) / "main/java/org/photonvision/struct"
@@ -163,6 +191,9 @@ def generate_photon_messages(output_root, template_root):
             template.globals["get_message_by_name"] = lambda name: get_message_by_name(
                 messages, name
             )
+            template.globals["get_qualified_name"] = lambda name: get_qualified_cpp_name(
+                messages, name
+            )
 
             output_file = output_folder / output_name
             output_file.write_text(
@@ -171,6 +202,7 @@ def generate_photon_messages(output_root, template_root):
                     type_map=extended_data_types,
                     message_str=message,
                     message_hash=message_hash.hexdigest(),
+                    cpp_includes=get_includes(messages, message)
                 ),
                 encoding="utf-8",
             )

@@ -17,12 +17,12 @@
 
 #include "photon/struct/PhotonTrackedTargetSerde.h"
 
-// For namespacing dependant structserializable types
-using namespace photon;
+// TODO: include headers from other messages for template resolution
 
-using StructType = ::photon::Struct<PhotonTrackedTarget>;
+using StructType = photon::Struct<PhotonTrackedTarget>;
 
-void StructType::Pack(Packet& packet, const PhotonTrackedTarget& value) {packet.Pack<double>(value.yaw);
+void StructType::Pack(Packet& packet, const PhotonTrackedTarget& value) {
+    packet.Pack<double>(value.yaw);
     packet.Pack<double>(value.pitch);
     packet.Pack<double>(value.area);
     packet.Pack<double>(value.skew);
@@ -31,24 +31,22 @@ void StructType::Pack(Packet& packet, const PhotonTrackedTarget& value) {packet.
     packet.Pack<frc::Transform3d>(value.bestCameraToTarget);
     packet.Pack<frc::Transform3d>(value.altCameraToTarget);
     packet.Pack<double>(value.poseAmbiguity);
-    packet.Pack<TargetCorner>(value.minAreaRectCorners);
-    packet.Pack<TargetCorner>(value.detectedCorners);
+    packet.Pack<photon::TargetCorner>(value.minAreaRectCorners);
+    packet.Pack<photon::TargetCorner>(value.detectedCorners);
 }
 
 PhotonTrackedTarget StructType::Unpack(Packet& packet) {
-    PhotonTrackedTarget ret;
-
-    ret.yaw = packet.Unpack<double>();
-    ret.pitch = packet.Unpack<double>();
-    ret.area = packet.Unpack<double>();
-    ret.skew = packet.Unpack<double>();
-    ret.fiducialId = packet.Unpack<int32_t>();
-    ret.objDetectConf = packet.Unpack<float>();
-    ret.bestCameraToTarget = packet.Unpack<frc::Transform3d>();
-    ret.altCameraToTarget = packet.Unpack<frc::Transform3d>();
-    ret.poseAmbiguity = packet.Unpack<double>();
-    ret.minAreaRectCorners = packet.Unpack<TargetCorner>();
-    ret.detectedCorners = packet.Unpack<TargetCorner>();
-
-    return ret;
+    return PhotonTrackedTarget_PhotonStruct {
+        .yaw = packet.Unpack<double>(),
+        .pitch = packet.Unpack<double>(),
+        .area = packet.Unpack<double>(),
+        .skew = packet.Unpack<double>(),
+        .fiducialId = packet.Unpack<int32_t>(),
+        .objDetectConf = packet.Unpack<float>(),
+        .bestCameraToTarget = packet.Unpack<frc::Transform3d>(),
+        .altCameraToTarget = packet.Unpack<frc::Transform3d>(),
+        .poseAmbiguity = packet.Unpack<double>(),
+        .minAreaRectCorners = packet.Unpack<photon::TargetCorner>(),
+        .detectedCorners = packet.Unpack<photon::TargetCorner>(),
+    };
 }

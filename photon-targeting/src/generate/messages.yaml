@@ -13,7 +13,10 @@
   java_decode_shim: PacketUtils.unpackTransform3d
   java_encode_shim: PacketUtils.packTransform3d
   cpp_type: frc::Transform3d
+  cpp_include: "<frc/geometry/Transform3d.h>"
+  # shim since we expect fields to at least exist
   fields: []
+
 
 - name: TargetCorner
   fields:

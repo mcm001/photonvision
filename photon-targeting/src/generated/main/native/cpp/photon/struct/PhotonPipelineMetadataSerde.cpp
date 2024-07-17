@@ -17,22 +17,20 @@
 
 #include "photon/struct/PhotonPipelineMetadataSerde.h"
 
-// For namespacing dependant structserializable types
-using namespace photon;
+// TODO: include headers from other messages for template resolution
 
-using StructType = ::photon::Struct<PhotonPipelineMetadata>;
+using StructType = photon::Struct<PhotonPipelineMetadata>;
 
-void StructType::Pack(Packet& packet, const PhotonPipelineMetadata& value) {packet.Pack<int64_t>(value.sequenceID);
+void StructType::Pack(Packet& packet, const PhotonPipelineMetadata& value) {
+    packet.Pack<int64_t>(value.sequenceID);
     packet.Pack<int64_t>(value.captureTimestampMicros);
     packet.Pack<int64_t>(value.publishTimestampMicros);
 }
 
 PhotonPipelineMetadata StructType::Unpack(Packet& packet) {
-    PhotonPipelineMetadata ret;
-
-    ret.sequenceID = packet.Unpack<int64_t>();
-    ret.captureTimestampMicros = packet.Unpack<int64_t>();
-    ret.publishTimestampMicros = packet.Unpack<int64_t>();
-
-    return ret;
+    return PhotonPipelineMetadata_PhotonStruct {
+        .sequenceID = packet.Unpack<int64_t>(),
+        .captureTimestampMicros = packet.Unpack<int64_t>(),
+        .publishTimestampMicros = packet.Unpack<int64_t>(),
+    };
 }

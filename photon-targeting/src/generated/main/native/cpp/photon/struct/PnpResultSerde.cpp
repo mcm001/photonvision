@@ -17,12 +17,12 @@
 
 #include "photon/struct/PnpResultSerde.h"
 
-// For namespacing dependant structserializable types
-using namespace photon;
+// TODO: include headers from other messages for template resolution
 
-using StructType = ::photon::Struct<PnpResult>;
+using StructType = photon::Struct<PnpResult>;
 
-void StructType::Pack(Packet& packet, const PnpResult& value) {packet.Pack<frc::Transform3d>(value.best);
+void StructType::Pack(Packet& packet, const PnpResult& value) {
+    packet.Pack<frc::Transform3d>(value.best);
     packet.Pack<frc::Transform3d>(value.alt);
     packet.Pack<double>(value.bestReprojErr);
     packet.Pack<double>(value.altReprojErr);
@@ -30,13 +30,11 @@ void StructType::Pack(Packet& packet, const PnpResult& value) {packet.Pack<frc::
 }
 
 PnpResult StructType::Unpack(Packet& packet) {
-    PnpResult ret;
-
-    ret.best = packet.Unpack<frc::Transform3d>();
-    ret.alt = packet.Unpack<frc::Transform3d>();
-    ret.bestReprojErr = packet.Unpack<double>();
-    ret.altReprojErr = packet.Unpack<double>();
-    ret.ambiguity = packet.Unpack<double>();
-
-    return ret;
+    return PnpResult_PhotonStruct {
+        .best = packet.Unpack<frc::Transform3d>(),
+        .alt = packet.Unpack<frc::Transform3d>(),
+        .bestReprojErr = packet.Unpack<double>(),
+        .altReprojErr = packet.Unpack<double>(),
+        .ambiguity = packet.Unpack<double>(),
+    };
 }

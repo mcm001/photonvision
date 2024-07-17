@@ -33,7 +33,7 @@ import org.photonvision.targeting.*;
 public class PnpResultSerde implements PacketSerde<PnpResult> {
 
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "4214e553b8585ff02bd2b1ed2f26c8c1";
+    public static final String MESSAGE_VERSION = "78f12b7e27611118ac1f416c4433bd86";
     public static final String MESSAGE_FORMAT = "{\"fields\": [{\"comment\": \"This is a comment\", \"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}, {\"name\": \"ambiguity\", \"type\": \"float64\"}], \"name\": \"PnpResult\"}";
 
     @Override

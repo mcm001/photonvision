@@ -17,22 +17,20 @@
 
 #include "photon/struct/PhotonPipelineResultSerde.h"
 
-// For namespacing dependant structserializable types
-using namespace photon;
+// TODO: include headers from other messages for template resolution
 
-using StructType = ::photon::Struct<PhotonPipelineResult>;
+using StructType = photon::Struct<PhotonPipelineResult>;
 
-void StructType::Pack(Packet& packet, const PhotonPipelineResult& value) {packet.Pack<PhotonPipelineMetadata>(value.metadata);
-    packet.Pack<PhotonTrackedTarget>(value.targets);
-    packet.Pack<MultiTargetPNPResult>(value.multiTagResult);
+void StructType::Pack(Packet& packet, const PhotonPipelineResult& value) {
+    packet.Pack<photon::PhotonPipelineMetadata>(value.metadata);
+    packet.Pack<photon::PhotonTrackedTarget>(value.targets);
+    packet.Pack<photon::MultiTargetPNPResult>(value.multiTagResult);
 }
 
 PhotonPipelineResult StructType::Unpack(Packet& packet) {
-    PhotonPipelineResult ret;
-
-    ret.metadata = packet.Unpack<PhotonPipelineMetadata>();
-    ret.targets = packet.Unpack<PhotonTrackedTarget>();
-    ret.multiTagResult = packet.Unpack<MultiTargetPNPResult>();
-
-    return ret;
+    return PhotonPipelineResult_PhotonStruct {
+        .metadata = packet.Unpack<photon::PhotonPipelineMetadata>(),
+        .targets = packet.Unpack<photon::PhotonTrackedTarget>(),
+        .multiTagResult = packet.Unpack<photon::MultiTargetPNPResult>(),
+    };
 }

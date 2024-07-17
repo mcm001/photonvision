@@ -19,13 +19,10 @@
 
 // TODO: include headers from other messages for template resolution
 
-// For namespacing dependant structserializable types
-using namespace photon;
-
-using StructType = ::photon::Struct<{{ name }}>;
+using StructType = photon::Struct<{{ name }}>;
 
 void StructType::Pack(Packet& packet, const {{ name }}& value) {
-{%- for field in fields -%}
+    {% for field in fields -%}
     {%- if field.type | is_shimmed -%}
     packet.Pack<{{ get_message_by_name(field.type).cpp_type }}>(value.{{ field.name }});
     {%- else -%}
@@ -37,17 +34,15 @@ void StructType::Pack(Packet& packet, const {{ name }}& value) {
 }
 
 {{ name }} StructType::Unpack(Packet& packet) {
-    {{ name }} ret;
-
-    {% for field in fields -%}
-    {%- if field.type | is_shimmed -%}
-    ret.{{ field.name}} = packet.Unpack<{{ get_message_by_name(field.type).cpp_type }}>();
-    {%- else -%}
-    ret.{{ field.name}} = packet.Unpack<{{ type_map[field.type].cpp_type }}>();
-    {%- endif -%}
-    {%- if not loop.last %}
-    {% endif -%}
+    return {{ name }}_PhotonStruct {
+        {% for field in fields -%}
+        {%- if field.type | is_shimmed -%}
+        .{{ field.name}} = packet.Unpack<{{ get_message_by_name(field.type).cpp_type }}>(),
+        {%- else -%}
+        .{{ field.name}} = packet.Unpack<{{ type_map[field.type].cpp_type }}>(),
+        {%- endif -%}
+        {%- if not loop.last %}
+        {% endif -%}
 {% endfor %}
-
-    return ret;
+    };
 }

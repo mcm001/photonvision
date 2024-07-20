@@ -1,6 +1,6 @@
-// #include "photon/struct/PhotonPipelineMetadataSerde.h"
+#pragma once
 
-class PhotonPipelineMetadata_PhotonStruct;
+#include "photon/struct/PhotonPipelineMetadataStruct.h"
 
 namespace photon {
 class PhotonPipelineMetadata : public PhotonPipelineMetadata_PhotonStruct {

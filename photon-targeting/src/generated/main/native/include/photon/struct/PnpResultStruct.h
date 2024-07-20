@@ -21,7 +21,7 @@
 
 // Includes for dependant types
 #include <frc/geometry/Transform3d.h>
-
+#include <stdint.h>
 
 
 namespace photon {

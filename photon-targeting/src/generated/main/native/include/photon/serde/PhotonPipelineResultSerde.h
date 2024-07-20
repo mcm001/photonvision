@@ -21,6 +21,7 @@
 
 #include <wpi/SymbolExports.h>
 
+// Include myself
 #include "photon/dataflow/structures/Packet.h"
 #include "photon/targeting/PhotonPipelineResult.h"
 
@@ -28,13 +29,10 @@
 #include "photon/targeting/MultiTargetPNPResult.h"
 #include "photon/targeting/PhotonPipelineMetadata.h"
 #include "photon/targeting/PhotonTrackedTarget.h"
+#include <optional>
+#include <stdint.h>
+#include <vector>
 
-
-struct PhotonPipelineResult_PhotonStruct {
-  photon::PhotonPipelineMetadata metadata;
-  std::vector<photon::PhotonTrackedTarget> targets;
-  std::optional<photon::MultiTargetPNPResult> multiTagResult;
-};
 
 namespace photon {
 

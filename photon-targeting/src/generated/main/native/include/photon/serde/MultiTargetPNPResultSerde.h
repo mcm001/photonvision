@@ -21,17 +21,15 @@
 
 #include <wpi/SymbolExports.h>
 
+// Include myself
 #include "photon/dataflow/structures/Packet.h"
 #include "photon/targeting/MultiTargetPNPResult.h"
 
 // Includes for dependant types
 #include "photon/targeting/PnpResult.h"
+#include <stdint.h>
+#include <vector>
 
-
-struct MultiTargetPNPResult_PhotonStruct {
-  photon::PnpResult estimatedPose;
-  std::vector<int16_t> fiducialIDsUsed;
-};
 
 namespace photon {
 

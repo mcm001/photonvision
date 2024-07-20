@@ -21,20 +21,14 @@
 
 #include <wpi/SymbolExports.h>
 
+// Include myself
 #include "photon/dataflow/structures/Packet.h"
 #include "photon/targeting/PnpResult.h"
 
 // Includes for dependant types
 #include <frc/geometry/Transform3d.h>
+#include <stdint.h>
 
-
-struct PnpResult_PhotonStruct {
-  frc::Transform3d best;
-  frc::Transform3d alt;
-  double bestReprojErr;
-  double altReprojErr;
-  double ambiguity;
-};
 
 namespace photon {
 

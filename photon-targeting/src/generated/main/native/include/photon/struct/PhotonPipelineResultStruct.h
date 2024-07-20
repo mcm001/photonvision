@@ -23,7 +23,9 @@
 #include "photon/targeting/MultiTargetPNPResult.h"
 #include "photon/targeting/PhotonPipelineMetadata.h"
 #include "photon/targeting/PhotonTrackedTarget.h"
-
+#include <optional>
+#include <stdint.h>
+#include <vector>
 
 
 namespace photon {

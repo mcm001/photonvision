@@ -21,16 +21,13 @@
 
 #include <wpi/SymbolExports.h>
 
+// Include myself
 #include "photon/dataflow/structures/Packet.h"
 #include "photon/targeting/TargetCorner.h"
 
 // Includes for dependant types
+#include <stdint.h>
 
-
-struct TargetCorner_PhotonStruct {
-  double x;
-  double y;
-};
 
 namespace photon {
 

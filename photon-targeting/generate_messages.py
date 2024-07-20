@@ -141,6 +141,14 @@ def get_includes(db, message: MessageType) -> str:
             else:
                 # must be a photon type.
                 includes.append(f"\"photon/targeting/{field_msg['name']}.h\"")
+        
+        if "optional" in field and field["optional"] == True:
+            includes.append("<optional>")
+        if "vla" in field and field["vla"] == True:
+            includes.append("<vector>")
+
+    # stdint types
+    includes.append("<stdint.h>")
 
     return sorted(set(includes))
 

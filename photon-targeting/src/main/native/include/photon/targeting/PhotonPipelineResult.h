@@ -28,6 +28,8 @@
 #include "PhotonTrackedTarget.h"
 #include "photon/dataflow/structures/Packet.h"
 
+#include "photon/struct/PhotonPipelineResultStruct.h"
+
 namespace photon {
 /**
  * Represents a pipeline result from a PhotonCamera.
@@ -128,22 +130,10 @@ class PhotonPipelineResult {
 
   bool operator==(const PhotonPipelineResult& other) const;
 
-  friend Packet& operator<<(Packet& packet, const PhotonPipelineResult& result);
-  friend Packet& operator>>(Packet& packet, PhotonPipelineResult& result);
-
-  // Mirror of the heartbeat entry -- monotonically increasing
-  int64_t sequenceID = -1;
-
-  // Image capture and NT publish timestamp, in microseconds and in the
-  // coprocessor timebase. As reported by WPIUtilJNI::now.
-  units::microsecond_t captureTimestamp;
-  units::microsecond_t publishTimestamp;
   // Since we don't trust NT time sync, keep track of when we got this packet
   // into robot code
   units::microsecond_t ntRecieveTimestamp = -1_s;
 
-  wpi::SmallVector<PhotonTrackedTarget, 10> targets;
-  std::optional<MultiTargetPNPResult> multitagResult;
   inline static bool HAS_WARNED = false;
 };
 }  // namespace photon

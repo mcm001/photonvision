@@ -21,27 +21,16 @@
 
 #include <wpi/SymbolExports.h>
 
+// Include myself
 #include "photon/dataflow/structures/Packet.h"
 #include "photon/targeting/PhotonTrackedTarget.h"
 
 // Includes for dependant types
 #include "photon/targeting/TargetCorner.h"
 #include <frc/geometry/Transform3d.h>
+#include <stdint.h>
+#include <vector>
 
-
-struct PhotonTrackedTarget_PhotonStruct {
-  double yaw;
-  double pitch;
-  double area;
-  double skew;
-  int32_t fiducialId;
-  float objDetectConf;
-  frc::Transform3d bestCameraToTarget;
-  frc::Transform3d altCameraToTarget;
-  double poseAmbiguity;
-  std::vector<photon::TargetCorner> minAreaRectCorners;
-  std::vector<photon::TargetCorner> detectedCorners;
-};
 
 namespace photon {
 

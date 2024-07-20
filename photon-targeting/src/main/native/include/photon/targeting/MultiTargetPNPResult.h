@@ -23,8 +23,7 @@
 #include "PnpResult.h"
 #include "photon/dataflow/structures/Packet.h"
 
-
-#include "photon/struct/MultiTargetPNPResultSerde.h"
+#include "photon/struct/MultiTargetPNPResultStruct.h"
 
 namespace photon {
 class MultiTargetPNPResult : public MultiTargetPNPResult_PhotonStruct {

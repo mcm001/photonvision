@@ -21,17 +21,13 @@
 
 #include <wpi/SymbolExports.h>
 
+// Include myself
 #include "photon/dataflow/structures/Packet.h"
 #include "photon/targeting/PhotonPipelineMetadata.h"
 
 // Includes for dependant types
+#include <stdint.h>
 
-
-struct PhotonPipelineMetadata_PhotonStruct {
-  int64_t sequenceID;
-  int64_t captureTimestampMicros;
-  int64_t publishTimestampMicros;
-};
 
 namespace photon {
 

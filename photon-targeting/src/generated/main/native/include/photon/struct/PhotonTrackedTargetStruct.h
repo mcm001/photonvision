@@ -22,7 +22,8 @@
 // Includes for dependant types
 #include "photon/targeting/TargetCorner.h"
 #include <frc/geometry/Transform3d.h>
-
+#include <stdint.h>
+#include <vector>
 
 
 namespace photon {

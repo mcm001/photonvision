@@ -21,7 +21,8 @@
 
 // Includes for dependant types
 #include "photon/targeting/PnpResult.h"
-
+#include <stdint.h>
+#include <vector>
 
 
 namespace photon {

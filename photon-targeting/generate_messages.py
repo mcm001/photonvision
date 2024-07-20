@@ -175,10 +175,14 @@ def generate_photon_messages(output_root, template_root):
 
     java_output_dir = Path(output_root) / "main/java/org/photonvision/struct"
     java_output_dir.mkdir(parents=True, exist_ok=True)
-    cpp_header_dir = Path(output_root) / "main/native/include/photon/serde/"
-    cpp_header_dir.mkdir(parents=True, exist_ok=True)
-    cpp_source_dir = Path(output_root) / "main/native/cpp/photon/serde/"
-    cpp_source_dir.mkdir(parents=True, exist_ok=True)
+
+    cpp_serde_header_dir = Path(output_root) / "main/native/include/photon/serde/"
+    cpp_serde_header_dir.mkdir(parents=True, exist_ok=True)
+    cpp_serde_source_dir = Path(output_root) / "main/native/cpp/photon/serde/"
+    cpp_serde_source_dir.mkdir(parents=True, exist_ok=True)
+
+    cpp_struct_header_dir = Path(output_root) / "main/native/include/photon/struct/"
+    cpp_struct_header_dir.mkdir(parents=True, exist_ok=True)
 
     env.filters["get_qualified_name"] = lambda field: get_qualified_cpp_name(
         messages, extended_data_types, field
@@ -193,19 +197,24 @@ def generate_photon_messages(output_root, template_root):
         message = cast(MessageType, message)
 
         java_name = f"{message['name']}Serde.java"
-        cpp_header_name = f"{message['name']}Serde.h"
-        cpp_source_name = f"{message['name']}Serde.cpp"
+        cpp_serde_header_name = f"{message['name']}Serde.h"
+        cpp_serde_source_name = f"{message['name']}Serde.cpp"
+        cpp_struct_header_name = f"{message['name']}Struct.h"
+
 
         java_template = env.get_template("Message.java.jinja")
-        cpp_header_template = env.get_template("ThingSerde.h.jinja")
-        cpp_source_template = env.get_template("ThingSerde.cpp.jinja")
+
+        cpp_serde_header_template = env.get_template("ThingSerde.h.jinja")
+        cpp_serde_source_template = env.get_template("ThingSerde.cpp.jinja")
+        cpp_struct_header_template = env.get_template("ThingStruct.h.jinja")
 
         message_hash = get_message_hash(messages, message)
 
         for output_name, template, output_folder in [
             [java_name, java_template, java_output_dir],
-            [cpp_header_name, cpp_header_template, cpp_header_dir],
-            [cpp_source_name, cpp_source_template, cpp_source_dir],
+            [cpp_serde_header_name, cpp_serde_header_template, cpp_serde_header_dir],
+            [cpp_serde_source_name, cpp_serde_source_template, cpp_serde_source_dir],
+            [cpp_struct_header_name, cpp_struct_header_template, cpp_struct_header_dir],
         ]:
             # Hack in our message getter
             template.globals["get_message_by_name"] = lambda name: get_message_by_name(
@@ -239,7 +248,7 @@ def main(argv):
     parser.add_argument(
         "--template_root",
         help="Optional. If set, will use this directory as the root for the jinja templates",
-        default=dirname / "src/generate",
+        default=dirname / "src/generate/templates",
         type=Path,
     )
     args = parser.parse_args(argv)

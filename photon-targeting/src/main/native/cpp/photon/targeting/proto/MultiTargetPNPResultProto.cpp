@@ -47,10 +47,10 @@ void wpi::Protobuf<photon::MultiTargetPNPResult>::Pack(
     google::protobuf::Message* msg, const photon::MultiTargetPNPResult& value) {
   auto m = static_cast<photonvision::proto::ProtobufMultiTargetPNPResult*>(msg);
 
-  wpi::PackProtobuf(m->mutable_estimated_pose(), value.result);
+  wpi::PackProtobuf(m->mutable_estimated_pose(), value.estimatedPose);
 
   m->clear_fiducial_ids_used();
-  for (const auto& t : value.fiducialIdsUsed) {
+  for (const auto& t : value.fiducialIDsUsed) {
     m->add_fiducial_ids_used(t);
   }
 }

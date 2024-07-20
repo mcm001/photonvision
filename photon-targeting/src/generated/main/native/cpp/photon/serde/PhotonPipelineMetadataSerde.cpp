@@ -15,11 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "photon/struct/PhotonPipelineMetadataSerde.h"
+#include "photon/serde/PhotonPipelineMetadataSerde.h"
 
-// TODO: include headers from other messages for template resolution
+namespace photon {
 
-using StructType = photon::Struct<PhotonPipelineMetadata>;
+using StructType = SerdeType<PhotonPipelineMetadata>;
 
 void StructType::Pack(Packet& packet, const PhotonPipelineMetadata& value) {
     packet.Pack<int64_t>(value.sequenceID);
@@ -28,9 +28,11 @@ void StructType::Pack(Packet& packet, const PhotonPipelineMetadata& value) {
 }
 
 PhotonPipelineMetadata StructType::Unpack(Packet& packet) {
-    return PhotonPipelineMetadata_PhotonStruct {
+    return PhotonPipelineMetadata{ PhotonPipelineMetadata_PhotonStruct{
         .sequenceID = packet.Unpack<int64_t>(),
         .captureTimestampMicros = packet.Unpack<int64_t>(),
         .publishTimestampMicros = packet.Unpack<int64_t>(),
-    };
+    }};
 }
+
+} // namespace photon

@@ -15,22 +15,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "photon/struct/PhotonPipelineResultSerde.h"
+#include "photon/serde/PhotonPipelineResultSerde.h"
 
-// TODO: include headers from other messages for template resolution
+namespace photon {
 
-using StructType = photon::Struct<PhotonPipelineResult>;
+using StructType = SerdeType<PhotonPipelineResult>;
 
 void StructType::Pack(Packet& packet, const PhotonPipelineResult& value) {
     packet.Pack<photon::PhotonPipelineMetadata>(value.metadata);
-    packet.Pack<photon::PhotonTrackedTarget>(value.targets);
-    packet.Pack<photon::MultiTargetPNPResult>(value.multiTagResult);
+    packet.Pack<std::vector<photon::PhotonTrackedTarget>>(value.targets);
+    packet.Pack<std::optional<photon::MultiTargetPNPResult>>(value.multiTagResult);
 }
 
 PhotonPipelineResult StructType::Unpack(Packet& packet) {
-    return PhotonPipelineResult_PhotonStruct {
+    return PhotonPipelineResult{ PhotonPipelineResult_PhotonStruct{
         .metadata = packet.Unpack<photon::PhotonPipelineMetadata>(),
-        .targets = packet.Unpack<photon::PhotonTrackedTarget>(),
-        .multiTagResult = packet.Unpack<photon::MultiTargetPNPResult>(),
-    };
+        .targets = packet.Unpack<std::vector<photon::PhotonTrackedTarget>>(),
+        .multiTagResult = packet.Unpack<std::optional<photon::MultiTargetPNPResult>>(),
+    }};
 }
+
+} // namespace photon

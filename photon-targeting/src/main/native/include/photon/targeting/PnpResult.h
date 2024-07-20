@@ -21,20 +21,14 @@
 
 #include "photon/dataflow/structures/Packet.h"
 
+class PnpResult_PhotonStruct;
+
 namespace photon {
 
-struct PnpResult {
-  frc::Transform3d best{};
-  double bestReprojErr{0};
-
-  frc::Transform3d alt{};
-  double altReprojErr{0};
-
-  double ambiguity{0};
+struct PnpResult : public PnpResult_PhotonStruct {
+  
+  PnpResult(PnpResult_PhotonStruct data) : PnpResult_PhotonStruct(data) {}
 
   bool operator==(const PnpResult& other) const;
-
-  friend Packet& operator<<(Packet& packet, const PnpResult& target);
-  friend Packet& operator>>(Packet& packet, PnpResult& target);
 };
 }  // namespace photon

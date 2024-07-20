@@ -15,34 +15,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "photon/struct/{{ name }}Serde.h"
+#include "photon/serde/{{ name }}Serde.h"
 
-// TODO: include headers from other messages for template resolution
+namespace photon {
 
-using StructType = photon::Struct<{{ name }}>;
+using StructType = SerdeType<{{ name }}>;
 
 void StructType::Pack(Packet& packet, const {{ name }}& value) {
     {% for field in fields -%}
-    {%- if field.type | is_shimmed -%}
-    packet.Pack<{{ get_message_by_name(field.type).cpp_type }}>(value.{{ field.name }});
-    {%- else -%}
-    packet.Pack<{{ type_map[field.type].cpp_type }}>(value.{{ field.name }});
-    {%- endif -%}
+    packet.Pack<{{ field | get_qualified_name }}>(value.{{ field.name }});
     {%- if not loop.last %}
     {% endif -%}
-{% endfor %}
+    {% endfor %}
 }
 
 {{ name }} StructType::Unpack(Packet& packet) {
-    return {{ name }}_PhotonStruct {
+    return {{ name }}{ {{ name }}_PhotonStruct{
         {% for field in fields -%}
-        {%- if field.type | is_shimmed -%}
-        .{{ field.name}} = packet.Unpack<{{ get_message_by_name(field.type).cpp_type }}>(),
-        {%- else -%}
-        .{{ field.name}} = packet.Unpack<{{ type_map[field.type].cpp_type }}>(),
-        {%- endif -%}
+        .{{ field.name}} = packet.Unpack<{{ field | get_qualified_name }}>(),
         {%- if not loop.last %}
         {% endif -%}
-{% endfor %}
-    };
+        {% endfor %}
+    }};
 }
+
+} // namespace photon
+

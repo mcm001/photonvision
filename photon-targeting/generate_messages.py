@@ -15,6 +15,9 @@ from jinja2 import Environment, FileSystemLoader
 class SerdeField(TypedDict):
     name: str
     type: str
+    # optional extra args
+    optional: bool
+    vla: bool
 
 
 class MessageType(TypedDict):
@@ -60,13 +63,28 @@ def get_shimmed_filter(message_db):
     return is_shimmed
 
 
-def get_qualified_cpp_name(message_db: List[MessageType], message_name: str):
+def get_qualified_cpp_name(
+    message_db: List[MessageType], data_types, field: SerdeField
+):
     """
     Get the full name of the type encoded. Eg:
       std::optional<photon::TargetCorner>
       std::array<frc::Transform3d>
     """
-    pass
+
+    if get_shimmed_filter(message_db)(field["type"]):
+        base_type = get_message_by_name(message_db, field["type"])["cpp_type"]
+    else:
+        base_type = data_types[field["type"]]["cpp_type"]
+
+    if "optional" in field and field["optional"] == True:
+        typestr = f"std::optional<{base_type}>"
+    elif "vla" in field and field["vla"] == True:
+        typestr = f"std::vector<{base_type}>"
+    else:
+        typestr = base_type
+
+    return typestr
 
 
 def get_message_by_name(message_db: List[MessageType], message_name: str):
@@ -115,17 +133,15 @@ def get_message_hash(message_db: List[MessageType], message: MessageType):
 def get_includes(db, message: MessageType) -> str:
     includes = []
     for field in message["fields"]:
-        if not is_intrinsic_type(field['type']):
-            field_msg = get_message_by_name(db, field['type'])
+        if not is_intrinsic_type(field["type"]):
+            field_msg = get_message_by_name(db, field["type"])
 
-            if 'shimmed' in field_msg and field_msg['shimmed'] == True:
-                includes.append(field_msg['cpp_include'])
+            if "shimmed" in field_msg and field_msg["shimmed"] == True:
+                includes.append(field_msg["cpp_include"])
             else:
                 # must be a photon type.
-                includes.append(f'"photon/targeting/{field_msg['name']}.h"')
+                includes.append(f"\"photon/targeting/{field_msg['name']}.h\"")
 
-    print(f"For type {message['name']}")
-    print(set(includes))
     return sorted(set(includes))
 
 
@@ -159,10 +175,14 @@ def generate_photon_messages(output_root, template_root):
 
     java_output_dir = Path(output_root) / "main/java/org/photonvision/struct"
     java_output_dir.mkdir(parents=True, exist_ok=True)
-    cpp_header_dir = Path(output_root) / "main/native/include/photon/struct/"
+    cpp_header_dir = Path(output_root) / "main/native/include/photon/serde/"
     cpp_header_dir.mkdir(parents=True, exist_ok=True)
-    cpp_source_dir = Path(output_root) / "main/native/cpp/photon/struct/"
+    cpp_source_dir = Path(output_root) / "main/native/cpp/photon/serde/"
     cpp_source_dir.mkdir(parents=True, exist_ok=True)
+
+    env.filters["get_qualified_name"] = lambda field: get_qualified_cpp_name(
+        messages, extended_data_types, field
+    )
 
     for message in messages:
 
@@ -191,9 +211,6 @@ def generate_photon_messages(output_root, template_root):
             template.globals["get_message_by_name"] = lambda name: get_message_by_name(
                 messages, name
             )
-            template.globals["get_qualified_name"] = lambda name: get_qualified_cpp_name(
-                messages, name
-            )
 
             output_file = output_folder / output_name
             output_file.write_text(
@@ -202,7 +219,7 @@ def generate_photon_messages(output_root, template_root):
                     type_map=extended_data_types,
                     message_str=message,
                     message_hash=message_hash.hexdigest(),
-                    cpp_includes=get_includes(messages, message)
+                    cpp_includes=get_includes(messages, message),
                 ),
                 encoding="utf-8",
             )

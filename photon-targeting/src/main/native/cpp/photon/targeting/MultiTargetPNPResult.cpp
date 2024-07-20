@@ -20,7 +20,7 @@
 namespace photon {
 
 bool MultiTargetPNPResult::operator==(const MultiTargetPNPResult& other) const {
-  return other.result == result && other.fiducialIdsUsed == fiducialIdsUsed;
+  return other.estimatedPose == estimatedPose && other.fiducialIDsUsed == fiducialIDsUsed;
 }
 
 // Packet& operator<<(Packet& packet, const MultiTargetPNPResult& result) {

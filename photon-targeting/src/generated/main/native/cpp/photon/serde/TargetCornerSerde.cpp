@@ -15,20 +15,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "photon/struct/MultiTargetPNPResultSerde.h"
+#include "photon/serde/TargetCornerSerde.h"
 
-// TODO: include headers from other messages for template resolution
+namespace photon {
 
-using StructType = photon::Struct<MultiTargetPNPResult>;
+using StructType = SerdeType<TargetCorner>;
 
-void StructType::Pack(Packet& packet, const MultiTargetPNPResult& value) {
-    packet.Pack<photon::PnpResult>(value.estimatedPose);
-    packet.Pack<int16_t>(value.fiducialIDsUsed);
+void StructType::Pack(Packet& packet, const TargetCorner& value) {
+    packet.Pack<double>(value.x);
+    packet.Pack<double>(value.y);
 }
 
-MultiTargetPNPResult StructType::Unpack(Packet& packet) {
-    return MultiTargetPNPResult_PhotonStruct {
-        .estimatedPose = packet.Unpack<photon::PnpResult>(),
-        .fiducialIDsUsed = packet.Unpack<int16_t>(),
-    };
+TargetCorner StructType::Unpack(Packet& packet) {
+    return TargetCorner{ TargetCorner_PhotonStruct{
+        .x = packet.Unpack<double>(),
+        .y = packet.Unpack<double>(),
+    }};
 }
+
+} // namespace photon

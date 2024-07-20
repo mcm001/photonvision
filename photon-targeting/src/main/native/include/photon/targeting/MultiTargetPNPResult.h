@@ -23,15 +23,22 @@
 #include "PnpResult.h"
 #include "photon/dataflow/structures/Packet.h"
 
+
+#include "photon/struct/MultiTargetPNPResultSerde.h"
+
 namespace photon {
-class MultiTargetPNPResult {
- public:
-  PnpResult result;
-  wpi::SmallVector<int16_t, 32> fiducialIdsUsed;
+class MultiTargetPNPResult : public MultiTargetPNPResult_PhotonStruct {
+
+public:
+    MultiTargetPNPResult(MultiTargetPNPResult_PhotonStruct data) : MultiTargetPNPResult_PhotonStruct(data) {}
+
+//  public:
+//   PnpResult result;
+//   wpi::SmallVector<int16_t, 32> fiducialIdsUsed;
 
   bool operator==(const MultiTargetPNPResult& other) const;
 
-  friend Packet& operator<<(Packet& packet, const MultiTargetPNPResult& result);
-  friend Packet& operator>>(Packet& packet, MultiTargetPNPResult& result);
+//   friend Packet& operator<<(Packet& packet, const MultiTargetPNPResult& result);
+//   friend Packet& operator>>(Packet& packet, MultiTargetPNPResult& result);
 };
 }  // namespace photon

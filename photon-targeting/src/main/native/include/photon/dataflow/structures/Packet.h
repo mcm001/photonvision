@@ -32,7 +32,7 @@ class Packet;
 
 // Struct is where all our actual ser/de methods are implemented
 template <typename T>
-struct Struct{};
+struct SerdeType{};
 
 template <typename T>
 concept PhotonStructSerializable = requires(Packet& packet, const T& value) {
@@ -110,14 +110,9 @@ class Packet {
   }
 
   template <typename T>
-  void PackList(const std::span<T> src) {
-    if (src.size() > 127) {
-      // bad stuff lol; we need to give up
-    }
-    Pack<uint8_t>(src.size());
-    for (const auto& t : src) {
-      Pack(src);
-    }
+    requires (PhotonStructSerializable<T>)
+  void Pack(T value) {
+    Struct<typename std::remove_cvref_t<T>>::Pack(*this, value);
   }
 
   template <typename T, typename... I>
@@ -129,15 +124,9 @@ class Packet {
   }
 
   template <typename T>
-  std::vector<T> UnpackList() {
-    auto len = Unpack<uint8_t>();
-
-    std::vector<T> ret {};
-    ret.resize(len);
-    for (int i = 0; i < len; i++) {
-      Unpack<T>(ret[i]);
-    }
-    return ret;
+    requires (PhotonStructSerializable<T>)
+  T Unpack() {
+      return Struct<typename std::remove_cvref_t<T>>::Unpack(*this);
   }
 
   bool operator==(const Packet& right) const;

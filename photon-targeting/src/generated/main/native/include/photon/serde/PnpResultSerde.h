@@ -22,38 +22,36 @@
 #include <wpi/SymbolExports.h>
 
 #include "photon/dataflow/structures/Packet.h"
-#include "photon/targeting/{{ name }}.h"
+#include "photon/targeting/PnpResult.h"
 
 // Includes for dependant types
-{% for include in cpp_includes -%}
-#include {{ include }}
-{% endfor %}
+#include <frc/geometry/Transform3d.h>
 
-struct {{ name }}_PhotonStruct {
-  {% for field in fields -%}
-  {{ field | get_qualified_name }} {{ field.name }};
-  {%- if not loop.last %}
-  {% endif -%}
-{% endfor %}
+
+struct PnpResult_PhotonStruct {
+  frc::Transform3d best;
+  frc::Transform3d alt;
+  double bestReprojErr;
+  double altReprojErr;
+  double ambiguity;
 };
 
 namespace photon {
 
 template <>
-struct WPILIB_DLLEXPORT photon::SerdeType<photon::{{ name }}> {
+struct WPILIB_DLLEXPORT photon::SerdeType<photon::PnpResult> {
   static constexpr std::string_view GetSchemaHash() {
-    return "{{ message_hash }}";
+    return "78f12b7e27611118ac1f416c4433bd86";
   }
 
   static constexpr std::string_view GetSchema() {
-    return "{{ message_str | tojson | replace('"','\\"') }}";
+    return "{\"fields\": [{\"comment\": \"This is a comment\", \"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}, {\"name\": \"ambiguity\", \"type\": \"float64\"}], \"name\": \"PnpResult\"}";
   }
 
-  static photon::{{ name }} Unpack(photon::Packet& packet);
-  static void Pack(photon::Packet& packet, const photon::{{ name }}& value);
+  static photon::PnpResult Unpack(photon::Packet& packet);
+  static void Pack(photon::Packet& packet, const photon::PnpResult& value);
 };
 
-static_assert(photon::PhotonStructSerializable<photon::{{ name }}>);
+static_assert(photon::PhotonStructSerializable<photon::PnpResult>);
 
 } // namespace photon
-

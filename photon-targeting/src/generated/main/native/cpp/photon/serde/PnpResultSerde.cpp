@@ -15,11 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "photon/struct/PnpResultSerde.h"
+#include "photon/serde/PnpResultSerde.h"
 
-// TODO: include headers from other messages for template resolution
+namespace photon {
 
-using StructType = photon::Struct<PnpResult>;
+using StructType = SerdeType<PnpResult>;
 
 void StructType::Pack(Packet& packet, const PnpResult& value) {
     packet.Pack<frc::Transform3d>(value.best);
@@ -30,11 +30,13 @@ void StructType::Pack(Packet& packet, const PnpResult& value) {
 }
 
 PnpResult StructType::Unpack(Packet& packet) {
-    return PnpResult_PhotonStruct {
+    return PnpResult{ PnpResult_PhotonStruct{
         .best = packet.Unpack<frc::Transform3d>(),
         .alt = packet.Unpack<frc::Transform3d>(),
         .bestReprojErr = packet.Unpack<double>(),
         .altReprojErr = packet.Unpack<double>(),
         .ambiguity = packet.Unpack<double>(),
-    };
+    }};
 }
+
+} // namespace photon

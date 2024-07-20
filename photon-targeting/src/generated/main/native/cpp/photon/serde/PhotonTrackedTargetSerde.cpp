@@ -15,11 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "photon/struct/PhotonTrackedTargetSerde.h"
+#include "photon/serde/PhotonTrackedTargetSerde.h"
 
-// TODO: include headers from other messages for template resolution
+namespace photon {
 
-using StructType = photon::Struct<PhotonTrackedTarget>;
+using StructType = SerdeType<PhotonTrackedTarget>;
 
 void StructType::Pack(Packet& packet, const PhotonTrackedTarget& value) {
     packet.Pack<double>(value.yaw);
@@ -31,12 +31,12 @@ void StructType::Pack(Packet& packet, const PhotonTrackedTarget& value) {
     packet.Pack<frc::Transform3d>(value.bestCameraToTarget);
     packet.Pack<frc::Transform3d>(value.altCameraToTarget);
     packet.Pack<double>(value.poseAmbiguity);
-    packet.Pack<photon::TargetCorner>(value.minAreaRectCorners);
-    packet.Pack<photon::TargetCorner>(value.detectedCorners);
+    packet.Pack<std::vector<photon::TargetCorner>>(value.minAreaRectCorners);
+    packet.Pack<std::vector<photon::TargetCorner>>(value.detectedCorners);
 }
 
 PhotonTrackedTarget StructType::Unpack(Packet& packet) {
-    return PhotonTrackedTarget_PhotonStruct {
+    return PhotonTrackedTarget{ PhotonTrackedTarget_PhotonStruct{
         .yaw = packet.Unpack<double>(),
         .pitch = packet.Unpack<double>(),
         .area = packet.Unpack<double>(),
@@ -46,7 +46,9 @@ PhotonTrackedTarget StructType::Unpack(Packet& packet) {
         .bestCameraToTarget = packet.Unpack<frc::Transform3d>(),
         .altCameraToTarget = packet.Unpack<frc::Transform3d>(),
         .poseAmbiguity = packet.Unpack<double>(),
-        .minAreaRectCorners = packet.Unpack<photon::TargetCorner>(),
-        .detectedCorners = packet.Unpack<photon::TargetCorner>(),
-    };
+        .minAreaRectCorners = packet.Unpack<std::vector<photon::TargetCorner>>(),
+        .detectedCorners = packet.Unpack<std::vector<photon::TargetCorner>>(),
+    }};
 }
+
+} // namespace photon

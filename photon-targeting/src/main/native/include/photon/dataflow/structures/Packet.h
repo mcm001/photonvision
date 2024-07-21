@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+#include <wpi/Demangle.h>
 #include <wpi/struct/Struct.h>
 
 namespace photon {
@@ -151,12 +152,13 @@ struct SerdeType<std::vector<T>> {
     }
   }
   static constexpr std::string_view GetSchemaHash() {
+    // quick hack lol
     return SerdeType<T>::GetSchemaHash();
   }
 
   static constexpr std::string_view GetSchema() {
-    // TODO!
-    return SerdeType<T>::GetSchema();
+    // TODO: this gets us the plain type name of T, but this is not schema JSON compliant!
+    return wpi::Demangle(typeid(T).name());
   }
 };
 
@@ -178,12 +180,13 @@ struct SerdeType<std::optional<T>> {
     }
   }
   static constexpr std::string_view GetSchemaHash() {
+    // quick hack lol
     return SerdeType<T>::GetSchemaHash();
   }
 
   static constexpr std::string_view GetSchema() {
-    // TODO!
-    return SerdeType<T>::GetSchema();
+    // TODO: this gets us the plain type name of T, but this is not schema JSON compliant!
+    return wpi::Demangle(typeid(T).name());
   }
 };
 

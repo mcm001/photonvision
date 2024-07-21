@@ -37,6 +37,8 @@
     type: float64
   - name: fiducialId
     type: int32
+  - name: objDetectId
+    type: int32
   - name: objDetectConf
     type: float32
   - name: bestCameraToTarget
@@ -82,6 +84,6 @@
   - name: targets
     type: PhotonTrackedTarget
     vla: True
-  - name: multiTagResult
+  - name: multitagResult
     type: MultiTargetPNPResult
     optional: True

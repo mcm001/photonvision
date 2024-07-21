@@ -20,16 +20,15 @@
 #include <frc/geometry/Transform3d.h>
 
 #include "photon/dataflow/structures/Packet.h"
-
 #include "photon/struct/PnpResultStruct.h"
 
 namespace photon {
 
 struct PnpResult : public PnpResult_PhotonStruct {
+  explicit PnpResult(PnpResult_PhotonStruct&& data)
+      : PnpResult_PhotonStruct(data) {}
 
-  PnpResult(PnpResult_PhotonStruct data) : PnpResult_PhotonStruct(data) {}
-
-  bool operator==(const PnpResult& other) const;
+  bool operator==(const PnpResult& other) const = default;
 };
 }  // namespace photon
 

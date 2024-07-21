@@ -31,7 +31,6 @@ import org.photonvision.targeting.*;
  * Auto-generated serialization/deserialization helper for PnpResult
  */
 public class PnpResultSerde implements PacketSerde<PnpResult> {
-
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "78f12b7e27611118ac1f416c4433bd86";
     public static final String MESSAGE_FORMAT = "{\"fields\": [{\"comment\": \"This is a comment\", \"name\": \"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", \"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", \"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": \"float64\"}, {\"name\": \"ambiguity\", \"type\": \"float64\"}], \"name\": \"PnpResult\"}";
@@ -46,16 +45,16 @@ public class PnpResultSerde implements PacketSerde<PnpResult> {
     public void pack(Packet packet, PnpResult value) {
         // field is shimmed!
         PacketUtils.packTransform3d(packet, value.best);
-    
+
         // field is shimmed!
         PacketUtils.packTransform3d(packet, value.alt);
-    
+
         // field bestReprojErr is of intrinsic type float64
         packet.encode((double) value.bestReprojErr);
-    
+
         // field altReprojErr is of intrinsic type float64
         packet.encode((double) value.altReprojErr);
-    
+
         // field ambiguity is of intrinsic type float64
         packet.encode((double) value.ambiguity);
     }
@@ -66,16 +65,16 @@ public class PnpResultSerde implements PacketSerde<PnpResult> {
 
         // field is shimmed!
         ret.best = PacketUtils.unpackTransform3d(packet);
-    
+
         // field is shimmed!
         ret.alt = PacketUtils.unpackTransform3d(packet);
-    
+
         // bestReprojErr is of intrinsic type float64
         ret.bestReprojErr = packet.decodeDouble();
-    
+
         // altReprojErr is of intrinsic type float64
         ret.altReprojErr = packet.decodeDouble();
-    
+
         // ambiguity is of intrinsic type float64
         ret.ambiguity = packet.decodeDouble();
 

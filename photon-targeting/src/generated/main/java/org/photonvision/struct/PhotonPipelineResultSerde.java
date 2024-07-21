@@ -31,10 +31,9 @@ import org.photonvision.targeting.*;
  * Auto-generated serialization/deserialization helper for PhotonPipelineResult
  */
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
-
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "44a380873774c812d37241007cba51b2";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"metadata\", \"type\": \"PhotonPipelineMetadata\"}, {\"name\": \"targets\", \"type\": \"PhotonTrackedTarget\", \"vla\": true}, {\"name\": \"multiTagResult\", \"optional\": true, \"type\": \"MultiTargetPNPResult\"}], \"name\": \"PhotonPipelineResult\"}";
+    public static final String MESSAGE_VERSION = "eefe85cf831c55de6f95e367c3f8784b";
+    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"metadata\", \"type\": \"PhotonPipelineMetadata\"}, {\"name\": \"targets\", \"type\": \"PhotonTrackedTarget\", \"vla\": true}, {\"name\": \"multitagResult\", \"optional\": true, \"type\": \"MultiTargetPNPResult\"}], \"name\": \"PhotonPipelineResult\"}";
 
     @Override
     public int getMaxByteSize() {
@@ -46,12 +45,12 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
     public void pack(Packet packet, PhotonPipelineResult value) {
         // field metadata is of non-intrinsic type PhotonPipelineMetadata
         PhotonPipelineMetadata.photonStruct.pack(packet, value.metadata);
-    
+
         // targets is a custom VLA!
         packet.encodeList(value.targets);
-    
-        // multiTagResult is optional! it better not be a VLA too
-        packet.encodeOptional(value.multiTagResult);
+
+        // multitagResult is optional! it better not be a VLA too
+        packet.encodeOptional(value.multitagResult);
     }
 
     @Override
@@ -60,12 +59,12 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
 
         // metadata is of non-intrinsic type PhotonPipelineMetadata
         ret.metadata = PhotonPipelineMetadata.photonStruct.unpack(packet);
-    
+
         // targets is a custom VLA!
         ret.targets = packet.decodeList(PhotonTrackedTarget.photonStruct);
-    
-        // multiTagResult is optional! it better not be a VLA too
-        ret.multiTagResult = packet.decodeOptional(MultiTargetPNPResult.photonStruct);
+
+        // multitagResult is optional! it better not be a VLA too
+        ret.multitagResult = packet.decodeOptional(MultiTargetPNPResult.photonStruct);
 
         return ret;
     }

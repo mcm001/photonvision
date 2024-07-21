@@ -20,10 +20,11 @@
 #include <algorithm>
 #include <bit>
 #include <cstring>
-#include <string>
-#include <vector>
 #include <optional>
 #include <span>
+#include <string>
+#include <vector>
+
 #include <wpi/struct/Struct.h>
 
 namespace photon {
@@ -32,20 +33,28 @@ class Packet;
 
 // Struct is where all our actual ser/de methods are implemented
 template <typename T>
-struct SerdeType{};
+struct SerdeType {};
 
 template <typename T>
 concept PhotonStructSerializable = requires(Packet& packet, const T& value) {
-    typename SerdeType<typename std::remove_cvref_t<T>>;
+  typename SerdeType<typename std::remove_cvref_t<T>>;
 
   // MD6sum of the message definition
-  { SerdeType<typename std::remove_cvref_t<T>>::GetSchemaHash() } -> std::convertible_to<std::string_view>;
+  {
+    SerdeType<typename std::remove_cvref_t<T>>::GetSchemaHash()
+  } -> std::convertible_to<std::string_view>;
   // JSON-encoded message chema
-  { SerdeType<typename std::remove_cvref_t<T>>::GetSchema() } -> std::convertible_to<std::string_view>;
+  {
+    SerdeType<typename std::remove_cvref_t<T>>::GetSchema()
+  } -> std::convertible_to<std::string_view>;
   // Unpack myself from a packet
-  { SerdeType<typename std::remove_cvref_t<T>>::Unpack(packet) } -> std::same_as<typename std::remove_cvref_t<T>>;
+  {
+    SerdeType<typename std::remove_cvref_t<T>>::Unpack(packet)
+  } -> std::same_as<typename std::remove_cvref_t<T>>;
   // Pack myself into a packet
-  { SerdeType<typename std::remove_cvref_t<T>>::Pack(packet, value) } -> std::same_as<void>;
+  {
+    SerdeType<typename std::remove_cvref_t<T>>::Pack(packet, value)
+  } -> std::same_as<void>;
 };
 
 /**
@@ -82,20 +91,20 @@ class Packet {
   inline size_t GetDataSize() const { return packetData.size(); }
 
   template <typename T, typename... I>
-  requires wpi::StructSerializable<T, I...>
+    requires wpi::StructSerializable<T, I...>
   inline void Pack(const T& value) {
     wpi::PackStruct(packetData, value);
     writePos += wpi::GetStructSize<T, I...>();
   }
 
   template <typename T>
-    requires (PhotonStructSerializable<T>)
-  void Pack(T value) {
+    requires(PhotonStructSerializable<T>)
+  void Pack(const T& value) {
     SerdeType<typename std::remove_cvref_t<T>>::Pack(*this, value);
   }
 
   template <typename T, typename... I>
-  requires wpi::StructSerializable<T, I...>
+    requires wpi::StructSerializable<T, I...>
   inline T Unpack() {
     T ret = wpi::UnpackStruct<T, I...>(packetData);
     readPos += wpi::GetStructSize<T, I...>();
@@ -103,9 +112,9 @@ class Packet {
   }
 
   template <typename T>
-    requires (PhotonStructSerializable<T>)
+    requires(PhotonStructSerializable<T>)
   T Unpack() {
-      return SerdeType<typename std::remove_cvref_t<T>>::Unpack(*this);
+    return SerdeType<typename std::remove_cvref_t<T>>::Unpack(*this);
   }
 
   bool operator==(const Packet& right) const;
@@ -126,7 +135,7 @@ concept arithmetic = std::integral<T> || std::floating_point<T>;
 template <typename T>
   requires(PhotonStructSerializable<T> || arithmetic<T>)
 struct SerdeType<std::vector<T>> {
-  static std::vector<T> Unpack(Packet &packet) {
+  static std::vector<T> Unpack(Packet& packet) {
     uint8_t len = packet.Unpack<uint8_t>();
     std::vector<T> ret;
     ret.reserve(len);
@@ -135,11 +144,19 @@ struct SerdeType<std::vector<T>> {
     }
     return ret;
   }
-  static void Pack(Packet &packet, const std::vector<T> &value) {
+  static void Pack(Packet& packet, const std::vector<T>& value) {
     packet.Pack<uint8_t>(value.size());
-    for (const auto &thing : value) {
+    for (const auto& thing : value) {
       packet.Pack<T>(thing);
     }
+  }
+  static constexpr std::string_view GetSchemaHash() {
+    return SerdeType<T>::GetSchemaHash();
+  }
+
+  static constexpr std::string_view GetSchema() {
+    // TODO!
+    return SerdeType<T>::GetSchema();
   }
 };
 
@@ -147,18 +164,26 @@ struct SerdeType<std::vector<T>> {
 template <typename T>
   requires(PhotonStructSerializable<T> || arithmetic<T>)
 struct SerdeType<std::optional<T>> {
-  static std::optional<T> Unpack(Packet &packet) {
+  static std::optional<T> Unpack(Packet& packet) {
     if (packet.Unpack<uint8_t>() == 1u) {
       return packet.Unpack<T>();
     } else {
       return std::nullopt;
     }
   }
-  static void Pack(Packet &packet, const std::optional<T> &value) {
+  static void Pack(Packet& packet, const std::optional<T>& value) {
     packet.Pack<uint8_t>(value.has_value());
     if (value) {
       packet.Pack<T>(*value);
     }
+  }
+  static constexpr std::string_view GetSchemaHash() {
+    return SerdeType<T>::GetSchemaHash();
+  }
+
+  static constexpr std::string_view GetSchema() {
+    // TODO!
+    return SerdeType<T>::GetSchema();
   }
 };
 

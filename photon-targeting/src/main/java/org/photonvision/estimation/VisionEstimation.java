@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.opencv.core.Point;
-import org.photonvision.targeting.PnpResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.targeting.PnpResult;
 import org.photonvision.targeting.TargetCorner;
 
 public class VisionEstimation {

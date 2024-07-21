@@ -29,11 +29,10 @@ photon::PnpResult wpi::Protobuf<photon::PnpResult>::Unpack(
     const google::protobuf::Message& msg) {
   auto m = static_cast<const photonvision::proto::ProtobufPNPResult*>(&msg);
 
-  return photon::PnpResult{wpi::UnpackProtobuf<frc::Transform3d>(m->best()),
-                           m->best_reproj_err(),
-                           wpi::UnpackProtobuf<frc::Transform3d>(m->alt()),
-                           m->alt_reproj_err(),
-                           m->ambiguity()};
+  return photon::PnpResult{photon::PnpResult_PhotonStruct{
+      wpi::UnpackProtobuf<frc::Transform3d>(m->best()),
+      wpi::UnpackProtobuf<frc::Transform3d>(m->alt()), m->best_reproj_err(),
+      m->alt_reproj_err(), m->ambiguity()}};
 }
 
 void wpi::Protobuf<photon::PnpResult>::Pack(google::protobuf::Message* msg,

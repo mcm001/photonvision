@@ -33,8 +33,10 @@ namespace photon {
  */
 class PhotonTrackedTarget : public PhotonTrackedTarget_PhotonStruct {
  public:
+  PhotonTrackedTarget() = default;
 
-  PhotonTrackedTarget(PhotonTrackedTarget_PhotonStruct data) : PhotonTrackedTarget_PhotonStruct(data) {}
+  explicit PhotonTrackedTarget(PhotonTrackedTarget_PhotonStruct&& data)
+      : PhotonTrackedTarget_PhotonStruct(data) {}
 
   /**
    * Returns the target yaw (positive-left).
@@ -83,8 +85,7 @@ class PhotonTrackedTarget : public PhotonTrackedTarget_PhotonStruct {
    * down), in no particular order, of the minimum area bounding rectangle of
    * this target
    */
-  const std::vector<photon::TargetCorner>& GetMinAreaRectCorners()
-      const {
+  const std::vector<photon::TargetCorner>& GetMinAreaRectCorners() const {
     return minAreaRectCorners;
   }
 
@@ -129,7 +130,7 @@ class PhotonTrackedTarget : public PhotonTrackedTarget_PhotonStruct {
     return altCameraToTarget;
   }
 
-  bool operator==(const PhotonTrackedTarget& other) const;
+  bool operator==(const PhotonTrackedTarget& other) const = default;
 };
 }  // namespace photon
 

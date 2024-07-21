@@ -55,9 +55,9 @@ import org.photonvision.estimation.RotTrlTransform3d;
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.estimation.VisionEstimation;
 import org.photonvision.targeting.MultiTargetPNPResult;
-import org.photonvision.targeting.PnpResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.targeting.PnpResult;
 
 /**
  * A handle for simulating {@link PhotonCamera} values. Processing simulated targets through this

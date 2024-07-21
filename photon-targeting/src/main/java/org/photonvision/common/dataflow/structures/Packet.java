@@ -143,7 +143,7 @@ public class Packet {
 
     public void encode(List<Short> data) {
         byte size = (byte) data.size();
-        if (size > Byte.MAX_VALUE) {
+        if (data.size() > Byte.MAX_VALUE) {
             throw new RuntimeException("Array too long! Got " + size);
         }
 
@@ -164,7 +164,7 @@ public class Packet {
      */
     public <T extends PhotonStructSerializable<T>> void encodeList(List<T> data) {
         byte size = (byte) data.size();
-        if (size > Byte.MAX_VALUE) {
+        if (data.size() > Byte.MAX_VALUE) {
             throw new RuntimeException("Array too long! Got " + size);
         }
 

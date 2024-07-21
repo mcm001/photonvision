@@ -34,7 +34,7 @@ namespace photon {
 /**
  * Represents a pipeline result from a PhotonCamera.
  */
-class PhotonPipelineResult {
+class PhotonPipelineResult : public PhotonPipelineResult_PhotonStruct {
  public:
   /**
    * Constructs an empty pipeline result
@@ -137,3 +137,5 @@ class PhotonPipelineResult {
   inline static bool HAS_WARNED = false;
 };
 }  // namespace photon
+
+#include "photon/serde/PhotonPipelineResultSerde.h"

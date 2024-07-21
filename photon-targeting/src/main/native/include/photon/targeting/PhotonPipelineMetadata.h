@@ -8,3 +8,5 @@ public:
     PhotonPipelineMetadata(PhotonPipelineMetadata_PhotonStruct data) : PhotonPipelineMetadata_PhotonStruct(data) {}
 };
 } // namespace photon
+
+#include "photon/serde/PhotonPipelineMetadataSerde.h"

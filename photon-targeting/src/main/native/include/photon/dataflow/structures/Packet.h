@@ -36,38 +36,17 @@ struct SerdeType{};
 
 template <typename T>
 concept PhotonStructSerializable = requires(Packet& packet, const T& value) {
-    typename Struct<typename std::remove_cvref_t<T>>;
+    typename SerdeType<typename std::remove_cvref_t<T>>;
 
   // MD6sum of the message definition
-  { Struct<typename std::remove_cvref_t<T>>::GetSchemaHash() } -> std::convertible_to<std::string_view>;
+  { SerdeType<typename std::remove_cvref_t<T>>::GetSchemaHash() } -> std::convertible_to<std::string_view>;
   // JSON-encoded message chema
-  { Struct<typename std::remove_cvref_t<T>>::GetSchema() } -> std::convertible_to<std::string_view>;
+  { SerdeType<typename std::remove_cvref_t<T>>::GetSchema() } -> std::convertible_to<std::string_view>;
   // Unpack myself from a packet
-  { Struct<typename std::remove_cvref_t<T>>::Unpack(packet) } -> std::same_as<typename std::remove_cvref_t<T>>;
+  { SerdeType<typename std::remove_cvref_t<T>>::Unpack(packet) } -> std::same_as<typename std::remove_cvref_t<T>>;
   // Pack myself into a packet
-  { Struct<typename std::remove_cvref_t<T>>::Pack(packet, value) } -> std::same_as<void>;
+  { SerdeType<typename std::remove_cvref_t<T>>::Pack(packet, value) } -> std::same_as<void>;
 };
-
-// template <typename T>
-// photon::Struct<std::optional<T>> OptionalPhotonStruct {
-//   static std::string_view GetSchemaHash();
-//   static std::string_view GetSchema();
-
-//   void Pack(photon::Packet& packet, const T& value) {
-//     packet.Pack<bool>(src.has_value());
-//     if (src) {
-//       packet.Pack<T>(*src);
-//     }
-//   }
-//   T Unpack(photon::Packet& packet) {
-//     bool present = packet.Unpack<bool>();
-//     if (present) {
-//       return packet.Unpack<T>();
-//     }
-//     return std::nullopt;
-//   }
-// };
-
 
 /**
  * A packet that holds byte-packed data to be sent over NetworkTables.
@@ -112,7 +91,7 @@ class Packet {
   template <typename T>
     requires (PhotonStructSerializable<T>)
   void Pack(T value) {
-    Struct<typename std::remove_cvref_t<T>>::Pack(*this, value);
+    SerdeType<typename std::remove_cvref_t<T>>::Pack(*this, value);
   }
 
   template <typename T, typename... I>
@@ -126,7 +105,7 @@ class Packet {
   template <typename T>
     requires (PhotonStructSerializable<T>)
   T Unpack() {
-      return Struct<typename std::remove_cvref_t<T>>::Unpack(*this);
+      return SerdeType<typename std::remove_cvref_t<T>>::Unpack(*this);
   }
 
   bool operator==(const Packet& right) const;
@@ -139,4 +118,48 @@ class Packet {
   size_t readPos = 0;
   size_t writePos = 0;
 };
+
+template <typename T>
+concept arithmetic = std::integral<T> || std::floating_point<T>;
+
+// support encoding vectors
+template <typename T>
+  requires(PhotonStructSerializable<T> || arithmetic<T>)
+struct SerdeType<std::vector<T>> {
+  static std::vector<T> Unpack(Packet &packet) {
+    uint8_t len = packet.Unpack<uint8_t>();
+    std::vector<T> ret;
+    ret.reserve(len);
+    for (size_t i = 0; i < len; i++) {
+      ret.push_back(packet.Unpack<T>());
+    }
+    return ret;
+  }
+  static void Pack(Packet &packet, const std::vector<T> &value) {
+    packet.Pack<uint8_t>(value.size());
+    for (const auto &thing : value) {
+      packet.Pack<T>(thing);
+    }
+  }
+};
+
+// support encoding optional types
+template <typename T>
+  requires(PhotonStructSerializable<T> || arithmetic<T>)
+struct SerdeType<std::optional<T>> {
+  static std::optional<T> Unpack(Packet &packet) {
+    if (packet.Unpack<uint8_t>() == 1u) {
+      return packet.Unpack<T>();
+    } else {
+      return std::nullopt;
+    }
+  }
+  static void Pack(Packet &packet, const std::optional<T> &value) {
+    packet.Pack<uint8_t>(value.has_value());
+    if (value) {
+      packet.Pack<T>(*value);
+    }
+  }
+};
+
 }  // namespace photon

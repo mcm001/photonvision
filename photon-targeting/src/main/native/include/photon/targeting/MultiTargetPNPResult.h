@@ -41,3 +41,5 @@ public:
 //   friend Packet& operator>>(Packet& packet, MultiTargetPNPResult& result);
 };
 }  // namespace photon
+
+#include "photon/serde/MultiTargetPNPResultSerde.h"

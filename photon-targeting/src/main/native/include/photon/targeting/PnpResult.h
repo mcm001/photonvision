@@ -21,7 +21,7 @@
 
 #include "photon/dataflow/structures/Packet.h"
 
-class PnpResult_PhotonStruct;
+#include "photon/struct/PnpResultStruct.h"
 
 namespace photon {
 
@@ -32,3 +32,5 @@ struct PnpResult : public PnpResult_PhotonStruct {
   bool operator==(const PnpResult& other) const;
 };
 }  // namespace photon
+
+#include "photon/serde/PnpResultSerde.h"

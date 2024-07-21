@@ -33,7 +33,7 @@
 namespace photon {
 
 template <>
-struct WPILIB_DLLEXPORT photon::SerdeType<photon::PnpResult> {
+struct WPILIB_DLLEXPORT SerdeType<PnpResult> {
   static constexpr std::string_view GetSchemaHash() {
     return "78f12b7e27611118ac1f416c4433bd86";
   }

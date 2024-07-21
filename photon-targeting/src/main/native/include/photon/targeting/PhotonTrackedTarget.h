@@ -25,8 +25,7 @@
 #include <frc/geometry/Transform3d.h>
 #include <wpi/SmallVector.h>
 
-#include "photon/dataflow/structures/Packet.h"
-#include "photon/struct/PhotonTrackedTargetSerde.h"
+#include "photon/struct/PhotonTrackedTargetStruct.h"
 
 namespace photon {
 /**
@@ -133,3 +132,5 @@ class PhotonTrackedTarget : public PhotonTrackedTarget_PhotonStruct {
   bool operator==(const PhotonTrackedTarget& other) const;
 };
 }  // namespace photon
+
+#include "photon/serde/PhotonTrackedTargetSerde.h"

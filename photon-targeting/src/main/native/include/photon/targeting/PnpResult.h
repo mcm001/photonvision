@@ -26,7 +26,7 @@
 namespace photon {
 
 struct PnpResult : public PnpResult_PhotonStruct {
-  
+
   PnpResult(PnpResult_PhotonStruct data) : PnpResult_PhotonStruct(data) {}
 
   bool operator==(const PnpResult& other) const;

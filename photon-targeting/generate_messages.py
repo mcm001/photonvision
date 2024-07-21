@@ -141,7 +141,7 @@ def get_includes(db, message: MessageType) -> str:
             else:
                 # must be a photon type.
                 includes.append(f"\"photon/targeting/{field_msg['name']}.h\"")
-        
+
         if "optional" in field and field["optional"] == True:
             includes.append("<optional>")
         if "vla" in field and field["vla"] == True:
@@ -208,7 +208,6 @@ def generate_photon_messages(output_root, template_root):
         cpp_serde_header_name = f"{message['name']}Serde.h"
         cpp_serde_source_name = f"{message['name']}Serde.cpp"
         cpp_struct_header_name = f"{message['name']}Struct.h"
-
 
         java_template = env.get_template("Message.java.jinja")
 

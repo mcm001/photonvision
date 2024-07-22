@@ -34,7 +34,7 @@ public class PhotonTrackedTarget
     public double area;
     public double skew;
     public int fiducialId;
-    public int classId;
+    public int objDetectId;
     public float objDetectConf;
     public Transform3d bestCameraToTarget;
     public Transform3d altCameraToTarget;
@@ -71,7 +71,7 @@ public class PhotonTrackedTarget
         this.area = area;
         this.skew = skew;
         this.fiducialId = fiducialId;
-        this.classId = classId;
+        this.objDetectId = classId;
         this.objDetectConf = objDetectConf;
         this.bestCameraToTarget = pose;
         this.altCameraToTarget = altPose;
@@ -107,7 +107,7 @@ public class PhotonTrackedTarget
 
     /** Get the object detection class ID number, or -1 if not set. */
     public int getDetectedObjectClassID() {
-        return classId;
+        return objDetectId;
     }
 
     /**

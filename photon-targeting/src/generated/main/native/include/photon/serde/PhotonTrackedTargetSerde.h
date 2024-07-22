@@ -41,18 +41,11 @@ struct WPILIB_DLLEXPORT SerdeType<PhotonTrackedTarget> {
   }
 
   static constexpr std::string_view GetSchema() {
-    return "{\"fields\": [{\"name\": \"yaw\", \"type\": \"float64\"}, "
-           "{\"name\": \"pitch\", \"type\": \"float64\"}, {\"name\": \"area\", "
-           "\"type\": \"float64\"}, {\"name\": \"skew\", \"type\": "
-           "\"float64\"}, {\"name\": \"fiducialId\", \"type\": \"int32\"}, "
-           "{\"name\": \"objDetectId\", \"type\": \"int32\"}, {\"name\": "
-           "\"objDetectConf\", \"type\": \"float32\"}, {\"name\": "
-           "\"bestCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": "
-           "\"altCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": "
-           "\"poseAmbiguity\", \"type\": \"float64\"}, {\"name\": "
-           "\"minAreaRectCorners\", \"type\": \"TargetCorner\", \"vla\": "
-           "true}, {\"name\": \"detectedCorners\", \"type\": \"TargetCorner\", "
-           "\"vla\": true}], \"name\": \"PhotonTrackedTarget\"}";
+    return "float64 yaw;float64 pitch;float64 area;float64 skew;int32 "
+           "fiducialId;int32 objDetectId;float32 objDetectConf;Transform3d "
+           "bestCameraToTarget;Transform3d altCameraToTarget;float64 "
+           "poseAmbiguity;TargetCorner[?] minAreaRectCorners;TargetCorner[?] "
+           "detectedCorners;";
   }
 
   static photon::PhotonTrackedTarget Unpack(photon::Packet& packet);

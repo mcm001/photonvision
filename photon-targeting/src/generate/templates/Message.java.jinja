@@ -34,7 +34,7 @@ public class {{ name }}Serde implements PacketSerde<{{name}}> {
 
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "{{ message_hash }}";
-    public static final String MESSAGE_FORMAT = "{{ message_str | tojson | replace('"','\\"') }}";
+    public static final String MESSAGE_FORMAT = "{{ message_fmt }}";
 
     @Override
     public int getMaxByteSize() {

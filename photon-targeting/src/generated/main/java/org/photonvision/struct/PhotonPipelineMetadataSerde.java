@@ -33,7 +33,7 @@ import org.photonvision.targeting.*;
 public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "2a7039527bda14d13028a1b9282d40a2";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"sequenceID\", \"type\": \"int64\"}, {\"name\": \"captureTimestampMicros\", \"type\": \"int64\"}, {\"name\": \"publishTimestampMicros\", \"type\": \"int64\"}], \"name\": \"PhotonPipelineMetadata\"}";
+    public static final String MESSAGE_FORMAT = "int64 sequenceID;int64 captureTimestampMicros;int64 publishTimestampMicros;";
 
     @Override
     public int getMaxByteSize() {

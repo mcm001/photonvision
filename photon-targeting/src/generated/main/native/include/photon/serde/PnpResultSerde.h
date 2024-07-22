@@ -39,12 +39,8 @@ struct WPILIB_DLLEXPORT SerdeType<PnpResult> {
   }
 
   static constexpr std::string_view GetSchema() {
-    return "{\"fields\": [{\"comment\": \"This is a comment\", \"name\": "
-           "\"best\", \"type\": \"Transform3d\"}, {\"name\": \"alt\", "
-           "\"type\": \"Transform3d\"}, {\"name\": \"bestReprojErr\", "
-           "\"type\": \"float64\"}, {\"name\": \"altReprojErr\", \"type\": "
-           "\"float64\"}, {\"name\": \"ambiguity\", \"type\": \"float64\"}], "
-           "\"name\": \"PnpResult\"}";
+    return "Transform3d best;Transform3d alt;float64 bestReprojErr;float64 "
+           "altReprojErr;float64 ambiguity;";
   }
 
   static photon::PnpResult Unpack(photon::Packet& packet);

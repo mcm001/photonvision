@@ -43,11 +43,8 @@ struct WPILIB_DLLEXPORT SerdeType<PhotonPipelineResult> {
   }
 
   static constexpr std::string_view GetSchema() {
-    return "{\"fields\": [{\"name\": \"metadata\", \"type\": "
-           "\"PhotonPipelineMetadata\"}, {\"name\": \"targets\", \"type\": "
-           "\"PhotonTrackedTarget\", \"vla\": true}, {\"name\": "
-           "\"multitagResult\", \"optional\": true, \"type\": "
-           "\"MultiTargetPNPResult\"}], \"name\": \"PhotonPipelineResult\"}";
+    return "PhotonPipelineMetadata metadata;PhotonTrackedTarget[?] "
+           "targets;MultiTargetPNPResult? multitagResult;";
   }
 
   static photon::PhotonPipelineResult Unpack(photon::Packet& packet);

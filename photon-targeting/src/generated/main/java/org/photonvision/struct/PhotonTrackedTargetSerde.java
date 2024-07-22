@@ -33,7 +33,7 @@ import org.photonvision.targeting.*;
 public class PhotonTrackedTargetSerde implements PacketSerde<PhotonTrackedTarget> {
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "4608fa07779c423723ef2d8f2ae01e53";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"yaw\", \"type\": \"float64\"}, {\"name\": \"pitch\", \"type\": \"float64\"}, {\"name\": \"area\", \"type\": \"float64\"}, {\"name\": \"skew\", \"type\": \"float64\"}, {\"name\": \"fiducialId\", \"type\": \"int32\"}, {\"name\": \"objDetectId\", \"type\": \"int32\"}, {\"name\": \"objDetectConf\", \"type\": \"float32\"}, {\"name\": \"bestCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": \"altCameraToTarget\", \"type\": \"Transform3d\"}, {\"name\": \"poseAmbiguity\", \"type\": \"float64\"}, {\"name\": \"minAreaRectCorners\", \"type\": \"TargetCorner\", \"vla\": true}, {\"name\": \"detectedCorners\", \"type\": \"TargetCorner\", \"vla\": true}], \"name\": \"PhotonTrackedTarget\"}";
+    public static final String MESSAGE_FORMAT = "float64 yaw;float64 pitch;float64 area;float64 skew;int32 fiducialId;int32 objDetectId;float32 objDetectConf;Transform3d bestCameraToTarget;Transform3d altCameraToTarget;float64 poseAmbiguity;TargetCorner[?] minAreaRectCorners;TargetCorner[?] detectedCorners;";
 
     @Override
     public int getMaxByteSize() {

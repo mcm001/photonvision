@@ -159,6 +159,20 @@ def parse_yaml():
     return config
 
 
+def get_struct_schema_str(message: MessageType):
+    ret = ""
+
+    for field in message["fields"]:
+        typestr = field["type"]
+        if "optional" in field and field["optional"] == True:
+            typestr += "?"
+        if "vla" in field and field["vla"] == True:
+            typestr += "[?]"
+        ret += f"{typestr} {field['name']};"
+
+    return ret
+
+
 def generate_photon_messages(output_root, template_root):
     messages = parse_yaml()
 
@@ -233,7 +247,7 @@ def generate_photon_messages(output_root, template_root):
                 template.render(
                     message,
                     type_map=extended_data_types,
-                    message_str=message,
+                    message_fmt=get_struct_schema_str(message),
                     message_hash=message_hash.hexdigest(),
                     cpp_includes=get_includes(messages, message),
                 ),

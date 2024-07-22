@@ -38,7 +38,7 @@ public class PhotonPipelineResult
     public List<PhotonTrackedTarget> targets = new ArrayList<>();
 
     // Multi-tag result
-    public Optional<MultiTargetPNPResult> multiTagResult;
+    public Optional<MultiTargetPNPResult> multitagResult;
 
     // HACK: Since we don't trust NT time sync, keep track of when we got this packet into robot code
     public long ntRecieveTimestampMicros = -1;
@@ -98,7 +98,7 @@ public class PhotonPipelineResult
             MultiTargetPNPResult result) {
         this.metadata = metadata;
         this.targets.addAll(targets);
-        this.multiTagResult = Optional.of(result);
+        this.multitagResult = Optional.of(result);
     }
 
     /**
@@ -156,7 +156,7 @@ public class PhotonPipelineResult
      * getMultiTagResult().estimatedPose.isPresent before using the pose estimate!
      */
     public Optional<MultiTargetPNPResult> getMultiTagResult() {
-        return multiTagResult;
+        return multitagResult;
     }
 
     /**
@@ -188,7 +188,7 @@ public class PhotonPipelineResult
         int result = 1;
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((targets == null) ? 0 : targets.hashCode());
-        result = prime * result + ((multiTagResult == null) ? 0 : multiTagResult.hashCode());
+        result = prime * result + ((multitagResult == null) ? 0 : multitagResult.hashCode());
         return result;
     }
 
@@ -204,9 +204,9 @@ public class PhotonPipelineResult
         if (targets == null) {
             if (other.targets != null) return false;
         } else if (!targets.equals(other.targets)) return false;
-        if (multiTagResult == null) {
-            if (other.multiTagResult != null) return false;
-        } else if (!multiTagResult.equals(other.multiTagResult)) return false;
+        if (multitagResult == null) {
+            if (other.multitagResult != null) return false;
+        } else if (!multitagResult.equals(other.multitagResult)) return false;
         return true;
     }
 
@@ -216,8 +216,8 @@ public class PhotonPipelineResult
                 + metadata
                 + ", targets="
                 + targets
-                + ", multiTagResult="
-                + multiTagResult
+                + ", multitagResult="
+                + multitagResult
                 + "]";
     }
 

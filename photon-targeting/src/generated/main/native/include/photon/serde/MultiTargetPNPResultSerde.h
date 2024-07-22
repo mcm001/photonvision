@@ -40,9 +40,7 @@ struct WPILIB_DLLEXPORT SerdeType<MultiTargetPNPResult> {
   }
 
   static constexpr std::string_view GetSchema() {
-    return "{\"fields\": [{\"name\": \"estimatedPose\", \"type\": "
-           "\"PnpResult\"}, {\"name\": \"fiducialIDsUsed\", \"type\": "
-           "\"int16\", \"vla\": true}], \"name\": \"MultiTargetPNPResult\"}";
+    return "PnpResult estimatedPose;int16[?] fiducialIDsUsed;";
   }
 
   static photon::MultiTargetPNPResult Unpack(photon::Packet& packet);

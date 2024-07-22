@@ -38,8 +38,7 @@ struct WPILIB_DLLEXPORT SerdeType<TargetCorner> {
   }
 
   static constexpr std::string_view GetSchema() {
-    return "{\"fields\": [{\"name\": \"x\", \"type\": \"float64\"}, {\"name\": "
-           "\"y\", \"type\": \"float64\"}], \"name\": \"TargetCorner\"}";
+    return "float64 x;float64 y;";
   }
 
   static photon::TargetCorner Unpack(photon::Packet& packet);

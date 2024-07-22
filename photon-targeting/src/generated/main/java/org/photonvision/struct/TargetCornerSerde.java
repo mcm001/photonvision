@@ -33,7 +33,7 @@ import org.photonvision.targeting.*;
 public class TargetCornerSerde implements PacketSerde<TargetCorner> {
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "22b1ff7551d10215af6fb3672fe4eda8";
-    public static final String MESSAGE_FORMAT = "{\"fields\": [{\"name\": \"x\", \"type\": \"float64\"}, {\"name\": \"y\", \"type\": \"float64\"}], \"name\": \"TargetCorner\"}";
+    public static final String MESSAGE_FORMAT = "float64 x;float64 y;";
 
     @Override
     public int getMaxByteSize() {

@@ -38,10 +38,8 @@ struct WPILIB_DLLEXPORT SerdeType<PhotonPipelineMetadata> {
   }
 
   static constexpr std::string_view GetSchema() {
-    return "{\"fields\": [{\"name\": \"sequenceID\", \"type\": \"int64\"}, "
-           "{\"name\": \"captureTimestampMicros\", \"type\": \"int64\"}, "
-           "{\"name\": \"publishTimestampMicros\", \"type\": \"int64\"}], "
-           "\"name\": \"PhotonPipelineMetadata\"}";
+    return "int64 sequenceID;int64 captureTimestampMicros;int64 "
+           "publishTimestampMicros;";
   }
 
   static photon::PhotonPipelineMetadata Unpack(photon::Packet& packet);

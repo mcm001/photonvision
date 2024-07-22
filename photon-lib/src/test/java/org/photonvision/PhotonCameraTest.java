@@ -40,7 +40,7 @@ class PhotonCameraTest {
                     if (packet.getSize() < 1) {
                         return;
                     }
-                    PhotonPipelineResult.serde.pack(packet, ret);
+                    PhotonPipelineResult.photonStruct.pack(packet, ret);
                 });
     }
 }

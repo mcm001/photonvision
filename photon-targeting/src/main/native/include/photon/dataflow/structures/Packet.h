@@ -94,8 +94,11 @@ class Packet {
   template <typename T, typename... I>
     requires wpi::StructSerializable<T, I...>
   inline void Pack(const T& value) {
-    wpi::PackStruct(packetData, value);
-    writePos += wpi::GetStructSize<T, I...>();
+    size_t newWritePos = writePos + wpi::GetStructSize<T, I...>();
+    printf("old %llu new %llu\n", writePos, newWritePos);
+    packetData.reserve(newWritePos);
+    wpi::PackStruct(std::span<uint8_t>{packetData.begin() + writePos, packetData.end()}, value);
+    writePos = newWritePos;
   }
 
   template <typename T>

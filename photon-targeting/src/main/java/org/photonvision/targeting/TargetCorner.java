@@ -19,8 +19,8 @@ package org.photonvision.targeting;
 
 import edu.wpi.first.util.protobuf.ProtobufSerializable;
 import java.util.Objects;
-import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.common.dataflow.structures.PacketSerde;
+import org.photonvision.struct.TargetCornerSerde;
 import org.photonvision.targeting.proto.TargetCornerProto;
 import org.photonvision.targeting.serde.PhotonStructSerializable;
 
@@ -59,32 +59,11 @@ public class TargetCorner implements ProtobufSerializable, PhotonStructSerializa
         return "(" + x + "," + y + ')';
     }
 
-    public static final class APacketSerde implements PacketSerde<TargetCorner> {
-        @Override
-        public int getMaxByteSize() {
-            return Double.BYTES * 2;
-        }
-
-        @Override
-        public void pack(Packet packet, TargetCorner corner) {
-            packet.encode(corner.x);
-            packet.encode(corner.y);
-        }
-
-        @Override
-        public TargetCorner unpack(Packet packet) {
-            return new TargetCorner(packet.decodeDouble(), packet.decodeDouble());
-        }
-    }
-
     public static final TargetCornerProto proto = new TargetCornerProto();
-
-    // TODO
-    public static final APacketSerde photonStruct = null;
+    public static final TargetCornerSerde photonStruct = new TargetCornerSerde();
 
     @Override
     public PacketSerde<TargetCorner> getSerde() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+        return photonStruct;
     }
 }

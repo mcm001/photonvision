@@ -18,14 +18,13 @@
 package org.photonvision.common.dataflow.structures;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.targeting.serde.PhotonStructSerializable;
 
 /** A packet that holds byte-packed data to be sent over NetworkTables. */
 public class Packet {
-    // Size of the packet.
-    int size;
     // Data stored in the packet.
     byte[] packetData;
     // Read and write positions.
@@ -37,7 +36,6 @@ public class Packet {
      * @param size The size of the packet buffer.
      */
     public Packet(int size) {
-        this.size = size;
         packetData = new byte[size];
     }
 
@@ -48,18 +46,21 @@ public class Packet {
      */
     public Packet(byte[] data) {
         packetData = data;
-        size = packetData.length;
     }
 
     /** Clears the packet and resets the read and write positions. */
     public void clear() {
-        packetData = new byte[size];
+        packetData = new byte[10];
         readPos = 0;
         writePos = 0;
     }
 
-    public int getSize() {
-        return size;
+    public int getNumBytesWritten() {
+        return writePos + 1;
+    }
+
+    public int getNumBytesRead() {
+        return readPos + 1;
     }
 
     /**
@@ -78,7 +79,64 @@ public class Packet {
      */
     public void setData(byte[] data) {
         packetData = data;
-        size = data.length;
+    }
+
+    // Logic taken from ArraysSupport, licensed under GPL V2
+    public static final int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
+
+    // Logic taken from ArraysSupport, licensed under GPL V2
+    private static int newLength(int oldLength, int minGrowth, int prefGrowth) {
+        // preconditions not checked because of inlining
+        // assert oldLength >= 0
+        // assert minGrowth > 0
+
+        int prefLength = oldLength + Math.max(minGrowth, prefGrowth); // might overflow
+        if (0 < prefLength && prefLength <= SOFT_MAX_ARRAY_LENGTH) {
+            return prefLength;
+        } else {
+            // put code cold in a separate method
+            return hugeLength(oldLength, minGrowth);
+        }
+    }
+
+    // Logic taken from ArraysSupport, licensed under GPL V2
+    private static int hugeLength(int oldLength, int minGrowth) {
+        int minLength = oldLength + minGrowth;
+        if (minLength < 0) { // overflow
+            throw new OutOfMemoryError(
+                    "Required array length " + oldLength + " + " + minGrowth + " is too large");
+        } else if (minLength <= SOFT_MAX_ARRAY_LENGTH) {
+            return SOFT_MAX_ARRAY_LENGTH;
+        } else {
+            return minLength;
+        }
+    }
+
+    /**
+     * Increases the capacity to ensure that it can hold at least the number of elements specified by
+     * the minimum capacity argument.
+     *
+     * <p>This logic is copied from ArrayList, which is licensed GPL V2
+     *
+     * @param minCapacity the desired minimum capacity
+     * @return
+     */
+    private void ensureCapacity(int bytesToAdd) {
+        int minCapacity = writePos + bytesToAdd;
+        int oldCapacity = packetData.length;
+        if (minCapacity <= oldCapacity) {
+            return;
+        }
+        if (oldCapacity > 0) {
+            int newCapacity =
+                    Packet.newLength(
+                            oldCapacity,
+                            minCapacity - oldCapacity, /* minimum growth */
+                            oldCapacity >> 1 /* preferred growth */);
+            packetData = Arrays.copyOf(packetData, newCapacity);
+        } else {
+            packetData = new byte[Math.max(256, minCapacity)];
+        }
     }
 
     /**
@@ -87,6 +145,7 @@ public class Packet {
      * @param src The byte to encode.
      */
     public void encode(byte src) {
+        ensureCapacity(1);
         packetData[writePos++] = src;
     }
 
@@ -96,6 +155,7 @@ public class Packet {
      * @param src The short to encode.
      */
     public void encode(short src) {
+        ensureCapacity(2);
         packetData[writePos++] = (byte) (src >>> 8);
         packetData[writePos++] = (byte) src;
     }
@@ -106,6 +166,7 @@ public class Packet {
      * @param src The integer to encode.
      */
     public void encode(int src) {
+        ensureCapacity(4);
         packetData[writePos++] = (byte) (src >>> 24);
         packetData[writePos++] = (byte) (src >>> 16);
         packetData[writePos++] = (byte) (src >>> 8);
@@ -118,6 +179,7 @@ public class Packet {
      * @param src The float to encode.
      */
     public void encode(float src) {
+        ensureCapacity(4);
         int data = Float.floatToIntBits(src);
         packetData[writePos++] = (byte) ((data >> 24) & 0xff);
         packetData[writePos++] = (byte) ((data >> 16) & 0xff);
@@ -131,6 +193,7 @@ public class Packet {
      * @param data The double to encode.
      */
     public void encode(long data) {
+        ensureCapacity(8);
         packetData[writePos++] = (byte) ((data >> 56) & 0xff);
         packetData[writePos++] = (byte) ((data >> 48) & 0xff);
         packetData[writePos++] = (byte) ((data >> 40) & 0xff);
@@ -139,6 +202,34 @@ public class Packet {
         packetData[writePos++] = (byte) ((data >> 16) & 0xff);
         packetData[writePos++] = (byte) ((data >> 8) & 0xff);
         packetData[writePos++] = (byte) (data & 0xff);
+    }
+
+    /**
+     * Encodes the double into the packet.
+     *
+     * @param src The double to encode.
+     */
+    public void encode(double src) {
+        ensureCapacity(8);
+        long data = Double.doubleToRawLongBits(src);
+        packetData[writePos++] = (byte) ((data >> 56) & 0xff);
+        packetData[writePos++] = (byte) ((data >> 48) & 0xff);
+        packetData[writePos++] = (byte) ((data >> 40) & 0xff);
+        packetData[writePos++] = (byte) ((data >> 32) & 0xff);
+        packetData[writePos++] = (byte) ((data >> 24) & 0xff);
+        packetData[writePos++] = (byte) ((data >> 16) & 0xff);
+        packetData[writePos++] = (byte) ((data >> 8) & 0xff);
+        packetData[writePos++] = (byte) (data & 0xff);
+    }
+
+    /**
+     * Encodes the boolean into the packet.
+     *
+     * @param src The boolean to encode.
+     */
+    public void encode(boolean src) {
+        ensureCapacity(1);
+        packetData[writePos++] = src ? (byte) 1 : (byte) 0;
     }
 
     public void encode(List<Short> data) {
@@ -153,6 +244,10 @@ public class Packet {
         for (var f : data) {
             encode(f);
         }
+    }
+
+    public <T extends PhotonStructSerializable<T>> void encode(T data) {
+        data.getSerde().pack(this, data);
     }
 
     /**
@@ -181,32 +276,6 @@ public class Packet {
         if (data.isPresent()) {
             data.get().getSerde().pack(this, data.get());
         }
-    }
-
-    /**
-     * Encodes the double into the packet.
-     *
-     * @param src The double to encode.
-     */
-    public void encode(double src) {
-        long data = Double.doubleToRawLongBits(src);
-        packetData[writePos++] = (byte) ((data >> 56) & 0xff);
-        packetData[writePos++] = (byte) ((data >> 48) & 0xff);
-        packetData[writePos++] = (byte) ((data >> 40) & 0xff);
-        packetData[writePos++] = (byte) ((data >> 32) & 0xff);
-        packetData[writePos++] = (byte) ((data >> 24) & 0xff);
-        packetData[writePos++] = (byte) ((data >> 16) & 0xff);
-        packetData[writePos++] = (byte) ((data >> 8) & 0xff);
-        packetData[writePos++] = (byte) (data & 0xff);
-    }
-
-    /**
-     * Encodes the boolean into the packet.
-     *
-     * @param src The boolean to encode.
-     */
-    public void encode(boolean src) {
-        packetData[writePos++] = src ? (byte) 1 : (byte) 0;
     }
 
     /**
@@ -362,5 +431,9 @@ public class Packet {
         }
 
         return ret;
+    }
+
+    public <T extends PhotonStructSerializable<T>> T decode(PhotonStructSerializable<T> t) {
+        return t.getSerde().unpack(this);
     }
 }

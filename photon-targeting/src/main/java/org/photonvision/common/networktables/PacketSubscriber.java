@@ -38,7 +38,7 @@ public class PacketSubscriber<T> implements AutoCloseable {
         packet.clear();
 
         packet.setData(subscriber.get(new byte[] {}));
-        if (packet.getSize() < 1) return defaultValue;
+        if (packet.getNumBytesWritten() < 1) return defaultValue;
 
         return serde.unpack(packet);
     }

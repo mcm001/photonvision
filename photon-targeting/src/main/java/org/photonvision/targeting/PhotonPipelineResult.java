@@ -45,7 +45,7 @@ public class PhotonPipelineResult
 
     /** Constructs an empty pipeline result. */
     public PhotonPipelineResult() {
-        this(new PhotonPipelineMetadata(), List.of(), new MultiTargetPNPResult());
+        this(new PhotonPipelineMetadata(), List.of(), Optional.empty());
     }
 
     /**
@@ -66,7 +66,7 @@ public class PhotonPipelineResult
         this(
                 new PhotonPipelineMetadata(sequenceID, captureTimestamp, publishTimestamp),
                 targets,
-                new MultiTargetPNPResult());
+                Optional.empty());
     }
 
     /**
@@ -85,7 +85,7 @@ public class PhotonPipelineResult
             long captureTimestamp,
             long publishTimestamp,
             List<PhotonTrackedTarget> targets,
-            MultiTargetPNPResult result) {
+            Optional<MultiTargetPNPResult> result) {
         this(
                 new PhotonPipelineMetadata(sequenceID, captureTimestamp, publishTimestamp),
                 targets,
@@ -95,10 +95,10 @@ public class PhotonPipelineResult
     public PhotonPipelineResult(
             PhotonPipelineMetadata metadata,
             List<PhotonTrackedTarget> targets,
-            MultiTargetPNPResult result) {
+            Optional<MultiTargetPNPResult> result) {
         this.metadata = metadata;
         this.targets.addAll(targets);
-        this.multitagResult = Optional.of(result);
+        this.multitagResult = result;
     }
 
     /**
@@ -183,12 +183,26 @@ public class PhotonPipelineResult
     }
 
     @Override
+    public String toString() {
+        return "PhotonPipelineResult [metadata="
+                + metadata
+                + ", targets="
+                + targets
+                + ", multitagResult="
+                + multitagResult
+                + ", ntRecieveTimestampMicros="
+                + ntRecieveTimestampMicros
+                + "]";
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((targets == null) ? 0 : targets.hashCode());
         result = prime * result + ((multitagResult == null) ? 0 : multitagResult.hashCode());
+        result = prime * result + (int) (ntRecieveTimestampMicros ^ (ntRecieveTimestampMicros >>> 32));
         return result;
     }
 
@@ -207,18 +221,8 @@ public class PhotonPipelineResult
         if (multitagResult == null) {
             if (other.multitagResult != null) return false;
         } else if (!multitagResult.equals(other.multitagResult)) return false;
+        if (ntRecieveTimestampMicros != other.ntRecieveTimestampMicros) return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "PhotonPipelineResult [metadata="
-                + metadata
-                + ", targets="
-                + targets
-                + ", multitagResult="
-                + multitagResult
-                + "]";
     }
 
     public static final PhotonPipelineResultSerde photonStruct = new PhotonPipelineResultSerde();
@@ -226,7 +230,6 @@ public class PhotonPipelineResult
 
     @Override
     public PacketSerde<PhotonPipelineResult> getSerde() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+        return photonStruct;
     }
 }

@@ -18,6 +18,7 @@
 package org.photonvision.targeting.proto;
 
 import edu.wpi.first.util.protobuf.Protobuf;
+import java.util.Optional;
 import org.photonvision.proto.Photon.ProtobufPhotonPipelineResult;
 import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -53,7 +54,7 @@ public class PhotonPipelineResultProto
                 msg.getCaptureTimestampMicros(),
                 msg.getNtPublishTimestampMicros(),
                 PhotonTrackedTarget.proto.unpack(msg.getTargets()),
-                MultiTargetPNPResult.proto.unpack(msg.getMultiTargetResult()));
+                Optional.of(MultiTargetPNPResult.proto.unpack(msg.getMultiTargetResult())));
     }
 
     @Override

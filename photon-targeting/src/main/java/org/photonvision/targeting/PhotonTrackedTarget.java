@@ -240,12 +240,10 @@ public class PhotonTrackedTarget
     }
 
     public static final PhotonTrackedTargetProto proto = new PhotonTrackedTargetProto();
-
     public static final PhotonTrackedTargetSerde photonStruct = new PhotonTrackedTargetSerde();
 
     @Override
     public PacketSerde<PhotonTrackedTarget> getSerde() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+        return photonStruct;
     }
 }

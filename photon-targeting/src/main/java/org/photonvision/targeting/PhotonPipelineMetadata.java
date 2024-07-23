@@ -65,11 +65,43 @@ public class PhotonPipelineMetadata implements PhotonStructSerializable<PhotonPi
         return sequenceID;
     }
 
+    @Override
+    public String toString() {
+        return "PhotonPipelineMetadata [sequenceID="
+                + sequenceID
+                + ", captureTimestampMicros="
+                + captureTimestampMicros
+                + ", publishTimestampMicros="
+                + publishTimestampMicros
+                + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (sequenceID ^ (sequenceID >>> 32));
+        result = prime * result + (int) (captureTimestampMicros ^ (captureTimestampMicros >>> 32));
+        result = prime * result + (int) (publishTimestampMicros ^ (publishTimestampMicros >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        PhotonPipelineMetadata other = (PhotonPipelineMetadata) obj;
+        if (sequenceID != other.sequenceID) return false;
+        if (captureTimestampMicros != other.captureTimestampMicros) return false;
+        if (publishTimestampMicros != other.publishTimestampMicros) return false;
+        return true;
+    }
+
     public static final PhotonPipelineMetadataSerde photonStruct = new PhotonPipelineMetadataSerde();
 
     @Override
     public PacketSerde<PhotonPipelineMetadata> getSerde() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSerde'");
+        return photonStruct;
     }
 }

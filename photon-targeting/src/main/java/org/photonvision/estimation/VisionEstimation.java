@@ -101,32 +101,32 @@ public class VisionEstimation {
         if (knownTags.size() == 1) {
             var camToTag =
                     OpenCVHelp.solvePNP_SQUARE(cameraMatrix, distCoeffs, tagModel.vertices, points);
-            if (!camToTag.isPresent) return new PnpResult();
-            var bestPose = knownTags.get(0).pose.transformBy(camToTag.best.inverse());
+            if (!camToTag.isPresent()) return new PnpResult();
+            var bestPose = knownTags.get(0).pose.transformBy(camToTag.get().best.inverse());
             var altPose = new Pose3d();
-            if (camToTag.ambiguity != 0)
-                altPose = knownTags.get(0).pose.transformBy(camToTag.alt.inverse());
+            if (camToTag.get().ambiguity != 0)
+                altPose = knownTags.get(0).pose.transformBy(camToTag.get().alt.inverse());
 
             var o = new Pose3d();
             return new PnpResult(
                     new Transform3d(o, bestPose),
                     new Transform3d(o, altPose),
-                    camToTag.ambiguity,
-                    camToTag.bestReprojErr,
-                    camToTag.altReprojErr);
+                    camToTag.get().ambiguity,
+                    camToTag.get().bestReprojErr,
+                    camToTag.get().altReprojErr);
         }
         // multi-tag pnp
         else {
             var objectTrls = new ArrayList<Translation3d>();
             for (var tag : knownTags) objectTrls.addAll(tagModel.getFieldVertices(tag.pose));
             var camToOrigin = OpenCVHelp.solvePNP_SQPNP(cameraMatrix, distCoeffs, objectTrls, points);
-            if (!camToOrigin.isPresent) return new PnpResult();
+            if (camToOrigin.isEmpty()) return new PnpResult();
             return new PnpResult(
-                    camToOrigin.best.inverse(),
-                    camToOrigin.alt.inverse(),
-                    camToOrigin.ambiguity,
-                    camToOrigin.bestReprojErr,
-                    camToOrigin.altReprojErr);
+                    camToOrigin.get().best.inverse(),
+                    camToOrigin.get().alt.inverse(),
+                    camToOrigin.get().ambiguity,
+                    camToOrigin.get().bestReprojErr,
+                    camToOrigin.get().altReprojErr);
         }
     }
 }

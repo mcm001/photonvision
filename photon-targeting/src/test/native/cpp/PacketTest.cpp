@@ -29,7 +29,7 @@ using namespace photon;
 TEST(PacketTest, PnpResult) {
   PnpResult result{PnpResult_PhotonStruct{}};
   // TODO: instead, grow the underlying array if we need to?
-  Packet p {0};
+  Packet p{0};
   p.Pack<PnpResult>(result);
 
   PnpResult b = p.Unpack<PnpResult>();

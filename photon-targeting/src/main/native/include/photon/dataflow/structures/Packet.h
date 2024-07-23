@@ -66,7 +66,7 @@ class Packet {
   /**
    * Constructs an empty packet.
    */
-  Packet(int initialCapacity = 0) : packetData(initialCapacity) {};
+  explicit Packet(int initialCapacity = 0) : packetData(initialCapacity) {}
 
   /**
    * Constructs a packet with the given data.
@@ -94,10 +94,15 @@ class Packet {
   template <typename T, typename... I>
     requires wpi::StructSerializable<T, I...>
   inline void Pack(const T& value) {
+    // as WPI struct stuff assumes constant data length - reserve at least
+    // enough new space for our new member
     size_t newWritePos = writePos + wpi::GetStructSize<T, I...>();
-    printf("old %llu new %llu\n", writePos, newWritePos);
     packetData.reserve(newWritePos);
-    wpi::PackStruct(std::span<uint8_t>{packetData.begin() + writePos, packetData.end()}, value);
+
+    wpi::PackStruct(
+        std::span<uint8_t>{packetData.begin() + writePos, packetData.end()},
+        value);
+
     writePos = newWritePos;
   }
 
@@ -110,7 +115,9 @@ class Packet {
   template <typename T, typename... I>
     requires wpi::StructSerializable<T, I...>
   inline T Unpack() {
-    T ret = wpi::UnpackStruct<T, I...>(packetData);
+    // Unpack this member, starting at readPos
+    T ret = wpi::UnpackStruct<T, I...>(
+        std::span<uint8_t>{packetData.begin() + readPos, packetData.end()});
     readPos += wpi::GetStructSize<T, I...>();
     return ret;
   }
@@ -126,7 +133,7 @@ class Packet {
 
  private:
   // Data stored in the packet
-  std::vector<uint8_t> packetData {};
+  std::vector<uint8_t> packetData{};
 
   size_t readPos = 0;
   size_t writePos = 0;

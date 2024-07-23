@@ -29,6 +29,9 @@ struct PhotonPipelineMetadata_PhotonStruct {
   int64_t sequenceID;
   int64_t captureTimestampMicros;
   int64_t publishTimestampMicros;
+
+  friend bool operator==(PhotonPipelineMetadata_PhotonStruct const&,
+                         PhotonPipelineMetadata_PhotonStruct const&) = default;
 };
 
 }  // namespace photon

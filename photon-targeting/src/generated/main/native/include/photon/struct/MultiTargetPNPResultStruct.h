@@ -32,6 +32,9 @@ namespace photon {
 struct MultiTargetPNPResult_PhotonStruct {
   photon::PnpResult estimatedPose;
   std::vector<int16_t> fiducialIDsUsed;
+
+  friend bool operator==(MultiTargetPNPResult_PhotonStruct const&,
+                         MultiTargetPNPResult_PhotonStruct const&) = default;
 };
 
 }  // namespace photon

@@ -44,6 +44,9 @@ struct PhotonTrackedTarget_PhotonStruct {
   double poseAmbiguity;
   std::vector<photon::TargetCorner> minAreaRectCorners;
   std::vector<photon::TargetCorner> detectedCorners;
+
+  friend bool operator==(PhotonTrackedTarget_PhotonStruct const&,
+                         PhotonTrackedTarget_PhotonStruct const&) = default;
 };
 
 }  // namespace photon

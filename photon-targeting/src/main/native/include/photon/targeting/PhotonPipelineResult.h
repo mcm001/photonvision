@@ -111,7 +111,8 @@ class PhotonPipelineResult : public PhotonPipelineResult_PhotonStruct {
     return targets;
   }
 
-  bool operator==(const PhotonPipelineResult& other) const = default;
+  friend bool operator==(PhotonPipelineResult const&,
+                         PhotonPipelineResult const&) = default;
 
   // Since we don't trust NT time sync, keep track of when we got this packet
   // into robot code

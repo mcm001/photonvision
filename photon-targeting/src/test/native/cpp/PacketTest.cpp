@@ -24,30 +24,31 @@
 #include "photon/targeting/PhotonTrackedTarget.h"
 #include "photon/targeting/PnpResult.h"
 
-// TEST(PacketTest, PnpResult) {
-//   photon::PnpResult result;
-//   photon::Packet p;
-//   p << result;
+using namespace photon;
 
-//   photon::PnpResult b;
-//   p >> b;
+TEST(PacketTest, PnpResult) {
+  PnpResult result{PnpResult_PhotonStruct{}};
+  Packet p;
+  p.Pack<PnpResult>(result);
 
-//   EXPECT_EQ(result, b);
-// }
+  PnpResult b = p.Unpack<PnpResult>();
+
+  EXPECT_EQ(result, b);
+}
 
 // TEST(PacketTest, MultiTargetPNPResult) {
-//   photon::MultiTargetPNPResult result;
-//   photon::Packet p;
+//   MultiTargetPNPResult result;
+//   Packet p;
 //   p << result;
 
-//   photon::MultiTargetPNPResult b;
+//   MultiTargetPNPResult b;
 //   p >> b;
 
 //   EXPECT_EQ(result, b);
 // }
 
 // TEST(PacketTest, PhotonTrackedTarget) {
-//   photon::PhotonTrackedTarget target{
+//   PhotonTrackedTarget target{
 //       3.0,
 //       4.0,
 //       9.0,
@@ -63,27 +64,27 @@
 //       {std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6}, std::pair{7, 8}},
 //       {std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6}, std::pair{7, 8}}};
 
-//   photon::Packet p;
+//   Packet p;
 //   p << target;
 
-//   photon::PhotonTrackedTarget b;
+//   PhotonTrackedTarget b;
 //   p >> b;
 
 //   EXPECT_EQ(target, b);
 // }
 
 // TEST(PacketTest, PhotonPipelineResult) {
-//   photon::PhotonPipelineResult result{0, 0_s, 1_s, {}};
-//   photon::Packet p;
+//   PhotonPipelineResult result{0, 0_s, 1_s, {}};
+//   Packet p;
 //   p << result;
 
-//   photon::PhotonPipelineResult b;
+//   PhotonPipelineResult b;
 //   p >> b;
 
 //   EXPECT_EQ(result, b);
 
-//   wpi::SmallVector<photon::PhotonTrackedTarget, 2> targets{
-//       photon::PhotonTrackedTarget{
+//   wpi::SmallVector<PhotonTrackedTarget, 2> targets{
+//       PhotonTrackedTarget{
 //           3.0,
 //           -4.0,
 //           9.0,
@@ -99,7 +100,7 @@
 //           {std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6}, std::pair{7,
 //           8}}, {std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6},
 //           std::pair{7, 8}}},
-//       photon::PhotonTrackedTarget{
+//       PhotonTrackedTarget{
 //           3.0,
 //           -4.0,
 //           9.1,
@@ -116,11 +117,11 @@
 //           8}}, {std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6},
 //            std::pair{7, 8}}}};
 
-//   photon::PhotonPipelineResult result2{0, 0_s, 1_s, targets};
-//   photon::Packet p2;
+//   PhotonPipelineResult result2{0, 0_s, 1_s, targets};
+//   Packet p2;
 //   p2 << result2;
 
-//   photon::PhotonPipelineResult b2;
+//   PhotonPipelineResult b2;
 //   p2 >> b2;
 
 //   EXPECT_EQ(result2, b2);

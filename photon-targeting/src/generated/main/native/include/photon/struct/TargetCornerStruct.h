@@ -28,6 +28,9 @@ namespace photon {
 struct TargetCorner_PhotonStruct {
   double x;
   double y;
+
+  friend bool operator==(TargetCorner_PhotonStruct const&,
+                         TargetCorner_PhotonStruct const&) = default;
 };
 
 }  // namespace photon

@@ -30,7 +30,8 @@ class MultiTargetPNPResult : public MultiTargetPNPResult_PhotonStruct {
   explicit MultiTargetPNPResult(MultiTargetPNPResult_PhotonStruct&& data)
       : MultiTargetPNPResult_PhotonStruct(data) {}
 
-  bool operator==(const MultiTargetPNPResult& other) const = default;
+  friend bool operator==(MultiTargetPNPResult const&,
+                         MultiTargetPNPResult const&) = default;
 };
 }  // namespace photon
 

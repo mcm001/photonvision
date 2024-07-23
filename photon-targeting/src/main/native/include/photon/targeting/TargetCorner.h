@@ -24,7 +24,8 @@ class TargetCorner : public TargetCorner_PhotonStruct {
  public:
   explicit TargetCorner(TargetCorner_PhotonStruct&& data)
       : TargetCorner_PhotonStruct(data) {}
-  bool operator==(const TargetCorner& other) const = default;
+
+  friend bool operator==(TargetCorner const&, TargetCorner const&) = default;
 };
 }  // namespace photon
 

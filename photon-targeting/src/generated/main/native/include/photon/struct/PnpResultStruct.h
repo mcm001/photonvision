@@ -33,6 +33,9 @@ struct PnpResult_PhotonStruct {
   double bestReprojErr;
   double altReprojErr;
   double ambiguity;
+
+  friend bool operator==(PnpResult_PhotonStruct const&,
+                         PnpResult_PhotonStruct const&) = default;
 };
 
 }  // namespace photon

@@ -130,7 +130,8 @@ class PhotonTrackedTarget : public PhotonTrackedTarget_PhotonStruct {
     return altCameraToTarget;
   }
 
-  bool operator==(const PhotonTrackedTarget& other) const = default;
+  friend bool operator==(PhotonTrackedTarget const&,
+                         PhotonTrackedTarget const&) = default;
 };
 }  // namespace photon
 

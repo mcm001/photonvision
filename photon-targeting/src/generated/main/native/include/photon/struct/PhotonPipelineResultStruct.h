@@ -36,6 +36,9 @@ struct PhotonPipelineResult_PhotonStruct {
   photon::PhotonPipelineMetadata metadata;
   std::vector<photon::PhotonTrackedTarget> targets;
   std::optional<photon::MultiTargetPNPResult> multitagResult;
+
+  friend bool operator==(PhotonPipelineResult_PhotonStruct const&,
+                         PhotonPipelineResult_PhotonStruct const&) = default;
 };
 
 }  // namespace photon

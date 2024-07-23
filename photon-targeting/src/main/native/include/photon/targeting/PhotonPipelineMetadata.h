@@ -25,7 +25,8 @@ class PhotonPipelineMetadata : public PhotonPipelineMetadata_PhotonStruct {
   explicit PhotonPipelineMetadata(PhotonPipelineMetadata_PhotonStruct&& data)
       : PhotonPipelineMetadata_PhotonStruct(data) {}
 
-  bool operator==(const PhotonPipelineMetadata& other) const = default;
+  friend bool operator==(PhotonPipelineMetadata const&,
+                         PhotonPipelineMetadata const&) = default;
 };
 }  // namespace photon
 

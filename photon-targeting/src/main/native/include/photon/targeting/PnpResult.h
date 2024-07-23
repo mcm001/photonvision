@@ -28,8 +28,9 @@ struct PnpResult : public PnpResult_PhotonStruct {
   explicit PnpResult(PnpResult_PhotonStruct&& data)
       : PnpResult_PhotonStruct(data) {}
 
-  bool operator==(const PnpResult& other) const = default;
+  friend bool operator==(PnpResult const&, PnpResult const&) = default;
 };
+
 }  // namespace photon
 
 #include "photon/serde/PnpResultSerde.h"

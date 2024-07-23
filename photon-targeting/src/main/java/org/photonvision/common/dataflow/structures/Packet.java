@@ -50,7 +50,7 @@ public class Packet {
 
     /** Clears the packet and resets the read and write positions. */
     public void clear() {
-        packetData = new byte[10];
+        packetData = new byte[packetData.length];
         readPos = 0;
         writePos = 0;
     }

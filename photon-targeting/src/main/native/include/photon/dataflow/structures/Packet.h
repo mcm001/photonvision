@@ -66,7 +66,7 @@ class Packet {
   /**
    * Constructs an empty packet.
    */
-  Packet() = default;
+  Packet(int initialCapacity = 0) : packetData(initialCapacity) {};
 
   /**
    * Constructs a packet with the given data.
@@ -123,7 +123,7 @@ class Packet {
 
  private:
   // Data stored in the packet
-  std::vector<uint8_t> packetData;
+  std::vector<uint8_t> packetData {};
 
   size_t readPos = 0;
   size_t writePos = 0;

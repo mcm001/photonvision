@@ -28,7 +28,7 @@ using namespace photon;
 
 TEST(PacketTest, PnpResult) {
   PnpResult result{PnpResult_PhotonStruct{}};
-  Packet p;
+  Packet p {1000};
   p.Pack<PnpResult>(result);
 
   PnpResult b = p.Unpack<PnpResult>();

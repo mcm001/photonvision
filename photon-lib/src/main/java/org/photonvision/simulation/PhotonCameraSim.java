@@ -427,7 +427,7 @@ public class PhotonCameraSim implements AutoCloseable {
                                 prop.getIntrinsics(),
                                 prop.getDistCoeffs(),
                                 tgt.getModel().vertices,
-                                noisyTargetCorners);
+                                noisyTargetCorners).get();
             }
 
             detectableTgts.add(
@@ -519,7 +519,7 @@ public class PhotonCameraSim implements AutoCloseable {
         } else videoSimProcessed.setConnectionStrategy(ConnectionStrategy.kForceClose);
 
         // calculate multitag results
-        var multitagResult = new MultiTargetPNPResult();
+        Optional<MultiTargetPNPResult> multitagResult = Optional.empty();
         // TODO: Implement ATFL subscribing in backend
         // var tagLayout = cam.getAprilTagFieldLayout();
         var visibleLayoutTags = VisionEstimation.getVisibleLayoutTags(detectableTgts, tagLayout);
@@ -533,7 +533,10 @@ public class PhotonCameraSim implements AutoCloseable {
                             detectableTgts,
                             tagLayout,
                             TargetModel.kAprilTag36h11);
-            multitagResult = new MultiTargetPNPResult(pnpResult, usedIDs);
+
+            if (pnpResult.isPresent()) {
+                multitagResult = Optional.of(new MultiTargetPNPResult(pnpResult.get(), usedIDs));
+            }
         }
 
         // sort target order

@@ -24,6 +24,7 @@ import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.vision.frame.Frame;
 import org.photonvision.vision.opencv.Releasable;
 import org.photonvision.vision.target.TrackedTarget;
+import java.util.Optional;
 
 public class CVPipelineResult implements Releasable {
     public final long sequenceID;
@@ -32,7 +33,7 @@ public class CVPipelineResult implements Releasable {
     public final double fps;
     public final List<TrackedTarget> targets;
     public final Frame inputAndOutputFrame;
-    public MultiTargetPNPResult multiTagResult;
+    public Optional<MultiTargetPNPResult> multiTagResult;
     public final List<String> objectDetectionClassNames;
 
     public CVPipelineResult(
@@ -46,7 +47,7 @@ public class CVPipelineResult implements Releasable {
                 processingNanos,
                 fps,
                 targets,
-                new MultiTargetPNPResult(),
+                Optional.empty(),
                 inputFrame,
                 List.of());
     }
@@ -63,7 +64,7 @@ public class CVPipelineResult implements Releasable {
                 processingNanos,
                 fps,
                 targets,
-                new MultiTargetPNPResult(),
+                Optional.empty(),
                 inputFrame,
                 classNames);
     }
@@ -73,7 +74,7 @@ public class CVPipelineResult implements Releasable {
             double processingNanos,
             double fps,
             List<TrackedTarget> targets,
-            MultiTargetPNPResult multiTagResult,
+            Optional<MultiTargetPNPResult> multiTagResult,
             Frame inputFrame) {
         this(sequenceID, processingNanos, fps, targets, multiTagResult, inputFrame, List.of());
     }
@@ -83,7 +84,7 @@ public class CVPipelineResult implements Releasable {
             double processingNanos,
             double fps,
             List<TrackedTarget> targets,
-            MultiTargetPNPResult multiTagResult,
+            Optional<MultiTargetPNPResult> multiTagResult,
             Frame inputFrame,
             List<String> classNames) {
         this.sequenceID = sequenceID;
@@ -101,7 +102,7 @@ public class CVPipelineResult implements Releasable {
             double processingNanos,
             double fps,
             List<TrackedTarget> targets,
-            MultiTargetPNPResult multiTagResult) {
+            Optional<MultiTargetPNPResult> multiTagResult) {
         this(sequenceID, processingNanos, fps, targets, multiTagResult, null, List.of());
     }
 

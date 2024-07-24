@@ -17,6 +17,7 @@
 
 package org.photonvision.estimation;
 
+import java.util.Optional;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
@@ -66,7 +67,7 @@ public class VisionEstimation {
      * @return The transformation that maps the field origin to the camera pose. Ensure the {@link
      *     PnpResult} are present before utilizing them.
      */
-    public static PnpResult estimateCamPosePNP(
+    public static Optional<PnpResult> estimateCamPosePNP(
             Matrix<N3, N3> cameraMatrix,
             Matrix<N8, N1> distCoeffs,
             List<PhotonTrackedTarget> visTags,
@@ -76,7 +77,7 @@ public class VisionEstimation {
                 || visTags == null
                 || tagLayout.getTags().isEmpty()
                 || visTags.isEmpty()) {
-            return new PnpResult();
+            return Optional.empty();
         }
 
         var corners = new ArrayList<TargetCorner>();
@@ -93,7 +94,7 @@ public class VisionEstimation {
                             });
         }
         if (knownTags.isEmpty() || corners.isEmpty() || corners.size() % 4 != 0) {
-            return new PnpResult();
+            return Optional.empty();
         }
         Point[] points = OpenCVHelp.cornersToPoints(corners);
 
@@ -101,32 +102,32 @@ public class VisionEstimation {
         if (knownTags.size() == 1) {
             var camToTag =
                     OpenCVHelp.solvePNP_SQUARE(cameraMatrix, distCoeffs, tagModel.vertices, points);
-            if (!camToTag.isPresent()) return new PnpResult();
+            if (!camToTag.isPresent()) return Optional.empty();
             var bestPose = knownTags.get(0).pose.transformBy(camToTag.get().best.inverse());
             var altPose = new Pose3d();
             if (camToTag.get().ambiguity != 0)
                 altPose = knownTags.get(0).pose.transformBy(camToTag.get().alt.inverse());
 
             var o = new Pose3d();
-            return new PnpResult(
+            return Optional.of(new PnpResult(
                     new Transform3d(o, bestPose),
                     new Transform3d(o, altPose),
                     camToTag.get().ambiguity,
                     camToTag.get().bestReprojErr,
-                    camToTag.get().altReprojErr);
+                    camToTag.get().altReprojErr));
         }
         // multi-tag pnp
         else {
             var objectTrls = new ArrayList<Translation3d>();
             for (var tag : knownTags) objectTrls.addAll(tagModel.getFieldVertices(tag.pose));
             var camToOrigin = OpenCVHelp.solvePNP_SQPNP(cameraMatrix, distCoeffs, objectTrls, points);
-            if (camToOrigin.isEmpty()) return new PnpResult();
-            return new PnpResult(
+            if (camToOrigin.isEmpty()) return Optional.empty();
+            return Optional.of(new PnpResult(
                     camToOrigin.get().best.inverse(),
                     camToOrigin.get().alt.inverse(),
                     camToOrigin.get().ambiguity,
                     camToOrigin.get().bestReprojErr,
-                    camToOrigin.get().altReprojErr);
+                    camToOrigin.get().altReprojErr));
         }
     }
 }

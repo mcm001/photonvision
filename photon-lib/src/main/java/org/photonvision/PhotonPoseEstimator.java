@@ -451,11 +451,11 @@ public class PhotonPoseEstimator {
                 VisionEstimation.estimateCamPosePNP(
                         cameraMatrixOpt.get(), distCoeffsOpt.get(), result.getTargets(), fieldTags, tagModel);
         // try fallback strategy if solvePNP fails for some reason
-        if (!pnpResult.isPresent)
+        if (!pnpResult.isPresent())
             return update(result, cameraMatrixOpt, distCoeffsOpt, this.multiTagFallbackStrategy);
         var best =
                 new Pose3d()
-                        .plus(pnpResult.best) // field-to-camera
+                        .plus(pnpResult.get().best) // field-to-camera
                         .plus(robotToCamera.inverse()); // field-to-robot
 
         return Optional.of(

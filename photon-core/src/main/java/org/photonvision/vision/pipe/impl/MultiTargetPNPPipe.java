@@ -20,6 +20,9 @@ package org.photonvision.vision.pipe.impl;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.cli.Option;
 import org.photonvision.common.logging.LogGroup;
 import org.photonvision.common.logging.Logger;
 import org.photonvision.estimation.TargetModel;
@@ -32,13 +35,13 @@ import org.photonvision.vision.target.TrackedTarget;
 /** Estimate the camera pose given multiple Apriltag observations */
 public class MultiTargetPNPPipe
         extends CVPipe<
-                List<TrackedTarget>, MultiTargetPNPResult, MultiTargetPNPPipe.MultiTargetPNPPipeParams> {
+                List<TrackedTarget>, Optional<MultiTargetPNPResult>, MultiTargetPNPPipe.MultiTargetPNPPipeParams> {
     private static final Logger logger = new Logger(MultiTargetPNPPipe.class, LogGroup.VisionModule);
 
     private boolean hasWarned = false;
 
     @Override
-    protected MultiTargetPNPResult process(List<TrackedTarget> targetList) {
+    protected Optional<MultiTargetPNPResult> process(List<TrackedTarget> targetList) {
         if (params == null
                 || params.cameraCoefficients == null
                 || params.cameraCoefficients.getCameraIntrinsicsMat() == null
@@ -48,13 +51,13 @@ public class MultiTargetPNPPipe
                         "Cannot perform solvePNP an uncalibrated camera! Please calibrate this resolution...");
                 hasWarned = true;
             }
-            return new MultiTargetPNPResult();
+            return Optional.empty();
         }
 
         return calculateCameraInField(targetList);
     }
 
-    private MultiTargetPNPResult calculateCameraInField(List<TrackedTarget> targetList) {
+    private Optional<MultiTargetPNPResult> calculateCameraInField(List<TrackedTarget> targetList) {
         // Find tag IDs that exist in the tag layout
         var tagIDsUsed = new ArrayList<Short>();
         for (var target : targetList) {
@@ -64,7 +67,7 @@ public class MultiTargetPNPPipe
 
         // Only run with multiple targets
         if (tagIDsUsed.size() < 2) {
-            return new MultiTargetPNPResult();
+            return Optional.empty();
         }
 
         var estimatedPose =
@@ -75,7 +78,11 @@ public class MultiTargetPNPPipe
                         params.atfl,
                         params.targetModel);
 
-        return new MultiTargetPNPResult(estimatedPose, tagIDsUsed);
+        if (estimatedPose.isPresent()) {
+            return Optional.of(new MultiTargetPNPResult(estimatedPose.get(), tagIDsUsed));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public static class MultiTargetPNPPipeParams {

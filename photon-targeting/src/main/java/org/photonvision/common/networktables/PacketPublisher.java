@@ -33,6 +33,7 @@ public class PacketPublisher<T> implements AutoCloseable {
     public void set(T value, int byteSize) {
         var packet = new Packet(byteSize);
         photonStruct.pack(packet, value);
+        // todo: trim to only the bytes we need to send
         publisher.set(packet.getData());
     }
 

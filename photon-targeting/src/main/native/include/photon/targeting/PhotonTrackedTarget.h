@@ -32,11 +32,16 @@ namespace photon {
  * Represents a tracked target within a pipeline.
  */
 class PhotonTrackedTarget : public PhotonTrackedTarget_PhotonStruct {
+  using Base = PhotonTrackedTarget_PhotonStruct;
+
  public:
   PhotonTrackedTarget() = default;
 
-  explicit PhotonTrackedTarget(PhotonTrackedTarget_PhotonStruct&& data)
-      : PhotonTrackedTarget_PhotonStruct(data) {}
+  explicit PhotonTrackedTarget(Base&& data) : Base(data) {}
+
+  template <typename... Args>
+  explicit PhotonTrackedTarget(Args&&... args)
+      : Base(std::forward<Args>(args)...) {}
 
   /**
    * Returns the target yaw (positive-left).

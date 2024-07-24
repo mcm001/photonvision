@@ -19,6 +19,7 @@
 
 #include <span>
 #include <string>
+#include <utility>
 
 #include <frc/Errors.h>
 #include <units/time.h>
@@ -34,9 +35,14 @@ namespace photon {
  * Represents a pipeline result from a PhotonCamera.
  */
 class PhotonPipelineResult : public PhotonPipelineResult_PhotonStruct {
+  using Base = PhotonPipelineResult_PhotonStruct;
+
  public:
-  explicit PhotonPipelineResult(PhotonPipelineResult_PhotonStruct&& data)
-      : PhotonPipelineResult_PhotonStruct(data) {}
+  explicit PhotonPipelineResult(Base&& data) : Base(data) {}
+
+  template <typename... Args>
+  explicit PhotonPipelineResult(Args&&... args)
+      : Base(std::forward<Args>(args)...) {}
 
   /**
    * Returns the best target in this pipeline result. If there are no targets,

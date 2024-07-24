@@ -64,7 +64,7 @@ public class PhotonPipelineResult
             long publishTimestamp,
             List<PhotonTrackedTarget> targets) {
         this(
-                new PhotonPipelineMetadata(sequenceID, captureTimestamp, publishTimestamp),
+                new PhotonPipelineMetadata(captureTimestamp, publishTimestamp, sequenceID),
                 targets,
                 Optional.empty());
     }
@@ -87,7 +87,7 @@ public class PhotonPipelineResult
             List<PhotonTrackedTarget> targets,
             Optional<MultiTargetPNPResult> result) {
         this(
-                new PhotonPipelineMetadata(sequenceID, captureTimestamp, publishTimestamp),
+                new PhotonPipelineMetadata(captureTimestamp, publishTimestamp, sequenceID),
                 targets,
                 result);
     }

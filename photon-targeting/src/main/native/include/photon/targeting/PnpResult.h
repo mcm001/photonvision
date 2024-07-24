@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include <frc/geometry/Transform3d.h>
 
 #include "photon/dataflow/structures/Packet.h"
@@ -25,8 +27,12 @@
 namespace photon {
 
 struct PnpResult : public PnpResult_PhotonStruct {
-  explicit PnpResult(PnpResult_PhotonStruct&& data)
-      : PnpResult_PhotonStruct(data) {}
+  using Base = PnpResult_PhotonStruct;
+
+  explicit PnpResult(Base&& data) : Base(data) {}
+
+  template <typename... Args>
+  explicit PnpResult(Args&&... args) : Base(std::forward<Args>(args)...) {}
 
   friend bool operator==(PnpResult const&, PnpResult const&) = default;
 };

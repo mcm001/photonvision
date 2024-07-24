@@ -17,13 +17,20 @@
 
 #pragma once
 
+#include <utility>
+
 #include "photon/struct/PhotonPipelineMetadataStruct.h"
 
 namespace photon {
 class PhotonPipelineMetadata : public PhotonPipelineMetadata_PhotonStruct {
+  using Base = PhotonPipelineMetadata_PhotonStruct;
+
  public:
-  explicit PhotonPipelineMetadata(PhotonPipelineMetadata_PhotonStruct&& data)
-      : PhotonPipelineMetadata_PhotonStruct(data) {}
+  explicit PhotonPipelineMetadata(Base&& data) : Base(data) {}
+
+  template <typename... Args>
+  explicit PhotonPipelineMetadata(Args&&... args)
+      : Base(std::forward<Args>(args)...) {}
 
   friend bool operator==(PhotonPipelineMetadata const&,
                          PhotonPipelineMetadata const&) = default;

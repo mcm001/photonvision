@@ -15,15 +15,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <utility>
+
 #include "photon/struct/TargetCornerStruct.h"
 
 #pragma once
 
 namespace photon {
 class TargetCorner : public TargetCorner_PhotonStruct {
+  using Base = TargetCorner_PhotonStruct;
+
  public:
-  explicit TargetCorner(TargetCorner_PhotonStruct&& data)
-      : TargetCorner_PhotonStruct(data) {}
+  explicit TargetCorner(Base&& data) : Base(data) {}
+
+  template <typename... Args>
+  explicit TargetCorner(Args&&... args) : Base(std::forward<Args>(args)...) {}
 
   friend bool operator==(TargetCorner const&, TargetCorner const&) = default;
 };

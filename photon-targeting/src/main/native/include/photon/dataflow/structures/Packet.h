@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <bit>
 #include <cstring>
+#include <iostream>
 #include <optional>
 #include <span>
 #include <string>
@@ -97,7 +98,7 @@ class Packet {
     // as WPI struct stuff assumes constant data length - reserve at least
     // enough new space for our new member
     size_t newWritePos = writePos + wpi::GetStructSize<T, I...>();
-    packetData.reserve(newWritePos);
+    packetData.resize(newWritePos);
 
     wpi::PackStruct(
         std::span<uint8_t>{packetData.begin() + writePos, packetData.end()},
@@ -108,7 +109,7 @@ class Packet {
 
   template <typename T>
     requires(PhotonStructSerializable<T>)
-  void Pack(const T& value) {
+  inline void Pack(const T& value) {
     SerdeType<typename std::remove_cvref_t<T>>::Pack(*this, value);
   }
 
@@ -124,7 +125,7 @@ class Packet {
 
   template <typename T>
     requires(PhotonStructSerializable<T>)
-  T Unpack() {
+  inline T Unpack() {
     return SerdeType<typename std::remove_cvref_t<T>>::Unpack(*this);
   }
 

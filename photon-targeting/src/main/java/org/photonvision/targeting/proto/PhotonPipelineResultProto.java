@@ -54,7 +54,9 @@ public class PhotonPipelineResultProto
                 msg.getCaptureTimestampMicros(),
                 msg.getNtPublishTimestampMicros(),
                 PhotonTrackedTarget.proto.unpack(msg.getTargets()),
-                Optional.of(MultiTargetPNPResult.proto.unpack(msg.getMultiTargetResult())));
+                msg.hasMultiTargetResult()
+                        ? Optional.of(MultiTargetPNPResult.proto.unpack(msg.getMultiTargetResult()))
+                        : Optional.empty());
     }
 
     @Override

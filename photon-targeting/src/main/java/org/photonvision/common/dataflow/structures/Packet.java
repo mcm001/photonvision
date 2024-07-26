@@ -124,7 +124,7 @@ public class Packet {
         packetData[writePos++] = (byte) (data & 0xff);
     }
 
-    public void encode(long data) { 
+    public void encode(long data) {
         packetData[writePos++] = (byte) ((data >> 56) & 0xff);
         packetData[writePos++] = (byte) ((data >> 48) & 0xff);
         packetData[writePos++] = (byte) ((data >> 40) & 0xff);

@@ -1,3 +1,7 @@
+plugins {
+    id 'edu.wpi.first.GradleJni' version '1.1.0'
+}
+
 import java.nio.file.Path
 
 ext {
@@ -54,6 +58,27 @@ model {
             nativeUtils.useRequiredLibrary(it, "apriltag_shared")
             nativeUtils.useRequiredLibrary(it, "opencv_shared")
         }
+        // photonlibJNI(JniNativeLibrarySpec) {
+        //   enableCheckTask true
+        //   javaCompileTasks << compileJava
+        //   jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.roborio)
+        //   // Leave these for future proofing
+        //   jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm32)
+        //   jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm64)
+        //   sources {
+        //     cpp {
+        //       source {
+        //         srcDirs 'src/main/driver/cpp'
+        //         include '**/*.cpp'
+        //       }
+        //       exportedHeaders {
+        //         srcDirs 'src/main/driver/include'
+        //       }
+        //     }
+        //   }
+
+        //   nativeUtils.useRequiredLibrary(it, "driver_shared")
+        // }
     }
     testSuites {
         "${nativeName}Test"(GoogleTestTestSuiteSpec) {

@@ -1,5 +1,4 @@
 plugins {
-    id 'edu.wpi.first.GradleJni' version '1.1.0'
 }
 
 import java.nio.file.Path
@@ -14,6 +13,7 @@ ext {
 apply plugin: 'cpp'
 apply plugin: 'google-test-test-suite'
 apply plugin: 'edu.wpi.first.NativeUtils'
+apply plugin: 'edu.wpi.first.GradleJni'
 
 apply from: "${rootDir}/shared/config.gradle"
 apply from: "${rootDir}/shared/javacommon.gradle"
@@ -58,27 +58,30 @@ model {
             nativeUtils.useRequiredLibrary(it, "apriltag_shared")
             nativeUtils.useRequiredLibrary(it, "opencv_shared")
         }
-        // photonlibJNI(JniNativeLibrarySpec) {
-        //   enableCheckTask true
-        //   javaCompileTasks << compileJava
-        //   jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.roborio)
-        //   // Leave these for future proofing
-        //   jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm32)
-        //   jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm64)
-        //   sources {
-        //     cpp {
-        //       source {
-        //         srcDirs 'src/main/driver/cpp'
-        //         include '**/*.cpp'
-        //       }
-        //       exportedHeaders {
-        //         srcDirs 'src/main/driver/include'
-        //       }
-        //     }
-        //   }
+        "${nativeName}Jni"(JniNativeLibrarySpec) {
+            // enableCheckTask true
+            // javaCompileTasks << compileJava
+            // jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.roborio)
+            // // Leave these for future proofing
+            // jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm32)
+            // jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm64)
+            sources {
+                cpp {
+                    source {
+                        srcDirs 'src/main/driver/cpp'
+                        include '**/*.cpp'
+                    }
+                    exportedHeaders {
+                        srcDirs 'src/main/driver/include'
+                    }
+                }
+            }
 
-        //   nativeUtils.useRequiredLibrary(it, "driver_shared")
-        // }
+            nativeUtils.useRequiredLibrary(it, "wpilib_static")
+            binaries.all {
+                lib project: ':photon-lib', library: nativeName, linkage: 'static'
+            }
+        }
     }
     testSuites {
         "${nativeName}Test"(GoogleTestTestSuiteSpec) {

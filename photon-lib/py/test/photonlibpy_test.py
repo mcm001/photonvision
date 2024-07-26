@@ -45,20 +45,20 @@ def test_byteParse5():
 
 
 def test_byteParse6():
-    res = setupCommon(rawBytes6)
+    setupCommon(rawBytes6)
     # assert len(res.getTargets()) >= 0
 
 
 def test_byteParse7():
-    res = setupCommon(rawBytes7)
+    setupCommon(rawBytes7)
     # assert len(res.getTargets()) >= 0
 
 
 def test_byteParse8():
-    res = setupCommon(rawBytes8)
+    setupCommon(rawBytes8)
     # assert len(res.getTargets()) >= 0
 
 
 def test_byteParse9():
-    res = setupCommon(rawBytes9)
+    setupCommon(rawBytes9)
     # assert len(res.getTargets()) >= 0

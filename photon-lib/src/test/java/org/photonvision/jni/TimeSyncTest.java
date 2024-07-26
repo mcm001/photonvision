@@ -40,7 +40,7 @@ public class TimeSyncTest {
         HAL.initialize(500, 0);
 
         System.err.println(TimeSyncJNI.start());
-
-        Thread.sleep(30000);
+        Thread.sleep(3000);
+        System.err.println(TimeSyncJNI.stop());
     }
 }

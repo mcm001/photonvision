@@ -22,18 +22,17 @@
  * SOFTWARE.
  */
 
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
 #include <thread>
 
 #include <frc/Notifier.h>
+#include <frc/RobotController.h>
+#include <wpi/struct/Struct.h>
 
 #include "jni.h"
 // #include "org_photonvision_jni_TimeSyncJNI.h"
-
-#include <wpi/struct/Struct.h>
-#include <frc/RobotController.h>
-
-#include <arpa/inet.h>
-#include <sys/socket.h>
 
 extern "C" {
 
@@ -55,8 +54,8 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved) {}
 static int sock;
 static struct sockaddr_in broadcast_addr;
 
-static void do_ping(void) { 
-  fmt::println("Hello!"); 
+static void do_ping(void) {
+  fmt::println("Hello!");
 
   if (!sock) {
     fmt::println("sock invalid??");
@@ -69,9 +68,9 @@ static void do_ping(void) {
     data.resize(wpi::GetStructSize<decltype(now)>());
     wpi::PackStruct(data, now);
 
-    int result =
-      sendto(sock, reinterpret_cast<const char*>(data.data()), data.size(), 0,
-             reinterpret_cast<sockaddr*>(&broadcast_addr), sizeof(broadcast_addr));
+    int result = sendto(
+        sock, reinterpret_cast<const char*>(data.data()), data.size(), 0,
+        reinterpret_cast<sockaddr*>(&broadcast_addr), sizeof(broadcast_addr));
     if (result) {
       fmt::println("sendto: {}", result);
     }
@@ -118,6 +117,21 @@ Java_org_photonvision_jni_TimeSyncJNI_start
   broadcast_addr.sin_port = htons(PORT);
 
   notifier.StartPeriodic(1_s);
+
+  return 0;
+}
+
+/*
+ * Class:     org_photonvision_jni_TimeSyncJNI
+ * Method:    stop
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL
+Java_org_photonvision_jni_TimeSyncJNI_stop
+  (JNIEnv*, jclass)
+{
+  notifier.Stop();
+  close(sock);
 
   return 0;
 }

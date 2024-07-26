@@ -69,11 +69,6 @@ public class TimeSyncJNI {
         libraryLoaded = true;
     }
 
-    /**
-     * Tells the driver to initialize. This is a demo of a native JNI method from the driver.
-     *
-     * @return the int returned by the driver
-     * @see "VendorJNI.cpp"
-     */
     public static native int start();
+    public static native int stop();
 }

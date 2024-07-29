@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 
 from photonlibpy.multiTargetPNPResult import MultiTargetPNPResult
-from photonlibpy.packet import Packet
 from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
 from targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
+
 
 @dataclass
 class PhotonPipelineResult:
@@ -20,7 +20,6 @@ class PhotonPipelineResult:
 
     targets: list[PhotonTrackedTarget] = field(default_factory=list)
     multiTagResult: MultiTargetPNPResult = field(default_factory=MultiTargetPNPResult)
-
 
     def getLatencyMillis(self) -> float:
         return (self.publishTimestampMicros - self.captureTimestampMicros) / 1e3

@@ -4,12 +4,12 @@ from photonlibpy.packet import Packet
 from targeting.TargetCornerSerde import TargetCornerSerde
 from targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
 
+
 @dataclass
 class TargetCorner:
     x: float
     y: float
 
-    
     photonStruct = TargetCornerSerde()
 
 

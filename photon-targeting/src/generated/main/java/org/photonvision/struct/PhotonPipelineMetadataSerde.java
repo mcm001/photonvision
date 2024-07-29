@@ -31,7 +31,6 @@ import org.photonvision.targeting.*;
  * Auto-generated serialization/deserialization helper for PhotonPipelineMetadata
  */
 public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMetadata> {
-
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "2a7039527bda14d13028a1b9282d40a2";
     public static final String MESSAGE_FORMAT = "int64 sequenceID;int64 captureTimestampMicros;int64 publishTimestampMicros;";
@@ -46,10 +45,10 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
     public void pack(Packet packet, PhotonPipelineMetadata value) {
         // field sequenceID is of intrinsic type int64
         packet.encode((long) value.sequenceID);
-    
+
         // field captureTimestampMicros is of intrinsic type int64
         packet.encode((long) value.captureTimestampMicros);
-    
+
         // field publishTimestampMicros is of intrinsic type int64
         packet.encode((long) value.publishTimestampMicros);
     }
@@ -60,10 +59,10 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
 
         // sequenceID is of intrinsic type int64
         ret.sequenceID = packet.decodeLong();
-    
+
         // captureTimestampMicros is of intrinsic type int64
         ret.captureTimestampMicros = packet.decodeLong();
-    
+
         // publishTimestampMicros is of intrinsic type int64
         ret.publishTimestampMicros = packet.decodeLong();
 

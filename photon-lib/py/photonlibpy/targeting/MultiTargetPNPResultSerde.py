@@ -10,7 +10,7 @@ class MultiTargetPNPResultSerde:
     MESSAGE_FORMAT = "PnpResult estimatedPose;int16[?] fiducialIDsUsed;"
 
     @staticmethod
-    def unpack(packet: Packet) -> Packet:
+    def unpack(packet: Packet) -> MultiTargetPNPResult:
         ret = MultiTargetPNPResult()
 
         # estimatedPose is of non-intrinsic type PnpResult

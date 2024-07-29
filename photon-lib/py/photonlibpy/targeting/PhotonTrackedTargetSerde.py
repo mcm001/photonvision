@@ -10,7 +10,7 @@ class PhotonTrackedTargetSerde:
     MESSAGE_FORMAT = "float64 yaw;float64 pitch;float64 area;float64 skew;int32 fiducialId;int32 objDetectId;float32 objDetectConf;Transform3d bestCameraToTarget;Transform3d altCameraToTarget;float64 poseAmbiguity;TargetCorner[?] minAreaRectCorners;TargetCorner[?] detectedCorners;"
 
     @staticmethod
-    def unpack(packet: Packet) -> Packet:
+    def unpack(packet: Packet) -> PhotonTrackedTarget:
         ret = PhotonTrackedTarget()
 
         # yaw is of intrinsic type float64

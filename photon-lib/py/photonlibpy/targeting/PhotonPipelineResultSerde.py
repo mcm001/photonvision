@@ -10,7 +10,7 @@ class PhotonPipelineResultSerde:
     MESSAGE_FORMAT = "PhotonPipelineMetadata metadata;PhotonTrackedTarget[?] targets;MultiTargetPNPResult? multitagResult;"
 
     @staticmethod
-    def unpack(packet: Packet) -> Packet:
+    def unpack(packet: Packet) -> PhotonPipelineResult:
         ret = PhotonPipelineResult()
 
         # metadata is of non-intrinsic type PhotonPipelineMetadata

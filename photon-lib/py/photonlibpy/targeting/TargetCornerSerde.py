@@ -10,7 +10,7 @@ class TargetCornerSerde:
     MESSAGE_FORMAT = "float64 x;float64 y;"
 
     @staticmethod
-    def unpack(packet: Packet) -> Packet:
+    def unpack(packet: Packet) -> TargetCorner:
         ret = TargetCorner()
 
         # x is of intrinsic type float64

@@ -10,7 +10,7 @@ class PnpResultSerde:
     MESSAGE_FORMAT = "Transform3d best;Transform3d alt;float64 bestReprojErr;float64 altReprojErr;float64 ambiguity;"
 
     @staticmethod
-    def unpack(packet: Packet) -> Packet:
+    def unpack(packet: Packet) -> PnpResult:
         ret = PnpResult()
 
         # field is shimmed!

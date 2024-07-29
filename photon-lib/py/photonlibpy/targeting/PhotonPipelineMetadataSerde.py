@@ -12,7 +12,7 @@ class PhotonPipelineMetadataSerde:
     )
 
     @staticmethod
-    def unpack(packet: Packet) -> Packet:
+    def unpack(packet: Packet) -> PhotonPipelineMetadata:
         ret = PhotonPipelineMetadata()
 
         # sequenceID is of intrinsic type int64

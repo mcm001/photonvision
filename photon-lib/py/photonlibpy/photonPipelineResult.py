@@ -3,10 +3,12 @@ from dataclasses import dataclass, field
 from photonlibpy.multiTargetPNPResult import MultiTargetPNPResult
 from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
 from targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
+from targeting.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
 
 
 @dataclass
-class PhotonPipelineResult:
+class PhotonPipelineMetadata:
+
     # Image capture and NT publish timestamp, in microseconds and in the coprocessor timebase. As
     # reported by WPIUtilJNI::now.
     captureTimestampMicros: int = -1
@@ -14,6 +16,12 @@ class PhotonPipelineResult:
 
     # Mirror of the heartbeat entry -- monotonically increasing
     sequenceID: int = -1
+
+    photonStruct = PhotonPipelineMetadataSerde()
+
+
+@dataclass
+class PhotonPipelineResult:
 
     # Since we don't trust NT time sync, keep track of when we got this packet into robot code
     ntRecieveTimestampMicros: int = -1

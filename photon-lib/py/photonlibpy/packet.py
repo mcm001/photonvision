@@ -1,5 +1,5 @@
 import struct
-from typing import Type
+from typing import Any, Optional, Type
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Quaternion
 import wpilib
 
@@ -159,9 +159,15 @@ class Packet:
 
         return Transform3d(translation, rotation)
 
-    def decodeList(self, inner_type: Type):
+    def decodeList(self, serde: Type):
         retList = []
         arr_len = self.decode8()
         for _ in range(arr_len):
-            retList.append(inner_type.photonSerde.unpack(self))
+            retList.append(serde.unpack(self))
         return retList
+
+    def decodeOptional(self, serde: Type) -> Optional[Any]:
+        if self.decodeBoolean():
+            return serde.unpack(self)
+        else:
+            return None

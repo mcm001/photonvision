@@ -2,6 +2,7 @@ from photonlibpy.packet import Packet
 
 from photonlibpy import *
 
+
 class MultiTargetPNPResultSerde:
 
     # Message definition md5sum. See photon_packet.adoc for details
@@ -14,7 +15,7 @@ class MultiTargetPNPResultSerde:
 
         # estimatedPose is of non-intrinsic type PnpResult
         ret.estimatedPose = PnpResult.photonStruct.unpack(packet)
-    
+
         # fiducialIDsUsed is a custom VLA!
         ret.fiducialIDsUsed = packet.decodeShortList()
 

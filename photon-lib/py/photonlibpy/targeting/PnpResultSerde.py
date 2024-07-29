@@ -2,6 +2,7 @@ from photonlibpy.packet import Packet
 
 from photonlibpy import *
 
+
 class PnpResultSerde:
 
     # Message definition md5sum. See photon_packet.adoc for details
@@ -14,16 +15,16 @@ class PnpResultSerde:
 
         # field is shimmed!
         ret.best = packet.decodeTransform()
-    
+
         # field is shimmed!
         ret.alt = packet.decodeTransform()
-    
+
         # bestReprojErr is of intrinsic type float64
         ret.bestReprojErr = packet.decodeDouble()
-    
+
         # altReprojErr is of intrinsic type float64
         ret.altReprojErr = packet.decodeDouble()
-    
+
         # ambiguity is of intrinsic type float64
         ret.ambiguity = packet.decodeDouble()
 

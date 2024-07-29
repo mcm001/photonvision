@@ -21,8 +21,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.apache.commons.cli.Option;
 import org.photonvision.common.logging.LogGroup;
 import org.photonvision.common.logging.Logger;
 import org.photonvision.estimation.TargetModel;
@@ -35,7 +33,9 @@ import org.photonvision.vision.target.TrackedTarget;
 /** Estimate the camera pose given multiple Apriltag observations */
 public class MultiTargetPNPPipe
         extends CVPipe<
-                List<TrackedTarget>, Optional<MultiTargetPNPResult>, MultiTargetPNPPipe.MultiTargetPNPPipeParams> {
+                List<TrackedTarget>,
+                Optional<MultiTargetPNPResult>,
+                MultiTargetPNPPipe.MultiTargetPNPPipeParams> {
     private static final Logger logger = new Logger(MultiTargetPNPPipe.class, LogGroup.VisionModule);
 
     private boolean hasWarned = false;

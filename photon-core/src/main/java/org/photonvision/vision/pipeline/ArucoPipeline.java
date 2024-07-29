@@ -41,9 +41,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import java.util.Optional;
 import org.opencv.objdetect.Objdetect;
 import org.photonvision.common.configuration.ConfigManager;
 import org.photonvision.common.util.math.MathUtils;
@@ -189,7 +189,8 @@ public class ArucoPipeline extends CVPipeline<CVPipelineResult, ArucoPipelineSet
                 AprilTagPoseEstimate tagPoseEstimate = null;
                 // Do single-tag estimation when "always enabled" or if a tag was not used for multitag
                 if (settings.doSingleTargetAlways
-                        || !(multiTagResult.isPresent() && multiTagResult.get().fiducialIDsUsed.contains((short)detection.getId()))) {
+                        || !(multiTagResult.isPresent()
+                                && multiTagResult.get().fiducialIDsUsed.contains((short) detection.getId()))) {
                     var poseResult = singleTagPoseEstimatorPipe.run(detection);
                     sumPipeNanosElapsed += poseResult.nanosElapsed;
                     tagPoseEstimate = poseResult.output;

@@ -41,7 +41,7 @@ def yaml_to_dict(path: str):
     return file_dict
 
 
-data_types = yaml_to_dict("src/generate/message_data_types.yaml")
+data_types = yaml_to_dict("message_data_types.yaml")
 
 
 # Helper to check if we need to use our own decoder
@@ -154,7 +154,8 @@ def get_includes(db, message: MessageType) -> str:
 
 
 def parse_yaml():
-    config = yaml_to_dict("src/generate/messages.yaml")
+    Path(__file__).resolve().parent
+    config = yaml_to_dict("messages.yaml")
 
     return config
 
@@ -257,19 +258,19 @@ def generate_photon_messages(output_root, template_root):
 
 def main(argv):
     script_path = Path(__file__).resolve()
-    dirname = script_path.parent
+    dirname = script_path.parent.parent
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--output_directory",
         help="Optional. If set, will output the generated files to this directory, otherwise it will use a path relative to the script",
-        default=dirname / "src/generated",
+        default=dirname / "photon-targeting/src/generated",
         type=Path,
     )
     parser.add_argument(
         "--template_root",
         help="Optional. If set, will use this directory as the root for the jinja templates",
-        default=dirname / "src/generate/templates",
+        default=dirname / "photon-targeting/src/generate/templates",
         type=Path,
     )
     args = parser.parse_args(argv)

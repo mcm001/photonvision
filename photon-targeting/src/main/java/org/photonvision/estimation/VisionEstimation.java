@@ -17,7 +17,6 @@
 
 package org.photonvision.estimation;
 
-import java.util.Optional;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
@@ -28,6 +27,7 @@ import edu.wpi.first.math.numbers.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.opencv.core.Point;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -109,12 +109,13 @@ public class VisionEstimation {
                 altPose = knownTags.get(0).pose.transformBy(camToTag.get().alt.inverse());
 
             var o = new Pose3d();
-            return Optional.of(new PnpResult(
-                    new Transform3d(o, bestPose),
-                    new Transform3d(o, altPose),
-                    camToTag.get().ambiguity,
-                    camToTag.get().bestReprojErr,
-                    camToTag.get().altReprojErr));
+            return Optional.of(
+                    new PnpResult(
+                            new Transform3d(o, bestPose),
+                            new Transform3d(o, altPose),
+                            camToTag.get().ambiguity,
+                            camToTag.get().bestReprojErr,
+                            camToTag.get().altReprojErr));
         }
         // multi-tag pnp
         else {
@@ -122,12 +123,13 @@ public class VisionEstimation {
             for (var tag : knownTags) objectTrls.addAll(tagModel.getFieldVertices(tag.pose));
             var camToOrigin = OpenCVHelp.solvePNP_SQPNP(cameraMatrix, distCoeffs, objectTrls, points);
             if (camToOrigin.isEmpty()) return Optional.empty();
-            return Optional.of(new PnpResult(
-                    camToOrigin.get().best.inverse(),
-                    camToOrigin.get().alt.inverse(),
-                    camToOrigin.get().ambiguity,
-                    camToOrigin.get().bestReprojErr,
-                    camToOrigin.get().altReprojErr));
+            return Optional.of(
+                    new PnpResult(
+                            camToOrigin.get().best.inverse(),
+                            camToOrigin.get().alt.inverse(),
+                            camToOrigin.get().ambiguity,
+                            camToOrigin.get().bestReprojErr,
+                            camToOrigin.get().altReprojErr));
         }
     }
 }

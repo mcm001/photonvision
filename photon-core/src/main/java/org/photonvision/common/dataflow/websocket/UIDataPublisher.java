@@ -67,7 +67,8 @@ public class UIDataPublisher implements CVPipelineResultConsumer {
             multitagData.put(
                     "bestTransform",
                     SerializationUtils.transformToHashMap(result.multiTagResult.get().estimatedPose.best));
-            multitagData.put("bestReprojectionError", result.multiTagResult.get().estimatedPose.bestReprojErr);
+            multitagData.put(
+                    "bestReprojectionError", result.multiTagResult.get().estimatedPose.bestReprojErr);
             multitagData.put("fiducialIDsUsed", result.multiTagResult.get().fiducialIDsUsed);
             dataMap.put("multitagResult", multitagData);
         }

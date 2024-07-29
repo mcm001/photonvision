@@ -19,12 +19,12 @@ package org.photonvision.vision.pipeline.result;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.photonvision.common.util.math.MathUtils;
 import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.vision.frame.Frame;
 import org.photonvision.vision.opencv.Releasable;
 import org.photonvision.vision.target.TrackedTarget;
-import java.util.Optional;
 
 public class CVPipelineResult implements Releasable {
     public final long sequenceID;
@@ -42,14 +42,7 @@ public class CVPipelineResult implements Releasable {
             double fps,
             List<TrackedTarget> targets,
             Frame inputFrame) {
-        this(
-                sequenceID,
-                processingNanos,
-                fps,
-                targets,
-                Optional.empty(),
-                inputFrame,
-                List.of());
+        this(sequenceID, processingNanos, fps, targets, Optional.empty(), inputFrame, List.of());
     }
 
     public CVPipelineResult(
@@ -59,14 +52,7 @@ public class CVPipelineResult implements Releasable {
             List<TrackedTarget> targets,
             Frame inputFrame,
             List<String> classNames) {
-        this(
-                sequenceID,
-                processingNanos,
-                fps,
-                targets,
-                Optional.empty(),
-                inputFrame,
-                classNames);
+        this(sequenceID, processingNanos, fps, targets, Optional.empty(), inputFrame, classNames);
     }
 
     public CVPipelineResult(

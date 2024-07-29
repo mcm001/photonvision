@@ -1,4 +1,4 @@
-from photonlibpy.multiTargetPNPResult import MultiTargetPNPResult, PNPResult
+from photonlibpy.multiTargetPNPResult import MultiTargetPNPResult, PnpResult
 from photonlibpy.photonPipelineResult import PhotonPipelineResult
 from photonlibpy.photonPoseEstimator import PhotonPoseEstimator, PoseStrategy
 from photonlibpy.photonTrackedTarget import PhotonTrackedTarget, TargetCorner
@@ -157,7 +157,7 @@ def test_multiTagOnCoprocStrategy():
             )
         ],
         multiTagResult=MultiTargetPNPResult(
-            PNPResult(True, Transform3d(1, 3, 2, Rotation3d()))
+            PnpResult(True, Transform3d(1, 3, 2, Rotation3d()))
         ),
     )
 

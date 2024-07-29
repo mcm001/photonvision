@@ -1,4 +1,5 @@
 import struct
+from typing import Type
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Quaternion
 import wpilib
 
@@ -88,7 +89,7 @@ class Packet:
         """
         return self._decodeGeneric(">h", 2)
 
-    def decode32(self) -> int:
+    def decodeInt(self) -> int:
         """
         * Returns a decoded int (32 bytes) from the packet.
         *
@@ -104,7 +105,7 @@ class Packet:
         """
         return self._decodeGeneric(">f", 4)
 
-    def decodei64(self) -> int:
+    def decodeLong(self) -> int:
         """
         * Returns a decoded int64 from the packet.
         *
@@ -157,3 +158,10 @@ class Packet:
         rotation = Rotation3d(Quaternion(w, x, y, z))
 
         return Transform3d(translation, rotation)
+
+    def decodeList(self, inner_type: Type):
+        retList = []
+        arr_len = self.decode8()
+        for _ in range(arr_len):
+            retList.append(inner_type.photonSerde.unpack(self))
+        return retList

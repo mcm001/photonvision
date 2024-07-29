@@ -14,6 +14,7 @@
   java_encode_shim: PacketUtils.packTransform3d
   cpp_type: frc::Transform3d
   cpp_include: "<frc/geometry/Transform3d.h>"
+  python_decode_shim: packet.decodeTransform
   # shim since we expect fields to at least exist
   fields: []
 

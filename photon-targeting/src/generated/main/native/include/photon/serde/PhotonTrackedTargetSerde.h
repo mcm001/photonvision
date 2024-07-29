@@ -37,7 +37,7 @@ namespace photon {
 template <>
 struct WPILIB_DLLEXPORT SerdeType<PhotonTrackedTarget> {
   static constexpr std::string_view GetSchemaHash() {
-    return "4608fa07779c423723ef2d8f2ae01e53";
+    return "8fdada56b9162f2e32bd24f0055d7b60";
   }
 
   static constexpr std::string_view GetSchema() {

@@ -1,29 +1,24 @@
 from photonlibpy.packet import Packet
 
+from photonlibpy import *
+
 class PhotonPipelineResultSerde:
     
     # Message definition md5sum. See photon_packet.adoc for details
-    MESSAGE_VERSION = "eefe85cf831c55de6f95e367c3f8784b"
+    MESSAGE_VERSION = "cb3e1605048ba49325888eb797399fe2"
     MESSAGE_FORMAT = "PhotonPipelineMetadata metadata;PhotonTrackedTarget[?] targets;MultiTargetPNPResult? multitagResult;"
 
-    def populateFromPacket(self, packet: Packet) -> Packet:
-        self.metadata = packet.Unpack<photon::PhotonPipelineMetadata>(),
-        self.targets = packet.Unpack<std::vector<photon::PhotonTrackedTarget>>(),
-        self.multitagResult = packet.Unpack<std::optional<photon::MultiTargetPNPResult>>(),
+    @staticmethod
+    def unpack(packet: Packet) -> Packet:
+        ret = PhotonPipelineResult()
 
-        # self.sequenceID = packet.decodei64()
-        # self.captureTimestampMicros = packet.decodei64()
-        # self.publishTimestampMicros = packet.decodei64()
+        # metadata is of non-intrinsic type PhotonPipelineMetadata
+        ret.metadata = PhotonPipelineMetadata.photonStruct.unpack(packet)
+    
+        # targets is a custom VLA!
+        ret.targets = packet.decodeList(PhotonTrackedTarget.photonStruct)
+    
+        # multitagResult is optional! it better not be a VLA too
+        ret.multitagResult = packet.decodeOptional(MultiTargetPNPResult.photonStruct)
 
-        # targetCount = packet.decode8()
-
-        # self.targets = []
-        # for _ in range(targetCount):
-        #     target = PhotonTrackedTarget()
-        #     target.createFromPacket(packet)
-        #     self.targets.append(target)
-
-        # self.multiTagResult = MultiTargetPNPResult()
-        # self.multiTagResult.createFromPacket(packet)
-
-        # return packet
+        return ret

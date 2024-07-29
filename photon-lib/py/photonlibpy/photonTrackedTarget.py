@@ -1,12 +1,16 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
 from photonlibpy.packet import Packet
-
+from targeting.TargetCornerSerde import TargetCornerSerde
+from targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
 
 @dataclass
 class TargetCorner:
     x: float
     y: float
+
+    
+    photonStruct = TargetCornerSerde()
 
 
 @dataclass
@@ -64,22 +68,4 @@ class PhotonTrackedTarget:
             retList.append(TargetCorner(cx, cy))
         return retList
 
-    def createFromPacket(self, packet: Packet) -> Packet:
-        self.yaw = packet.decodeDouble()
-        self.pitch = packet.decodeDouble()
-        self.area = packet.decodeDouble()
-        self.skew = packet.decodeDouble()
-        self.fiducialId = packet.decode32()
-
-        self.classId = packet.decode32()
-        self.objDetectConf = packet.decodeFloat()
-
-        self.bestCameraToTarget = packet.decodeTransform()
-        self.altCameraToTarget = packet.decodeTransform()
-
-        self.poseAmbiguity = packet.decodeDouble()
-
-        self.minAreaRectCorners = self._decodeTargetList(packet, 4)  # always four
-        numCorners = packet.decode8()
-        self.detectedCorners = self._decodeTargetList(packet, numCorners)
-        return packet
+    photonStruct = PhotonPipelineResultSerde()

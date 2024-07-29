@@ -1,28 +1,21 @@
 from photonlibpy.packet import Packet
 
+from photonlibpy import *
+
 class MultiTargetPNPResultSerde:
     
     # Message definition md5sum. See photon_packet.adoc for details
-    MESSAGE_VERSION = "03960a77c0071f70aa848e7a11c6dd74"
+    MESSAGE_VERSION = "ffc1cb847deb6e796a583a5b1885496b"
     MESSAGE_FORMAT = "PnpResult estimatedPose;int16[?] fiducialIDsUsed;"
 
-    def populateFromPacket(self, packet: Packet) -> Packet:
-        self.estimatedPose = packet.Unpack<photon::PnpResult>(),
-        self.fiducialIDsUsed = packet.Unpack<std::vector<int16_t>>(),
+    @staticmethod
+    def unpack(packet: Packet) -> Packet:
+        ret = MultiTargetPNPResult()
 
-        # self.sequenceID = packet.decodei64()
-        # self.captureTimestampMicros = packet.decodei64()
-        # self.publishTimestampMicros = packet.decodei64()
+        # estimatedPose is of non-intrinsic type PnpResult
+        ret.estimatedPose = PnpResult.photonStruct.unpack(packet)
+    
+        # fiducialIDsUsed is a custom VLA!
+        ret.fiducialIDsUsed = packet.decodeShortList()
 
-        # targetCount = packet.decode8()
-
-        # self.targets = []
-        # for _ in range(targetCount):
-        #     target = PhotonTrackedTarget()
-        #     target.createFromPacket(packet)
-        #     self.targets.append(target)
-
-        # self.multiTagResult = MultiTargetPNPResult()
-        # self.multiTagResult.createFromPacket(packet)
-
-        # return packet
+        return ret

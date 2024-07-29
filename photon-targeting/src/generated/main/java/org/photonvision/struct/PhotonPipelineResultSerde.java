@@ -33,7 +33,7 @@ import org.photonvision.targeting.*;
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
 
     // Message definition md5sum. See photon_packet.adoc for details
-    public static final String MESSAGE_VERSION = "eefe85cf831c55de6f95e367c3f8784b";
+    public static final String MESSAGE_VERSION = "cb3e1605048ba49325888eb797399fe2";
     public static final String MESSAGE_FORMAT = "PhotonPipelineMetadata metadata;PhotonTrackedTarget[?] targets;MultiTargetPNPResult? multitagResult;";
 
     @Override

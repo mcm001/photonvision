@@ -29,6 +29,8 @@ class MessageType(TypedDict):
     java_encode_shim: str
     # C++ helpers
     cpp_include: str
+    # python shim types
+    python_decode_shim: str
 
 
 def yaml_to_dict(path: str):

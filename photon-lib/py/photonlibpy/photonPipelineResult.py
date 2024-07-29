@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from photonlibpy.multiTargetPNPResult import MultiTargetPNPResult
 from photonlibpy.packet import Packet
 from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
-
+from targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
 
 @dataclass
 class PhotonPipelineResult:
@@ -21,24 +21,6 @@ class PhotonPipelineResult:
     targets: list[PhotonTrackedTarget] = field(default_factory=list)
     multiTagResult: MultiTargetPNPResult = field(default_factory=MultiTargetPNPResult)
 
-    def populateFromPacket(self, packet: Packet) -> Packet:
-        self.targets = []
-
-        self.sequenceID = packet.decodei64()
-        self.captureTimestampMicros = packet.decodei64()
-        self.publishTimestampMicros = packet.decodei64()
-
-        targetCount = packet.decode8()
-
-        for _ in range(targetCount):
-            target = PhotonTrackedTarget()
-            target.createFromPacket(packet)
-            self.targets.append(target)
-
-        self.multiTagResult = MultiTargetPNPResult()
-        self.multiTagResult.createFromPacket(packet)
-
-        return packet
 
     def getLatencyMillis(self) -> float:
         return (self.publishTimestampMicros - self.captureTimestampMicros) / 1e3
@@ -60,3 +42,5 @@ class PhotonPipelineResult:
 
     def hasTargets(self) -> bool:
         return len(self.targets) > 0
+
+    photonStruct = PhotonPipelineResultSerde()

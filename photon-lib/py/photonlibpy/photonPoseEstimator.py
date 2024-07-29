@@ -9,7 +9,6 @@ from .photonPipelineResult import PhotonPipelineResult
 from .photonCamera import PhotonCamera
 from .estimatedRobotPose import EstimatedRobotPose
 
-
 class PoseStrategy(enum.Enum):
     """
     Position estimation strategies that can be used by the PhotonPoseEstimator class.
@@ -41,6 +40,7 @@ class PoseStrategy(enum.Enum):
     Use all visible tags to compute a single pose estimate.
     This runs on the RoboRIO, and can take a lot of time.
     """
+
 
 
 class PhotonPoseEstimator:

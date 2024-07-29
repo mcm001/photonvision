@@ -7,9 +7,9 @@ from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
 class PhotonPipelineResult:
     def populateFromPacket(self, packet: Packet) -> Packet:
 
-        self.sequenceID = packet.decodei64()
-        self.captureTimestampMicros = packet.decodei64()
-        self.publishTimestampMicros = packet.decodei64()
+        self.sequenceID = packet.decodeLong()
+        self.captureTimestampMicros = packet.decodeLong()
+        self.publishTimestampMicros = packet.decodeLong()
 
         targetCount = packet.decode8()
 

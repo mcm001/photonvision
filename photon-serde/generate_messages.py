@@ -174,7 +174,7 @@ def get_struct_schema_str(message: MessageType):
     return ret
 
 
-def generate_photon_messages(output_root, template_root):
+def generate_photon_messages(cpp_java_root, py_root, template_root):
     messages = parse_yaml()
 
     env = Environment(
@@ -196,16 +196,19 @@ def generate_photon_messages(output_root, template_root):
             "cpp_type": "photon::" + name,
         }
 
-    java_output_dir = Path(output_root) / "main/java/org/photonvision/struct"
+    java_output_dir = Path(cpp_java_root) / "main/java/org/photonvision/struct"
     java_output_dir.mkdir(parents=True, exist_ok=True)
 
-    cpp_serde_header_dir = Path(output_root) / "main/native/include/photon/serde/"
+    cpp_serde_header_dir = Path(cpp_java_root) / "main/native/include/photon/serde/"
     cpp_serde_header_dir.mkdir(parents=True, exist_ok=True)
-    cpp_serde_source_dir = Path(output_root) / "main/native/cpp/photon/serde/"
+    cpp_serde_source_dir = Path(cpp_java_root) / "main/native/cpp/photon/serde/"
     cpp_serde_source_dir.mkdir(parents=True, exist_ok=True)
 
-    cpp_struct_header_dir = Path(output_root) / "main/native/include/photon/struct/"
+    cpp_struct_header_dir = Path(cpp_java_root) / "main/native/include/photon/struct/"
     cpp_struct_header_dir.mkdir(parents=True, exist_ok=True)
+
+    py_serde_source_dir = Path(py_root)
+    py_serde_source_dir.mkdir(parents=True, exist_ok=True)
 
     env.filters["get_qualified_name"] = lambda field: get_qualified_cpp_name(
         messages, extended_data_types, field
@@ -223,12 +226,15 @@ def generate_photon_messages(output_root, template_root):
         cpp_serde_header_name = f"{message['name']}Serde.h"
         cpp_serde_source_name = f"{message['name']}Serde.cpp"
         cpp_struct_header_name = f"{message['name']}Struct.h"
+        py_name = f"{message['name']}Serde.py"
 
         java_template = env.get_template("Message.java.jinja")
 
         cpp_serde_header_template = env.get_template("ThingSerde.h.jinja")
         cpp_serde_source_template = env.get_template("ThingSerde.cpp.jinja")
         cpp_struct_header_template = env.get_template("ThingStruct.h.jinja")
+
+        py_template = env.get_template("ThingSerde.py.jinja")
 
         message_hash = get_message_hash(messages, message)
 
@@ -237,6 +243,7 @@ def generate_photon_messages(output_root, template_root):
             [cpp_serde_header_name, cpp_serde_header_template, cpp_serde_header_dir],
             [cpp_serde_source_name, cpp_serde_source_template, cpp_serde_source_dir],
             [cpp_struct_header_name, cpp_struct_header_template, cpp_struct_header_dir],
+            [py_name, py_template, py_serde_source_dir],
         ]:
             # Hack in our message getter
             template.globals["get_message_by_name"] = lambda name: get_message_by_name(
@@ -258,24 +265,32 @@ def generate_photon_messages(output_root, template_root):
 
 def main(argv):
     script_path = Path(__file__).resolve()
-    dirname = script_path.parent.parent
+    dirname = script_path.parent
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--output_directory",
+        "--cpp_java_output_dir",
         help="Optional. If set, will output the generated files to this directory, otherwise it will use a path relative to the script",
-        default=dirname / "photon-targeting/src/generated",
+        default=dirname.parent / "photon-targeting/src/generated",
+        type=Path,
+    )
+    parser.add_argument(
+        "--py_output_dir",
+        help="Optional. If set, will spit Python serde files here",
+        default=dirname.parent / "photon-lib/py/photonlibpy/targeting",
         type=Path,
     )
     parser.add_argument(
         "--template_root",
         help="Optional. If set, will use this directory as the root for the jinja templates",
-        default=dirname / "photon-targeting/src/generate/templates",
+        default=dirname / "templates",
         type=Path,
     )
     args = parser.parse_args(argv)
 
-    generate_photon_messages(args.output_directory, args.template_root)
+    generate_photon_messages(
+        args.cpp_java_output_dir, args.py_output_dir, args.template_root
+    )
 
 
 if __name__ == "__main__":

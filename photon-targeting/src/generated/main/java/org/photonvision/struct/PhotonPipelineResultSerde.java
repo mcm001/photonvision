@@ -31,6 +31,7 @@ import org.photonvision.targeting.*;
  * Auto-generated serialization/deserialization helper for PhotonPipelineResult
  */
 public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResult> {
+
     // Message definition md5sum. See photon_packet.adoc for details
     public static final String MESSAGE_VERSION = "eefe85cf831c55de6f95e367c3f8784b";
     public static final String MESSAGE_FORMAT = "PhotonPipelineMetadata metadata;PhotonTrackedTarget[?] targets;MultiTargetPNPResult? multitagResult;";
@@ -45,10 +46,10 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
     public void pack(Packet packet, PhotonPipelineResult value) {
         // field metadata is of non-intrinsic type PhotonPipelineMetadata
         PhotonPipelineMetadata.photonStruct.pack(packet, value.metadata);
-
+    
         // targets is a custom VLA!
         packet.encodeList(value.targets);
-
+    
         // multitagResult is optional! it better not be a VLA too
         packet.encodeOptional(value.multitagResult);
     }
@@ -59,10 +60,10 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
 
         // metadata is of non-intrinsic type PhotonPipelineMetadata
         ret.metadata = PhotonPipelineMetadata.photonStruct.unpack(packet);
-
+    
         // targets is a custom VLA!
         ret.targets = packet.decodeList(PhotonTrackedTarget.photonStruct);
-
+    
         // multitagResult is optional! it better not be a VLA too
         ret.multitagResult = packet.decodeOptional(MultiTargetPNPResult.photonStruct);
 

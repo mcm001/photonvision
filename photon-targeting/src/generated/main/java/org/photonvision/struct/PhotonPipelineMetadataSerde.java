@@ -35,6 +35,9 @@ public class PhotonPipelineMetadataSerde implements PacketSerde<PhotonPipelineMe
     public static final String MESSAGE_VERSION = "2a7039527bda14d13028a1b9282d40a2";
     public static final String MESSAGE_FORMAT = "int64 sequenceID;int64 captureTimestampMicros;int64 publishTimestampMicros;";
 
+    public final String getTypeString() { return MESSAGE_FORMAT; }
+    public final String getInterfaceUUID() { return MESSAGE_VERSION; }
+
     @Override
     public int getMaxByteSize() {
         // TODO Auto-generated method stub

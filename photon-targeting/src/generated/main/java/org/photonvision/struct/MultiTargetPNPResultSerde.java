@@ -35,6 +35,9 @@ public class MultiTargetPNPResultSerde implements PacketSerde<MultiTargetPNPResu
     public static final String MESSAGE_VERSION = "ffc1cb847deb6e796a583a5b1885496b";
     public static final String MESSAGE_FORMAT = "PnpResult estimatedPose;int16[?] fiducialIDsUsed;";
 
+    public final String getTypeString() { return MESSAGE_FORMAT; }
+    public final String getInterfaceUUID() { return MESSAGE_VERSION; }
+
     @Override
     public int getMaxByteSize() {
         // TODO Auto-generated method stub

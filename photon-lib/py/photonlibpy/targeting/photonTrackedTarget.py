@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
-from .packet import Packet
-from .targetCorner import TargetCorner
-from .generated.PhotonTrackedTargetSerde import PhotonTrackedTargetSerde
+from ..packet import Packet
+from .TargetCorner import TargetCorner
+from ..generated.PhotonTrackedTargetSerde import PhotonTrackedTargetSerde
 
 
 @dataclass

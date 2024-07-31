@@ -35,6 +35,9 @@ public class {{ name }}Serde implements PacketSerde<{{name}}> {
     public static final String MESSAGE_VERSION = "{{ message_hash }}";
     public static final String MESSAGE_FORMAT = "{{ message_fmt }}";
 
+    public final String getTypeString() { return MESSAGE_FORMAT; }
+    public final String getInterfaceUUID() { return MESSAGE_VERSION; }
+
     @Override
     public int getMaxByteSize() {
         // TODO Auto-generated method stub

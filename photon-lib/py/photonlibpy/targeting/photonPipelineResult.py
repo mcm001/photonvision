@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 
 from .multiTargetPNPResult import MultiTargetPNPResult
 from .photonTrackedTarget import PhotonTrackedTarget
-from .generated.PhotonPipelineResultSerde import PhotonPipelineResultSerde
-from .generated.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
+from ..generated.PhotonPipelineResultSerde import PhotonPipelineResultSerde
+from ..generated.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
 
 
 @dataclass
@@ -29,7 +29,9 @@ class PhotonPipelineResult:
     metadata: PhotonPipelineMetadata = field(default_factory=PhotonPipelineMetadata)
 
     def getLatencyMillis(self) -> float:
-        return (self.publishTimestampMicros - self.captureTimestampMicros) / 1e3
+        return (
+            self.metadata.publishTimestampMicros - self.metadata.captureTimestampMicros
+        ) / 1e3
 
     def getTimestampSeconds(self) -> float:
         """
@@ -40,7 +42,10 @@ class PhotonPipelineResult:
         # TODO - we don't trust NT4 to correctly latency-compensate ntRecieveTimestampMicros
         return (
             self.ntRecieveTimestampMicros
-            - (self.publishTimestampMicros - self.captureTimestampMicros)
+            - (
+                self.metadata.publishTimestampMicros
+                - self.metadata.captureTimestampMicros
+            )
         ) / 1e6
 
     def getTargets(self) -> list[PhotonTrackedTarget]:

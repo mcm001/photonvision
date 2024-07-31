@@ -35,6 +35,9 @@ public class PhotonPipelineResultSerde implements PacketSerde<PhotonPipelineResu
     public static final String MESSAGE_VERSION = "cb3e1605048ba49325888eb797399fe2";
     public static final String MESSAGE_FORMAT = "PhotonPipelineMetadata metadata;PhotonTrackedTarget[?] targets;MultiTargetPNPResult? multitagResult;";
 
+    public final String getTypeString() { return MESSAGE_FORMAT; }
+    public final String getInterfaceUUID() { return MESSAGE_VERSION; }
+
     @Override
     public int getMaxByteSize() {
         // TODO Auto-generated method stub

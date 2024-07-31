@@ -35,6 +35,9 @@ public class PnpResultSerde implements PacketSerde<PnpResult> {
     public static final String MESSAGE_VERSION = "0d1f2546b00f24718e30f38d206d4491";
     public static final String MESSAGE_FORMAT = "Transform3d best;Transform3d alt;float64 bestReprojErr;float64 altReprojErr;float64 ambiguity;";
 
+    public final String getTypeString() { return MESSAGE_FORMAT; }
+    public final String getInterfaceUUID() { return MESSAGE_VERSION; }
+
     @Override
     public int getMaxByteSize() {
         // TODO Auto-generated method stub

@@ -20,10 +20,11 @@
 ##                        --> DO NOT MODIFY <--
 ###############################################################################
 
-from photonlibpy import *
+from ..targeting import *
 
 
 class TargetCornerSerde:
+
     # Message definition md5sum. See photon_packet.adoc for details
     MESSAGE_VERSION = "22b1ff7551d10215af6fb3672fe4eda8"
     MESSAGE_FORMAT = "float64 x;float64 y;"

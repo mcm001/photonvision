@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
-from .packet import Packet
-from .generated.MultiTargetPNPResultSerde import MultiTargetPNPResultSerde
+from ..packet import Packet
+from ..generated.MultiTargetPNPResultSerde import MultiTargetPNPResultSerde
 
 
 @dataclass
@@ -32,3 +32,5 @@ class MultiTargetPNPResult:
             if fidId >= 0:
                 self.fiducialIDsUsed.append(fidId)
         return packet
+
+    photonStruct = MultiTargetPNPResultSerde()

@@ -79,16 +79,15 @@ class PhotonCamera:
         self._versionCheck()
 
         now = RobotController.getFPGATime()
-        retVal = PhotonPipelineResult()
         packetWithTimestamp = self._rawBytesEntry.getAtomic()
         byteList = packetWithTimestamp.value
         packetWithTimestamp.time
 
         if len(byteList) < 1:
-            return retVal
+            return PhotonPipelineResult()
         else:
             pkt = Packet(byteList)
-            retVal.populateFromPacket(pkt)
+            retVal = PhotonPipelineResult.photonStruct.unpack(pkt)
             # We don't trust NT4 time, hack around
             retVal.ntRecieveTimestampMicros = now
             return retVal
@@ -199,6 +198,6 @@ class PhotonCamera:
 
             wpilib.reportWarning(bfw)
 
-            errText = f"Photon version {PHOTONLIB_VERSION} does not match coprocessor version {versionString}. Please install photonlibpy version {PHOTONLIB_VERSION}."
+            errText = f"Photon version {PHOTONLIB_VERSION} does not match coprocessor version {versionString}. Please install photonlibpy version {versionString}, or update your coprocessor to {PHOTONLIB_VERSION}."
             wpilib.reportError(errText, True)
             raise Exception(errText)

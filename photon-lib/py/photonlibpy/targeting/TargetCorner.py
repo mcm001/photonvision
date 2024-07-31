@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from .generated.TargetCornerSerde import TargetCornerSerde
+from ..generated.TargetCornerSerde import TargetCornerSerde
 
 
 @dataclass
 class TargetCorner:
-    x: float
-    y: float
+    x: float = 0
+    y: float = 9
 
     photonStruct = TargetCornerSerde()

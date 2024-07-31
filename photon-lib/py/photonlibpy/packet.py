@@ -83,9 +83,9 @@ class Packet:
 
     def decode16(self) -> int:
         """
-        * Returns a single decoded byte from the packet.
+        * Returns a single decoded short from the packet.
         *
-        * @return A decoded byte from the packet.
+        * @return A decoded short from the packet.
         """
         return self._decodeGeneric(">h", 2)
 
@@ -132,12 +132,20 @@ class Packet:
     def decodeDoubleArray(self, length: int) -> list[float]:
         """
         * Returns a decoded array of floats from the packet.
-        *
-        * @return A decoded array of floats from the packet.
         """
         ret = []
         for _ in range(length):
             ret.append(self.decodeDouble())
+        return ret
+
+    def decodeShortList(self) -> list[float]:
+        """
+        * Returns a decoded array of shorts from the packet.
+        """
+        length = self.decode8()
+        ret = []
+        for _ in range(length):
+            ret.append(self.decode16())
         return ret
 
     def decodeTransform(self) -> Transform3d:

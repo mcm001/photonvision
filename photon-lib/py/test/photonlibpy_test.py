@@ -14,12 +14,10 @@ def test_roundTrip():
 
     setVersionCheckEnabled(False)
 
-    for i in range(1000):
+    for i in range(5):
         sleep(0.1)
-        camera.getLatestResult()
-        # print("result")
-        # print(result)
-
+        result = camera.getLatestResult()
+        print(result)
         print(camera._rawBytesEntry.getTopic().getProperties())
 
 

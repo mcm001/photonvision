@@ -3,8 +3,11 @@ import ntcore
 from wpilib import RobotController, Timer
 import wpilib
 from .packet import Packet
-from .photonPipelineResult import PhotonPipelineResult
+from .targeting.photonPipelineResult import PhotonPipelineResult
 from .version import PHOTONVISION_VERSION, PHOTONLIB_VERSION  # type: ignore[import-untyped]
+
+# magical import to make serde stuff work
+import photonlibpy.generated  # noqa
 
 
 class VisionLEDMode(Enum):

@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
 from ..packet import Packet
 from .TargetCorner import TargetCorner
-from ..generated.PhotonTrackedTargetSerde import PhotonTrackedTargetSerde
 
 
 @dataclass
@@ -56,4 +55,4 @@ class PhotonTrackedTarget:
             retList.append(TargetCorner(cx, cy))
         return retList
 
-    photonStruct = PhotonTrackedTargetSerde()
+    photonStruct: "PhotonTrackedTargetSerde" = None

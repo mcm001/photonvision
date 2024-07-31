@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 from .multiTargetPNPResult import MultiTargetPNPResult
 from .photonTrackedTarget import PhotonTrackedTarget
-from ..generated.PhotonPipelineResultSerde import PhotonPipelineResultSerde
-from ..generated.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
 
 
 @dataclass
@@ -16,7 +15,7 @@ class PhotonPipelineMetadata:
     # Mirror of the heartbeat entry -- monotonically increasing
     sequenceID: int = -1
 
-    photonStruct = PhotonPipelineMetadataSerde()
+    photonStruct: "PhotonPipelineMetadataSerde" = None
 
 
 @dataclass
@@ -25,8 +24,8 @@ class PhotonPipelineResult:
     ntRecieveTimestampMicros: int = -1
 
     targets: list[PhotonTrackedTarget] = field(default_factory=list)
-    multiTagResult: MultiTargetPNPResult = field(default_factory=MultiTargetPNPResult)
     metadata: PhotonPipelineMetadata = field(default_factory=PhotonPipelineMetadata)
+    multiTagResult: Optional[MultiTargetPNPResult] = None
 
     def getLatencyMillis(self) -> float:
         return (
@@ -54,4 +53,4 @@ class PhotonPipelineResult:
     def hasTargets(self) -> bool:
         return len(self.targets) > 0
 
-    photonStruct = PhotonPipelineResultSerde()
+    photonStruct: "PhotonPipelineResultSerde" = None

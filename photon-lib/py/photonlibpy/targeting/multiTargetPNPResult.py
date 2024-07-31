@@ -1,19 +1,17 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
 from ..packet import Packet
-from ..generated.MultiTargetPNPResultSerde import MultiTargetPNPResultSerde
 
 
 @dataclass
 class PnpResult:
-    isPresent: bool = False
     best: Transform3d = field(default_factory=Transform3d)
     alt: Transform3d = field(default_factory=Transform3d)
     ambiguity: float = 0.0
     bestReprojError: float = 0.0
     altReprojError: float = 0.0
 
-    photonStruct = MultiTargetPNPResultSerde()
+    photonStruct: "PNPResultSerde" = None
 
 
 @dataclass
@@ -33,4 +31,4 @@ class MultiTargetPNPResult:
                 self.fiducialIDsUsed.append(fidId)
         return packet
 
-    photonStruct = MultiTargetPNPResultSerde()
+    photonStruct: "MultiTargetPNPResultSerde" = None

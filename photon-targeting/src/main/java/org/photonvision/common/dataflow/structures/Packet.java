@@ -68,8 +68,8 @@ public class Packet {
      *
      * @return The packet data.
      */
-    public byte[] getData() {
-        return packetData;
+    public byte[] getWrittenDataCopy() {
+        return Arrays.copyOfRange(packetData, 0, writePos);
     }
 
     /**

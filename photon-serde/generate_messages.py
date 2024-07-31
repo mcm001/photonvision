@@ -1,4 +1,20 @@
 #!/usr/bin/env python3
+###############################################################################
+## Copyright (C) Photon Vision.
+###############################################################################
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <https://www.gnu.org/licenses/>.
+###############################################################################
 
 import argparse
 import copy
@@ -278,7 +294,7 @@ def main(argv):
     parser.add_argument(
         "--py_output_dir",
         help="Optional. If set, will spit Python serde files here",
-        default=dirname.parent / "photon-lib/py/photonlibpy/targeting",
+        default=dirname.parent / "photon-lib/py/photonlibpy/generated",
         type=Path,
     )
     parser.add_argument(

@@ -26,6 +26,7 @@ class PhotonPipelineResult:
 
     targets: list[PhotonTrackedTarget] = field(default_factory=list)
     multiTagResult: MultiTargetPNPResult = field(default_factory=MultiTargetPNPResult)
+    metadata: PhotonPipelineMetadata = field(default_factory=PhotonPipelineMetadata)
 
     def getLatencyMillis(self) -> float:
         return (self.publishTimestampMicros - self.captureTimestampMicros) / 1e3

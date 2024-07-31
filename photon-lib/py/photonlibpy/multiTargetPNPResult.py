@@ -1,14 +1,11 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
-from photonlibpy.packet import Packet
-from targeting.MultiTargetPNPResultSerde import MultiTargetPNPResultSerde
+from .Packet import Packet
+from .targeting.MultiTargetPNPResultSerde import MultiTargetPNPResultSerde
 
 
 @dataclass
 class PnpResult:
-    _NUM_BYTES_IN_FLOAT = 8
-    PACK_SIZE_BYTES = 1 + (_NUM_BYTES_IN_FLOAT * 7 * 2) + (_NUM_BYTES_IN_FLOAT * 3)
-
     isPresent: bool = False
     best: Transform3d = field(default_factory=Transform3d)
     alt: Transform3d = field(default_factory=Transform3d)
@@ -22,8 +19,6 @@ class PnpResult:
 @dataclass
 class MultiTargetPNPResult:
     _MAX_IDS = 32
-    # pnpresult + MAX_IDS possible targets (arbitrary upper limit that should never be hit, ideally)
-    _PACK_SIZE_BYTES = PnpResult.PACK_SIZE_BYTES + (1 * _MAX_IDS)
 
     estimatedPose: PnpResult = field(default_factory=PnpResult)
     fiducialIDsUsed: list[int] = field(default_factory=list)

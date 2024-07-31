@@ -217,7 +217,6 @@ def generate_photon_messages(cpp_java_root, py_root, template_root):
     )
 
     for message in messages:
-
         # don't generate shimmed types
         if get_shimmed_filter(messages)(message["name"]):
             continue

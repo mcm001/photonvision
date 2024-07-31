@@ -2,9 +2,9 @@ from enum import Enum
 import ntcore
 from wpilib import RobotController, Timer
 import wpilib
-from photonlibpy.packet import Packet
-from photonlibpy.photonPipelineResult import PhotonPipelineResult
-from photonlibpy.version import PHOTONVISION_VERSION, PHOTONLIB_VERSION  # type: ignore[import-untyped]
+from .Packet import Packet
+from .PhotonPipelineResult import PhotonPipelineResult
+from .version import PHOTONVISION_VERSION, PHOTONLIB_VERSION  # type: ignore[import-untyped]
 
 
 class VisionLEDMode(Enum):

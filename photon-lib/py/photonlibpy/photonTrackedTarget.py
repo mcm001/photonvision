@@ -1,23 +1,11 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
-from photonlibpy.packet import Packet
-from targeting.TargetCornerSerde import TargetCornerSerde
-from targeting.PhotonTrackedTargetSerde import PhotonTrackedTargetSerde
-
-
-@dataclass
-class TargetCorner:
-    x: float
-    y: float
-
-    photonStruct = TargetCornerSerde()
-
+from .Packet import Packet
+from .TargetCorner import TargetCorner
+from .targeting.PhotonTrackedTargetSerde import PhotonTrackedTargetSerde
 
 @dataclass
 class PhotonTrackedTarget:
-    _MAX_CORNERS = 8
-    _NUM_BYTES_IN_FLOAT = 8
-    _PACK_SIZE_BYTES = _NUM_BYTES_IN_FLOAT * (5 + 7 + 2 * 4 + 1 + 7 + 2 * _MAX_CORNERS)
 
     yaw: float = 0.0
     pitch: float = 0.0

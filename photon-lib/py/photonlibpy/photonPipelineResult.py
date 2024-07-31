@@ -1,14 +1,13 @@
 from dataclasses import dataclass, field
 
-from photonlibpy.multiTargetPNPResult import MultiTargetPNPResult
-from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
-from targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
-from targeting.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
+from .MultiTargetPNPResult import MultiTargetPNPResult
+from .PhotonTrackedTarget import PhotonTrackedTarget
+from .targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
+from .targeting.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
 
 
 @dataclass
 class PhotonPipelineMetadata:
-
     # Image capture and NT publish timestamp, in microseconds and in the coprocessor timebase. As
     # reported by WPIUtilJNI::now.
     captureTimestampMicros: int = -1
@@ -22,7 +21,6 @@ class PhotonPipelineMetadata:
 
 @dataclass
 class PhotonPipelineResult:
-
     # Since we don't trust NT time sync, keep track of when we got this packet into robot code
     ntRecieveTimestampMicros: int = -1
 

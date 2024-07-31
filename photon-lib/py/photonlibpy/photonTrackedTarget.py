@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
-from .Packet import Packet
-from .TargetCorner import TargetCorner
-from .targeting.PhotonTrackedTargetSerde import PhotonTrackedTargetSerde
+from .packet import Packet
+from .targetCorner import TargetCorner
+from .generated.PhotonTrackedTargetSerde import PhotonTrackedTargetSerde
+
 
 @dataclass
 class PhotonTrackedTarget:
-
     yaw: float = 0.0
     pitch: float = 0.0
     area: float = 0.0

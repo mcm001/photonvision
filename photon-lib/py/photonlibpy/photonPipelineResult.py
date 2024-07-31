@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 
-from .MultiTargetPNPResult import MultiTargetPNPResult
-from .PhotonTrackedTarget import PhotonTrackedTarget
-from .targeting.PhotonPipelineResultSerde import PhotonPipelineResultSerde
-from .targeting.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
+from .multiTargetPNPResult import MultiTargetPNPResult
+from .photonTrackedTarget import PhotonTrackedTarget
+from .generated.PhotonPipelineResultSerde import PhotonPipelineResultSerde
+from .generated.PhotonPipelineMetadataSerde import PhotonPipelineMetadataSerde
 
 
 @dataclass

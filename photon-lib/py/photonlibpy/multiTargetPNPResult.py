@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from wpimath.geometry import Transform3d
-from .Packet import Packet
-from .targeting.MultiTargetPNPResultSerde import MultiTargetPNPResultSerde
+from .packet import Packet
+from .generated.MultiTargetPNPResultSerde import MultiTargetPNPResultSerde
 
 
 @dataclass

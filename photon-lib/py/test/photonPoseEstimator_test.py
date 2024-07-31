@@ -1,7 +1,7 @@
-from photonlibpy.MultiTargetPNPResult import MultiTargetPNPResult, PnpResult
-from photonlibpy.PhotonPipelineResult import PhotonPipelineResult
-from photonlibpy.PhotonPoseEstimator import PhotonPoseEstimator, PoseStrategy
-from photonlibpy.PhotonTrackedTarget import PhotonTrackedTarget, TargetCorner
+from photonlibpy import MultiTargetPNPResult, PnpResult
+from photonlibpy import PhotonPipelineResult
+from photonlibpy import PhotonPoseEstimator, PoseStrategy
+from photonlibpy import PhotonTrackedTarget, TargetCorner, PhotonPipelineMetadata
 from robotpy_apriltag import AprilTag, AprilTagFieldLayout
 from wpimath.geometry import Pose3d, Rotation3d, Transform3d, Translation3d
 
@@ -36,9 +36,6 @@ def test_lowestAmbiguityStrategy():
 
     cameraOne = PhotonCameraInjector()
     cameraOne.result = PhotonPipelineResult(
-        0,
-        2 * 1e3,
-        1,
         11 * 1e6,
         [
             PhotonTrackedTarget(
@@ -108,6 +105,8 @@ def test_lowestAmbiguityStrategy():
                 0.4,
             ),
         ],
+        None,
+        metadata=PhotonPipelineMetadata(0, 2 * 1e3, 0),
     )
 
     estimator = PhotonPoseEstimator(
@@ -126,9 +125,6 @@ def test_lowestAmbiguityStrategy():
 def test_multiTagOnCoprocStrategy():
     cameraOne = PhotonCameraInjector()
     cameraOne.result = PhotonPipelineResult(
-        0,
-        2 * 1e3,
-        1,
         11 * 1e6,
         # There needs to be at least one target present for pose estimation to work
         # Doesn't matter which/how many targets for this test
@@ -159,6 +155,7 @@ def test_multiTagOnCoprocStrategy():
         multiTagResult=MultiTargetPNPResult(
             PnpResult(True, Transform3d(1, 3, 2, Rotation3d()))
         ),
+        metadata=PhotonPipelineMetadata(0, 2 * 1e3, 0),
     )
 
     estimator = PhotonPoseEstimator(
@@ -182,9 +179,6 @@ def test_cacheIsInvalidated():
 
     cameraOne = PhotonCameraInjector()
     result = PhotonPipelineResult(
-        0,
-        2 * 1e3,
-        1,
         20 * 1e6,
         [
             PhotonTrackedTarget(
@@ -210,6 +204,7 @@ def test_cacheIsInvalidated():
                 0.7,
             )
         ],
+        metadata=PhotonPipelineMetadata(0, 2 * 1e3, 0),
     )
 
     estimator = PhotonPoseEstimator(
@@ -217,9 +212,7 @@ def test_cacheIsInvalidated():
     )
 
     # Empty result, expect empty result
-    cameraOne.result = PhotonPipelineResult(
-        captureTimestampMicros=0, publishTimestampMicros=0, ntRecieveTimestampMicros=1e6
-    )
+    cameraOne.result = PhotonPipelineResult(0)
     estimatedPose = estimator.update()
     assert estimatedPose is None
 

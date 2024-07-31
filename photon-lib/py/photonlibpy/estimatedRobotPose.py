@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 
 from wpimath.geometry import Pose3d
 
-from .PhotonTrackedTarget import PhotonTrackedTarget
+from .photonTrackedTarget import PhotonTrackedTarget
 
 if TYPE_CHECKING:
-    from .PhotonPoseEstimator import PoseStrategy
+    from .photonPoseEstimator import PoseStrategy
 
 
 @dataclass

@@ -2,8 +2,8 @@ from enum import Enum
 import ntcore
 from wpilib import RobotController, Timer
 import wpilib
-from .Packet import Packet
-from .PhotonPipelineResult import PhotonPipelineResult
+from .packet import Packet
+from .photonPipelineResult import PhotonPipelineResult
 from .version import PHOTONVISION_VERSION, PHOTONLIB_VERSION  # type: ignore[import-untyped]
 
 

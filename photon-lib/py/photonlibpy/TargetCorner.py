@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from .targeting.TargetCornerSerde import TargetCornerSerde
+from .generated.TargetCornerSerde import TargetCornerSerde
+
 
 @dataclass
 class TargetCorner:

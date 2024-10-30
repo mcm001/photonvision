@@ -157,7 +157,7 @@ class VisionSystemSimTest {
     }
 
     @Test
-    public void testNotVisibleVert1() {
+    public void testNotVisibleVert1() throws InterruptedException {
         final var targetPose =
                 new Pose3d(new Translation3d(15.98, 0, 1), new Rotation3d(0, 0, Math.PI));
         var visionSysSim = new VisionSystemSim("Test");
@@ -174,6 +174,8 @@ class VisionSystemSimTest {
         visionSysSim.adjustCamera( // vooop selfie stick
                 cameraSim, new Transform3d(new Translation3d(0, 0, 5000), new Rotation3d(0, 0, Math.PI)));
         visionSysSim.update(robotPose);
+        NetworkTableInstance.getDefault().flush();
+        Thread.sleep(10);
         assertFalse(camera.getLatestResult().hasTargets());
     }
 

@@ -133,6 +133,72 @@ jobs:
         with:
           name: built-docs
           path: docs/build/html
+
+  build-photonlib-vendorjson:
+    name: "Build Vendor JSON"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Checkout vendor-jsons
+        uses: actions/checkout@v4
+        with:
+          repository: PhotonVision/vendor-json-repo
+          path: vendor-json-repo
+
+      - name: Install Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+      - run: git fetch --tags --force
+      # Generate the JSON and give it the ""standard""" name maven gives it
+      - run: |
+          chmod +x gradlew
+          ./gradlew photon-lib:generateVendorJson
+          mv photon-lib/build/generated/vendordeps/photonlib.json photon-lib/build/generated/vendordeps/photonlib-json-1.0.json
+      # Upload it here so it shows up in releases
+      - uses: actions/upload-artifact@v4
+        with:
+          name: photonlib-vendor-json
+          path: photon-lib/build/generated/vendordeps/photonlib.json
+
+      - run: find .
+        working-directory: vendor-json-repo
+
+      - run: |
+          export VERSION=$(git describe --tags --match=v*)
+          cd vendor-json-repo
+          git switch -C photonlib-$VERSION
+      - run: git status
+        working-directory: vendor-json-repo
+
+      - run: rm ./2025/photonlib-*
+        name: Nuke old photon releases
+        working-directory: vendor-json-repo
+      - run: cp photon-lib/build/generated/vendordeps/photonlib-json-1.0.json ./2025/photonlib-$(git describe --tags --match=v*).json
+        name: Copy new JSON over
+        working-directory: vendor-json-repo
+
+      # apparently we have to push or gh pr create gets upset
+      - name: Commit and push 
+        run: |
+          export VERSION=$(git describe --tags --match=v*)
+          cd vendor-json-repo
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git add .
+          git commit -m "Update vendor JSON to $VERSION"
+          git push --set-upstream origin photonlib-$VERSION -f
+
+      # Cut a new release
+      - run: gh pr create --repo PhotonVision/vendor-json-repo --title "Update PhotonLib to asdf" --body "Automatic vendor JSON update" --base main --head $(git branch --show-current)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        working-directory: vendor-json-repo
+
   build-photonlib-host:
     env:
       MACOSX_DEPLOYMENT_TARGET: 13

@@ -61,7 +61,6 @@ public class PhotonTargetingJniLoader {
             // least
             var tempfolder = Files.createTempDirectory("nativeextract");
             File temp = new File(tempfolder.toAbsolutePath().toString(), nativeLibName);
-            System.out.println(temp.getAbsolutePath().toString());
             FileOutputStream fos = new FileOutputStream(temp);
 
             int read = -1;

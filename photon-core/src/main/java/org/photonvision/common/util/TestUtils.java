@@ -22,8 +22,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import java.awt.HeadlessException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+
+import org.apache.commons.io.FileUtils;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.photonvision.jni.WpilibLoader;
@@ -32,6 +37,37 @@ import org.photonvision.vision.calibration.CameraCalibrationCoefficients;
 public class TestUtils {
     public static boolean loadLibraries() {
         return WpilibLoader.loadLibraries();
+    }
+
+    public File loadResourceFromJar(String path) {
+        InputStream in = null;
+        try {
+            in = TestUtils.class.getResourceAsStream(path);
+
+            if (in == null) {
+                System.err.println("Could not get resource at path " + path);
+                return null;
+            }
+
+            // get filename
+            var fname = Path.of(path).getFileName().toString();
+
+            // Somewhere to shove the file
+            File temp = Files.createTempFile(fname, null).toFile();
+
+            FileUtils.copyInputStreamToFile(in, temp);
+
+            return temp;
+        } catch (IOException e) {
+            try {
+                if (in != null) in.close();
+            } catch (IOException e1) {
+                // we're just fobar at this point
+            }
+        } finally {
+        }
+
+        return null;
     }
 
     @SuppressWarnings("unused")
@@ -370,12 +406,6 @@ public class TestUtils {
 
     public static void showImage(Mat frame) {
         showImage(frame, DefaultTimeoutMillis);
-    }
-
-    public static Path getTestMode2023ImagePath() {
-        return getResourcesFolderPath(true)
-                .resolve("testimages")
-                .resolve(WPI2022Image.kTerminal22ft6in.path);
     }
 
     public static Path getConfigDirectoriesPath(boolean testMode) {

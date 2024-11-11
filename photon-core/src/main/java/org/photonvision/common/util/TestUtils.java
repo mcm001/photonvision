@@ -18,16 +18,12 @@
 package org.photonvision.common.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import java.awt.HeadlessException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.apache.commons.io.FileUtils;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
@@ -39,35 +35,68 @@ public class TestUtils {
         return WpilibLoader.loadLibraries();
     }
 
-    public File loadResourceFromJar(String path) {
-        InputStream in = null;
+    public static Path getResourcesFolderPath() {
+        System.out.println("CWD: " + Path.of("").toAbsolutePath());
+
+        // VSCode likes to make this path relative to the wrong root directory, so a fun hack to tell
+        // if it's wrong
+        Path ret = Path.of("test-resources");
+
+        if (Path.of("test-resources")
+                .toAbsolutePath()
+                .toString()
+                .replace("/", "")
+                .replace("\\", "")
+                .toLowerCase()
+                .matches(".*photon-[a-z]*test-resources")) {
+            ret = Path.of("../test-resources");
+
+            if (ret.toFile().exists()) {
+                return ret;
+            } else {
+                throw new RuntimeException("Seems like we're running from gradle, but test-resources still doesnt exist");
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Load a Path, relative to the test-resources folder, or extract from our JAR if it isn't present.
+     */
+    public static Path loadResourceFromJar(Path path) {
+        // First check if the given path exists already
+        if (path.toFile().exists()) {
+            return path;
+        }
+
         try {
-            in = TestUtils.class.getResourceAsStream(path);
+            var in = TestUtils.class.getClassLoader().getResource(path.toString());
 
             if (in == null) {
                 System.err.println("Could not get resource at path " + path);
                 return null;
             }
 
+            // Resource folder is a literal folder - easy enoguh
+            if (in.getProtocol().equals("file")) {
+                return Path.of(in.toURI());
+            }
+
+            // Otherwise, extract from jar
+
             // get filename
-            var fname = Path.of(path).getFileName().toString();
+            var fname = path.getFileName().toString();
 
             // Somewhere to shove the file
             File temp = Files.createTempFile(fname, null).toFile();
 
-            FileUtils.copyInputStreamToFile(in, temp);
+            FileUtils.copyInputStreamToFile(in.openStream(), temp);
 
-            return temp;
-        } catch (IOException e) {
-            try {
-                if (in != null) in.close();
-            } catch (IOException e1) {
-                // we're just fobar at this point
-            }
-        } finally {
+            return temp.toPath();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     @SuppressWarnings("unused")
@@ -158,54 +187,6 @@ public class TestUtils {
         }
     }
 
-    public enum WPI2023Apriltags {
-        k162_36_Angle,
-        k162_36_Straight,
-        k383_60_Angle2;
-
-        public static double FOV = 68.5;
-
-        public final Translation2d approxPose;
-        public final Path path;
-
-        Path getPath() {
-            var filename = this.toString().substring(1);
-            return Path.of("2023", "AprilTags", filename + ".png");
-        }
-
-        Translation2d getPose() {
-            var names = this.toString().substring(1).split("_");
-            var x = Units.inchesToMeters(Integer.parseInt(names[0]));
-            var y = Units.inchesToMeters(Integer.parseInt(names[1]));
-            return new Translation2d(x, y);
-        }
-
-        WPI2023Apriltags() {
-            this.approxPose = getPose();
-            this.path = getPath();
-        }
-    }
-
-    public enum WPI2022Image {
-        kTerminal12ft6in(Units.feetToMeters(12.5)),
-        kTerminal22ft6in(Units.feetToMeters(22.5));
-
-        public static double FOV = 68.5;
-
-        public final double distanceMeters;
-        public final Path path;
-
-        Path getPath() {
-            var filename = this.toString().substring(1).replace('_', '-');
-            return Path.of("2022", "WPI", filename + ".png");
-        }
-
-        WPI2022Image(double distanceMeters) {
-            this.distanceMeters = distanceMeters;
-            this.path = getPath();
-        }
-    }
-
     public enum PolygonTestImages {
         kPolygons;
 
@@ -262,90 +243,71 @@ public class TestUtils {
         }
     }
 
-    public static Path getResourcesFolderPath(boolean testMode) {
-        System.out.println("CWD: " + Path.of("").toAbsolutePath());
-
-        // VSCode likes to make this path relative to the wrong root directory, so a fun hack to tell
-        // if it's wrong
-        Path ret = Path.of("test-resources").toAbsolutePath();
-        if (Path.of("test-resources")
-                .toAbsolutePath()
-                .toString()
-                .replace("/", "")
-                .replace("\\", "")
-                .toLowerCase()
-                .matches(".*photon-[a-z]*test-resources")) {
-            ret = Path.of("../test-resources").toAbsolutePath();
-        }
-        return ret;
-    }
 
     public static Path getTestMode2019ImagePath() {
-        return getResourcesFolderPath(true)
+        return getResourcesFolderPath()
                 .resolve("testimages")
                 .resolve(WPI2019Image.kRocketPanelAngleDark60in.path);
     }
 
     public static Path getTestMode2020ImagePath() {
-        return getResourcesFolderPath(true)
+        return getResourcesFolderPath()
                 .resolve("testimages")
                 .resolve(WPI2020Image.kBlueGoal_156in_Left.path);
     }
 
-    public static Path getTestMode2022ImagePath() {
-        return getResourcesFolderPath(true)
-                .resolve("testimages")
-                .resolve(WPI2022Image.kTerminal22ft6in.path);
-    }
-
     public static Path getTestModeApriltagPath() {
-        return getResourcesFolderPath(true)
+        return getResourcesFolderPath()
                 .resolve("testimages")
                 .resolve(ApriltagTestImages.kRobots.path);
     }
 
-    public static Path getTestImagesPath(boolean testMode) {
-        return getResourcesFolderPath(testMode).resolve("testimages");
+    public static Path getTestImagesPath() {
+        return Path.of("testimages");
     }
 
-    public static Path getCalibrationPath(boolean testMode) {
-        return getResourcesFolderPath(testMode).resolve("calibration");
+    public static Path getCalibrationPath() {
+        return getResourcesFolderPath().resolve("calibration");
     }
 
-    public static Path getPowercellPath(boolean testMode) {
-        return getTestImagesPath(testMode).resolve("polygons").resolve("powercells");
+    public static Path getPowercellPath() {
+        return getTestImagesPath().resolve("polygons").resolve("powercells");
     }
 
-    public static Path getWPIImagePath(WPI2020Image image, boolean testMode) {
-        return getTestImagesPath(testMode).resolve(image.path);
+    public static Path getWPIImagePath(WPI2024Images image) {
+        return loadResourceFromJar(getTestImagesPath().resolve(image.path));
     }
 
-    public static Path getWPIImagePath(WPI2019Image image, boolean testMode) {
-        return getTestImagesPath(testMode).resolve(image.path);
+    public static Path getWPIImagePath(WPI2020Image image) {
+        return getTestImagesPath().resolve(image.path);
     }
 
-    public static Path getPolygonImagePath(PolygonTestImages image, boolean testMode) {
-        return getTestImagesPath(testMode).resolve(image.path);
+    public static Path getWPIImagePath(WPI2019Image image) {
+        return getTestImagesPath().resolve(image.path);
     }
 
-    public static Path getApriltagImagePath(ApriltagTestImages image, boolean testMode) {
-        return getTestImagesPath(testMode).resolve(image.path);
+    public static Path getPolygonImagePath(PolygonTestImages image) {
+        return getTestImagesPath().resolve(image.path);
     }
 
-    public static Path getPowercellImagePath(PowercellTestImages image, boolean testMode) {
-        return getPowercellPath(testMode).resolve(image.path);
+    public static Path getApriltagImagePath(ApriltagTestImages image) {
+        return getTestImagesPath().resolve(image.path);
+    }
+
+    public static Path getPowercellImagePath(PowercellTestImages image) {
+        return getPowercellPath().resolve(image.path);
     }
 
     public static Path getSquaresBoardImagesPath() {
-        return getResourcesFolderPath(false).resolve("calibrationSquaresImg");
+        return getResourcesFolderPath().resolve("calibrationSquaresImg");
     }
 
     public static Path getCharucoBoardImagesPath() {
-        return getResourcesFolderPath(false).resolve("calibrationCharucoImg");
+        return getResourcesFolderPath().resolve("calibrationCharucoImg");
     }
 
     public static File getHardwareConfigJson() {
-        return getResourcesFolderPath(false)
+        return getResourcesFolderPath()
                 .resolve("hardware")
                 .resolve("HardwareConfig.json")
                 .toFile();
@@ -356,11 +318,11 @@ public class TestUtils {
     public static final String LIFECAM_1280P_CAL_FILE = "lifecam_1280.json";
     public static final String LIMELIGHT_480P_CAL_FILE = "limelight_1280_720.json";
 
-    public static CameraCalibrationCoefficients getCoeffs(String filename, boolean testMode) {
+    public static CameraCalibrationCoefficients getCoeffs(String filename) {
         try {
             return new ObjectMapper()
                     .readValue(
-                            (Path.of(getCalibrationPath(testMode).toString(), filename).toFile()),
+                            (Path.of(getCalibrationPath().toString(), filename).toFile()),
                             CameraCalibrationCoefficients.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -368,20 +330,16 @@ public class TestUtils {
         }
     }
 
-    public static CameraCalibrationCoefficients get2019LifeCamCoeffs(boolean testMode) {
-        return getCoeffs(LIFECAM_240P_CAL_FILE, testMode);
+    public static CameraCalibrationCoefficients get2019LifeCamCoeffs() {
+        return getCoeffs(LIFECAM_240P_CAL_FILE);
     }
 
-    public static CameraCalibrationCoefficients get2020LifeCamCoeffs(boolean testMode) {
-        return getCoeffs(LIFECAM_480P_CAL_FILE, testMode);
+    public static CameraCalibrationCoefficients get2020LifeCamCoeffs() {
+        return getCoeffs(LIFECAM_480P_CAL_FILE);
     }
 
-    public static CameraCalibrationCoefficients get2023LifeCamCoeffs(boolean testMode) {
-        return getCoeffs(LIFECAM_1280P_CAL_FILE, testMode);
-    }
-
-    public static CameraCalibrationCoefficients getLaptop() {
-        return getCoeffs("laptop.json", true);
+    public static CameraCalibrationCoefficients get2023LifeCamCoeffs() {
+        return getCoeffs(LIFECAM_1280P_CAL_FILE);
     }
 
     private static final int DefaultTimeoutMillis = 5000;
@@ -396,19 +354,11 @@ public class TestUtils {
         }
     }
 
-    public static void showImage(Mat frame, int timeoutMs) {
-        showImage(frame, "", timeoutMs);
-    }
-
     public static void showImage(Mat frame, String title) {
         showImage(frame, title, DefaultTimeoutMillis);
     }
 
-    public static void showImage(Mat frame) {
-        showImage(frame, DefaultTimeoutMillis);
-    }
-
-    public static Path getConfigDirectoriesPath(boolean testMode) {
-        return getResourcesFolderPath(testMode).resolve("old_configs");
+    public static Path getConfigDirectoriesPath() {
+        return getResourcesFolderPath().resolve("old_configs");
     }
 }

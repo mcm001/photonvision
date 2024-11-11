@@ -52,9 +52,9 @@ public class ArucoPipelineTest {
 
         var frameProvider =
                 new FileFrameProvider(
-                        TestUtils.getApriltagImagePath(TestUtils.ApriltagTestImages.kTag1_640_480, false),
+                        TestUtils.getApriltagImagePath(TestUtils.ApriltagTestImages.kTag1_640_480),
                         TestUtils.WPI2020Image.FOV,
-                        TestUtils.get2020LifeCamCoeffs(false));
+                        TestUtils.get2020LifeCamCoeffs());
         frameProvider.requestFrameThresholdType(pipeline.getThresholdType());
 
         CVPipelineResult pipelineResult;

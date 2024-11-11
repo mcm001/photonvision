@@ -169,7 +169,7 @@ public class VisionModuleManagerTest {
         var conf = new CameraConfiguration("Foo", "Bar");
         var ffp =
                 new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes, false),
+                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes),
                         TestUtils.WPI2019Image.FOV);
 
         var testSource = new TestSource(ffp, conf);
@@ -197,7 +197,7 @@ public class VisionModuleManagerTest {
         conf.streamIndex = 1;
         var ffp =
                 new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes, false),
+                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes),
                         TestUtils.WPI2019Image.FOV);
         var testSource = new TestSource(ffp, conf);
 
@@ -205,7 +205,7 @@ public class VisionModuleManagerTest {
         conf2.streamIndex = 0;
         var ffp2 =
                 new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes, false),
+                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes),
                         TestUtils.WPI2019Image.FOV);
         var testSource2 = new TestSource(ffp2, conf2);
 
@@ -213,7 +213,7 @@ public class VisionModuleManagerTest {
         conf3.streamIndex = 0;
         var ffp3 =
                 new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes, false),
+                        TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes),
                         TestUtils.WPI2019Image.FOV);
         var testSource3 = new TestSource(ffp3, conf3);
 

@@ -52,9 +52,9 @@ public class AprilTagTest {
 
         var frameProvider =
                 new FileFrameProvider(
-                        TestUtils.getApriltagImagePath(TestUtils.ApriltagTestImages.kTag1_640_480, false),
+                        TestUtils.getApriltagImagePath(TestUtils.ApriltagTestImages.kTag1_640_480),
                         TestUtils.WPI2020Image.FOV,
-                        TestUtils.get2020LifeCamCoeffs(false));
+                        TestUtils.get2020LifeCamCoeffs());
         frameProvider.requestFrameThresholdType(pipeline.getThresholdType());
 
         CVPipelineResult pipelineResult;
@@ -117,9 +117,9 @@ public class AprilTagTest {
 
         var frameProvider =
                 new FileFrameProvider(
-                        TestUtils.getApriltagImagePath(TestUtils.ApriltagTestImages.kTag_corner_1280, false),
+                        TestUtils.getApriltagImagePath(TestUtils.ApriltagTestImages.kTag_corner_1280),
                         TestUtils.WPI2020Image.FOV,
-                        TestUtils.getCoeffs(TestUtils.LIMELIGHT_480P_CAL_FILE, false));
+                        TestUtils.getCoeffs(TestUtils.LIMELIGHT_480P_CAL_FILE));
         frameProvider.requestFrameThresholdType(pipeline.getThresholdType());
 
         CVPipelineResult pipelineResult;

@@ -109,7 +109,7 @@ public class SQLConfigTest {
     public void testLoad2024_3_1() {
         var cfgLoader =
                 new SqlConfigProvider(
-                        TestUtils.getConfigDirectoriesPath(false)
+                        TestUtils.getConfigDirectoriesPath()
                                 .resolve("photonvision_config_from_v2024.3.1"));
 
         assertDoesNotThrow(cfgLoader::load);

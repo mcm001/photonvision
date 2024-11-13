@@ -15,14 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <hal/HAL.h>
+#pragma once
 
-#include "gtest/gtest.h"
-
-int main(int argc, char** argv) {
-  HAL_Initialize(500, 0);
-  ::testing::InitGoogleTest(&argc, argv);
-  int ret = RUN_ALL_TESTS();
-  HAL_Shutdown();
-  return ret;
-}
+#define CHECK_PTR(ptr)                                               \
+  if (!ptr) {                                                        \
+    fmt::println("Got invalid pointer?? {}:{}", __FILE__, __LINE__); \
+    return;                                                          \
+  }
+#define CHECK_PTR_RETURN(ptr, default)                               \
+  if (!ptr) {                                                        \
+    fmt::println("Got invalid pointer?? {}:{}", __FILE__, __LINE__); \
+    return default;                                                  \
+  }

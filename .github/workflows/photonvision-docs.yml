@@ -3,22 +3,43 @@ name: PhotonVision Sphinx Documentation Checks
 on:
   push:
     branches: [ master ]
-    paths:
-      - 'docs/**'
-      - '.github/**'
   pull_request:
     branches: [ master ]
-    paths:
-      - 'docs/**'
-      - '.github/**'
   merge_group:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
+  changed:
+    runs-on: ubuntu-22.04
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' }}
+      code: ${{ steps.filter.outputs.code == 'true' || steps.filter.outputs.workflow == 'true' }}
+    steps:
+      - name: Check for file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          list-files: 'shell'
+          filters: |
+            docs:
+              - 'docs/**'
+            workflow:
+              - '.github/**'
+            code:
+              - 'photon-*/**'
+
+
   build:
     runs-on: ubuntu-22.04
+
+    needs: changed
+    if: ${{ needs.changed.outputs.docs }}
 
     steps:
     - uses: actions/checkout@v4

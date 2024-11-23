@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     needs: changed
-    if: ${{ needs.changed.outputs.docs }}
+    if: needs.changed.outputs.docs== 'true'
 
     steps:
     - uses: actions/checkout@v4

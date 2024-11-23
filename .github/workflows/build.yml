@@ -38,7 +38,7 @@ jobs:
     name: "PhotonClient Build"
 
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
 
     defaults:
       run:
@@ -63,7 +63,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
 
     strategy:
       fail-fast: false
@@ -102,7 +102,7 @@ jobs:
     name: "Gradle Build"
 
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
 
     runs-on: ubuntu-22.04
     steps:
@@ -138,7 +138,7 @@ jobs:
     name: "Build Offline Docs"
 
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
 
     runs-on: ubuntu-22.04
     steps:
@@ -170,7 +170,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -218,7 +218,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -265,7 +265,7 @@ jobs:
     name: "Photonlib - Build Docker - ${{ matrix.artifact-name }}"
 
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
 
     steps:
       - uses: actions/checkout@v4

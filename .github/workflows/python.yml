@@ -22,6 +22,8 @@ jobs:
     outputs:
       py: ${{ steps.filter.outputs.python == 'true' || steps.filter.outputs.workflow == 'true' }}
     steps:
+      - uses: actions/checkout@v4
+        if: github.event_name != 'pull_request'
       - name: Check for file changes
         uses: dorny/paths-filter@v2
         id: filter

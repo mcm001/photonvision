@@ -6,21 +6,40 @@ on:
     branches: [ master ]
     tags:
       - 'v*'
-    paths:
-      - '**'
-      - '!docs/**'
-      - '.github/**'
   pull_request:
     branches: [ master ]
-    paths:
-      - '**'
-      - '!docs/**'
-      - '.github/**'
   merge_group:
 
 jobs:
+  changed:
+    runs-on: ubuntu-22.04
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' }}
+      code: ${{ steps.filter.outputs.code == 'true' || steps.filter.outputs.workflow == 'true' }}
+    steps:
+      - name: Check for file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          list-files: 'shell'
+          filters: |
+            docs:
+              - 'docs/**'
+            workflow:
+              - '.github/**'
+            code:
+              - 'photon-*/**'
+
   build-client:
     name: "PhotonClient Build"
+
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
+
     defaults:
       run:
         working-directory: photon-client
@@ -40,6 +59,11 @@ jobs:
           name: built-client
           path: photon-client/dist/
   build-examples:
+    name: "Photonlib - Build Examples - ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
 
     strategy:
       fail-fast: false
@@ -50,9 +74,6 @@ jobs:
           - os: macos-14
             architecture: aarch64
           - os: ubuntu-22.04
-
-    name: "Photonlib - Build Examples - ${{ matrix.os }}"
-    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -79,6 +100,10 @@ jobs:
         run: ./gradlew build
   build-gradle:
     name: "Gradle Build"
+
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
+
     runs-on: ubuntu-22.04
     steps:
       # Checkout code.
@@ -111,6 +136,10 @@ jobs:
           file: ./photon-core/build/reports/jacoco/test/jacocoTestReport.xml
   build-offline-docs:
     name: "Build Offline Docs"
+
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
+
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -139,6 +168,10 @@ jobs:
   build-photonlib-vendorjson:
     name: "Build Vendor JSON"
     runs-on: ubuntu-22.04
+
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -183,6 +216,10 @@ jobs:
 
     name: "Photonlib - Build Host - ${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
+
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -226,6 +263,10 @@ jobs:
     runs-on: ubuntu-22.04
     container: ${{ matrix.container }}
     name: "Photonlib - Build Docker - ${{ matrix.artifact-name }}"
+
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
+
     steps:
       - uses: actions/checkout@v4
         with:

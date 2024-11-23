@@ -6,16 +6,8 @@ on:
     branches: [ master ]
     tags:
       - 'v*'
-    paths:
-      - '**'
-      - '!docs/**'
-      - '.github/**'
   pull_request:
     branches: [ master ]
-    paths:
-      - '**'
-      - '!docs/**'
-      - '.github/**'
   merge_group:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -29,8 +21,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changed:
+    runs-on: ubuntu-22.04
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' }}
+      code: ${{ steps.filter.outputs.code == 'true' || steps.filter.outputs.workflow == 'true' }}
+    steps:
+      - name: Check for file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          list-files: 'shell'
+          filters: |
+            docs:
+              - 'docs/**'
+            workflow:
+              - '.github/**'
+            code:
+              - 'photon-*/**'
+
+  echo:
+    needs: changed
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo ${{ needs.changed.outputs.code }}
+      - run: echo ${{ needs.changed.outputs.docs }}
+
   build-client:
+    needs: changed
     name: "PhotonClient Build"
+    if: ${{ needs.changed.outputs.code }}
     defaults:
       run:
         working-directory: photon-client
@@ -52,6 +76,8 @@ jobs:
 
   run_docs:
     runs-on: "ubuntu-22.04"
+    needs: changed
+    if: ${{ needs.changed.outputs.code }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

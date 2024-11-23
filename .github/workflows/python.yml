@@ -8,21 +8,35 @@ on:
     branches: [ master ]
     tags:
       - 'v*'
-    paths:
-      - '**'
-      - '!docs/**'
-      - '.github/**'
   pull_request:
     branches: [ master ]
-    paths:
-      - '**'
-      - '!docs/**'
-      - '.github/**'
   merge_group:
 
 jobs:
+  changed:
+    runs-on: ubuntu-22.04
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      py: ${{ steps.filter.outputs.python == 'true' || steps.filter.outputs.workflow == 'true' }}
+    steps:
+      - name: Check for file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          list-files: 'shell'
+          filters: |
+            workflow:
+              - '.github/**'
+            python:
+              - 'photon-lib/py/**'
   buildAndDeploy:
     runs-on: ubuntu-22.04
+
+    needs: changed
+    if: ${{ needs.changed.outputs.py }}
 
     steps:
       - name: Checkout code
@@ -70,7 +84,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages_dir: ./photon-lib/py/dist/
+          packages-dir: ./photon-lib/py/dist/
 
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing

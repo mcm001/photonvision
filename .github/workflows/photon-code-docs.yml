@@ -28,10 +28,10 @@ jobs:
       pull-requests: read
     # Set job outputs to values from filter step
     outputs:
-      docs: ${{ steps.filter.outputs.docs || steps.filter.outputs.workflow }}
-      code: ${{ steps.filter.outputs.code || steps.filter.outputs.workflow }}
+      docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' }}
+      code: ${{ steps.filter.outputs.code == 'true' || steps.filter.outputs.workflow == 'true' }}
     steps:
-      - name: Check for non-docs file changes
+      - name: Check for file changes
         uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -44,9 +44,17 @@ jobs:
             code:
               - 'photon-*/**'
 
+  echo:
+    needs: changed
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo ${{ needs.changed.outputs }}
+      - run: echo ${{ needs.changed.outputs.code }}
+      - run: echo ${{ needs.changed.outputs.docs }}
+
   build-client:
     needs: changed
-    name: "PhotonClient Build - ${{ needs.changed.outputs.code }} -- ${{ needs.changed.outputs.docs}}"
+    name: "PhotonClient Build"
     if: ${{ needs.changed.outputs.code == 'true' }}
     defaults:
       run:

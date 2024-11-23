@@ -48,13 +48,13 @@ jobs:
     needs: changed
     runs-on: ubuntu-22.04
     steps:
-      - run: echo ${{ needs.changed.outputs.code }}
-      - run: echo ${{ needs.changed.outputs.docs }}
+      - run: echo "code=${{ needs.changed.outputs.code }}"
+      - run: echo "docs=${{ needs.changed.outputs.docs }}"
 
   build-client:
     needs: changed
     name: "PhotonClient Build"
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
     defaults:
       run:
         working-directory: photon-client
@@ -77,7 +77,7 @@ jobs:
   run_docs:
     runs-on: "ubuntu-22.04"
     needs: changed
-    if: ${{ needs.changed.outputs.code }}
+    if: needs.changed.outputs.code  == 'true'
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

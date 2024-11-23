@@ -45,8 +45,8 @@ jobs:
               - 'photon-*/**'
 
   build-client:
-    name: "PhotonClient Build"
     needs: changed
+    name: "PhotonClient Build - ${{ needs.changed.outputs.code }} -- ${{ needs.changed.outputs.docs}}"
     if: ${{ needs.changed.outputs.code == 'true' }}
     defaults:
       run:

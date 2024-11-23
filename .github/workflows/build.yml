@@ -13,14 +13,18 @@ on:
 jobs:
   changed:
     runs-on: ubuntu-22.04
+
     # Required permissions
     permissions:
       pull-requests: read
     # Set job outputs to values from filter step
     outputs:
-      docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' }}
-      code: ${{ steps.filter.outputs.code == 'true' || steps.filter.outputs.workflow == 'true' }}
+      docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' || github.event_name != 'pull_request' }}
+      code: ${{ steps.filter.outputs.code == 'true' || steps.filter.outputs.workflow == 'true' || github.event_name != 'pull_request' }}
+
     steps:
+      - uses: actions/checkout@v4
+        if: github.event_name != 'pull_request'
       - name: Check for file changes
         uses: dorny/paths-filter@v2
         id: filter

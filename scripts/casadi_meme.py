@@ -46,51 +46,40 @@ robot2camera = ca.SX.sym("robot2camera", 4, 4)
 
 field2camera = field2robot @ robot2camera
 
-# Cost function
-J = 0
+NUM_LANDMARKS = 3
 
-# Points in the field (homogeneous coordinates)
-field2points = [
-    ca.DM([1.5, 0 - 0.08255, 0.5 - 0.08255, 1]),
-    ca.DM([1.5, 0 - 0.08255, 0.5 + 0.08255, 1]),
-    ca.DM([1.5, 0 + 0.08255, 0.5 + 0.08255, 1]),
-    ca.DM([1.5, 0 + 0.08255, 0.5 - 0.08255, 1]),
-]
+# Points in the field (homogeneous coordinates). Rows are [x, y, z, 1]
+field2points = ca.SX.sym("field2landmark", 4, NUM_LANDMARKS)
 
 # Observed points in the image
-point_observations = [
-    (333, -17),
-    (333, -83),
-    (267, -83),
-    (267, -17),
-]
+point_observations = ca.SX.sym("observations_px", 2, NUM_LANDMARKS)
 
-# Compute the inverse of field2camera
+# landmarks in camera frame
 camera2field = ca.inv(field2camera)
+camera2point = camera2field @ field2points
 
-# Compute reprojection error for each point
-for field2point, observation in zip(field2points, point_observations):
-    camera2point = camera2field @ field2point
+# Camera frame coordinates
+x = camera2point[0, :]
+y = camera2point[1, :]
+z = camera2point[2, :]
 
-    # Camera frame coordinates
-    x = camera2point[0]
-    y = camera2point[1]
-    z = camera2point[2]
+# Observed coordinates
+u_observed = point_observations[0, :]
+v_observed = point_observations[1, :]
 
-    # Observed coordinates
-    u_observed, v_observed = observation
+# Project to image plane
+X = x / z
+Y = y / z
 
-    # Project to image plane
-    X = x / z
-    Y = y / z
+u = fx * X + cx
+v = fy * Y + cy
 
-    u = fx * X + cx
-    v = fy * Y + cy
+# Reprojection error
+u_err = u - u_observed
+v_err = v - v_observed
 
-    # Compute squared error
-    u_err = u - u_observed
-    v_err = v - v_observed
-    J += u_err**2 + v_err**2
+# Frobenius norm - sqrt(sum squared of each component). Square to remove sqrt
+J = ca.norm_fro(u_err) ** 2 + ca.norm_fro(v_err) ** 2
 
 SOLVE_IPOPT = False
 if SOLVE_IPOPT:
@@ -119,9 +108,19 @@ hess_J, _ = ca.hessian(J, x_vec)
 grad_J = ca.gradient(J, x_vec)
 
 # Cost, plus grad and hessian of cost
-J_func = ca.Function("J", [x_vec, fx, fy, cx, cy, robot2camera], [J])
-grad_func = ca.Function("grad_J", [x_vec, fx, fy, cx, cy, robot2camera], [grad_J])
-hess_func = ca.Function("hess_J", [x_vec, fx, fy, cx, cy, robot2camera], [hess_J])
+J_func = ca.Function(
+    "J", [x_vec, fx, fy, cx, cy, robot2camera, field2points, point_observations], [J]
+)
+grad_func = ca.Function(
+    "grad_J",
+    [x_vec, fx, fy, cx, cy, robot2camera, field2points, point_observations],
+    [grad_J],
+)
+hess_func = ca.Function(
+    "hess_J",
+    [x_vec, fx, fy, cx, cy, robot2camera, field2points, point_observations],
+    [hess_J],
+)
 
 if False:
 

@@ -46,7 +46,7 @@ robot2camera = ca.SX.sym("robot2camera", 4, 4)
 
 field2camera = field2robot @ robot2camera
 
-NUM_LANDMARKS = 3
+NUM_LANDMARKS = 4 * 1
 
 # Points in the field (homogeneous coordinates). Rows are [x, y, z, 1]
 field2points = ca.SX.sym("field2landmark", 4, NUM_LANDMARKS)
@@ -79,7 +79,10 @@ u_err = u - u_observed
 v_err = v - v_observed
 
 # Frobenius norm - sqrt(sum squared of each component). Square to remove sqrt
-J = ca.norm_fro(u_err) ** 2 + ca.norm_fro(v_err) ** 2
+J = ca.norm_fro(u_err)**2 + ca.norm_fro(v_err)**2
+
+print(J)
+
 
 SOLVE_IPOPT = False
 if SOLVE_IPOPT:
@@ -121,6 +124,9 @@ hess_func = ca.Function(
     [x_vec, fx, fy, cx, cy, robot2camera, field2points, point_observations],
     [hess_J],
 )
+
+print(J_func)
+print(robot2camera)
 
 if False:
 

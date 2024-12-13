@@ -63,9 +63,9 @@ point_observations = [
 ]
 
 # initial guess at robot pose. We expect the robot to converge to 0,0,0
-robot_x.set_value(-0.01)
+robot_x.set_value(-0.1)
 robot_y.set_value(0.0)
-robot_θ.set_value(0.02)
+robot_θ.set_value(0.2)
 
 # field2camera @ field2camera^-1 = I
 camera2field = solve(field2camera, VariableMatrix(np.identity(4)))

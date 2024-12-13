@@ -33,7 +33,7 @@ field2robot = ca.vertcat(
     ca.horzcat(0, 0, 0, 1),
 )
 
-robot2camera = ca.DM(
+robot2camera_ = ca.DM(
     [
         [0, 0, 1, 0],
         [-1, 0, 0, 0],
@@ -41,6 +41,8 @@ robot2camera = ca.DM(
         [0, 0, 0, 1],
     ]
 )
+
+robot2camera = ca.SX.sym("robot2camera", 4, 4)
 
 field2camera = field2robot @ robot2camera
 
@@ -117,9 +119,9 @@ hess_J, _ = ca.hessian(J, x_vec)
 grad_J = ca.gradient(J, x_vec)
 
 # Cost, plus grad and hessian of cost
-J_func = ca.Function("J", [x_vec, fx, fy, cx, cy], [J])
-grad_func = ca.Function("grad_J", [x_vec, fx, fy, cx, cy], [grad_J])
-hess_func = ca.Function("hess_J", [x_vec, fx, fy, cx, cy], [hess_J])
+J_func = ca.Function("J", [x_vec, fx, fy, cx, cy, robot2camera], [J])
+grad_func = ca.Function("grad_J", [x_vec, fx, fy, cx, cy, robot2camera], [grad_J])
+hess_func = ca.Function("hess_J", [x_vec, fx, fy, cx, cy, robot2camera], [hess_J])
 
 if False:
 
@@ -165,7 +167,7 @@ if False:
 
     plt.show()
 
-SOLVE_NEWTON = True
+SOLVE_NEWTON = False
 if SOLVE_NEWTON:
     # Newton's method parameters
     x0 = np.array([-0.1, 0.0, 0.2]).reshape((3, 1))  # Initial guess

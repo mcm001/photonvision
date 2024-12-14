@@ -134,6 +134,54 @@ hess_func = ca.Function(
 )
 
 print(J_func)
+print(grad_func)
+print(hess_func)
+
+if True:
+    robot2camera = np.array(
+        [
+            [0, 0, 1, 0],
+            [-1, 0, 0, 0],
+            [0, -1, 0, 0],
+            [0, 0, 0, 1],
+        ]
+    )
+
+    # list of points in field space to reproject. Each one is a 4x1 vector of (x,y,z,1)
+    field2points = np.array([
+        [1.5, 0 - 0.08255, 0.5 - 0.08255, 1],
+        [1.5, 0 - 0.08255, 0.5 + 0.08255, 1],
+        [1.5, 0 + 0.08255, 0.5 + 0.08255, 1],
+        [1.5, 0 + 0.08255, 0.5 - 0.08255, 1],
+    ]).T
+    
+    point_observations = np.array([
+        (333, -17),
+        (333, -83),
+        (267, -83),
+        (267, -17),
+    ]).T
+
+    # x = [0,0,0]
+    # print(f"J({x})={J_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print(f"grad({x})={grad_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print(f"hess({x})={hess_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print("============")
+    # x = [0.1,0,0]
+    # print(f"J({x})={J_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print(f"grad({x})={grad_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print(f"hess({x})={hess_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print("============")
+    # x = [0,0.2,0]
+    # print(f"J({x})={J_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print(f"grad({x})={grad_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print(f"hess({x})={hess_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    # print("============")
+    x = [0.1,0.2,0.3]
+    print(f"J({x})={J_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    print(f"grad({x})={grad_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    print(f"hess({x})={hess_func(*x, 600, 600, 300, 150, robot2camera, field2points, point_observations)}")
+    print("============")
 
 if False:
 

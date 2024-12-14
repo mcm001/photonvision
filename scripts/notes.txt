@@ -1,0 +1,48 @@
+Build with:
+
+cmake -G Ninja -B build -S . --toolchain ../toolchain/toolchain-config.cmake
+
+# Benchmarks
+
+On a ryzen 4400h at balanced perf on battery:
+
+With 1 tag:
+
+```
+Total time, N=100 samples
+
+J=1926ns
+grad(J)=2265ns
+hess(J)=4349ns
+```
+
+With 2 tags:
+
+
+```
+Total time, N=100 samples
+
+J=2052ns
+grad(J)=2581ns
+hess(J)=5370ns
+```
+
+With 4 tags:
+
+```
+Total time, N=100 samples
+
+J=2227ns
+grad(J)=3015ns
+hess(J)=6247ns
+```
+
+With 8 tags:
+
+```
+Total time, N=100 samples
+
+J=2725ns
+grad(J)=3479ns
+hess(J)=8475ns
+```

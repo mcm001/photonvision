@@ -81,7 +81,7 @@ v_err = v - v_observed
 # Frobenius norm - sqrt(sum squared of each component). Square to remove sqrt
 J = ca.norm_fro(u_err)**2 + ca.norm_fro(v_err)**2
 
-print(J)
+# print(J)
 
 
 SOLVE_IPOPT = False
@@ -112,21 +112,28 @@ grad_J = ca.gradient(J, x_vec)
 
 # Cost, plus grad and hessian of cost
 J_func = ca.Function(
-    "J", [x_vec, fx, fy, cx, cy, robot2camera, field2points, point_observations], [J]
+    "J", 
+    [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations], 
+    [J],
+    ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
+    ["J"],
 )
 grad_func = ca.Function(
     "grad_J",
-    [x_vec, fx, fy, cx, cy, robot2camera, field2points, point_observations],
+    [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations],
     [grad_J],
+    ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
+    ["grad_J"],
 )
 hess_func = ca.Function(
     "hess_J",
-    [x_vec, fx, fy, cx, cy, robot2camera, field2points, point_observations],
+    [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations],
     [hess_J],
+    ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
+    ["hess_J"],
 )
 
 print(J_func)
-print(robot2camera)
 
 if False:
 
@@ -227,9 +234,14 @@ if SOLVE_NEWTON:
     robot_x_sol, robot_y_sol, robot_θ_sol = x
     print(f"X={robot_x_sol} m, Y={robot_y_sol} m, theta={robot_θ_sol} rad")
 
-J_c = J_func.generate()
-g_c = grad_func.generate()
-H_c = hess_func.generate()
+cg = CodeGenerator('casadi_meme', {
+    'with_header': True,
+    'cpp': False,
+})
+cg.add(J_func)
+cg.add(grad_func)
+cg.add(hess_func)
+cg.generate()
 
 # print('Compiling with O3 optimization: ', oname_O3)
 # t1 = time.time()

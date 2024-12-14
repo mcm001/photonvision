@@ -15,7 +15,7 @@ extern "C" {
   #define _CASADI_NAMESPACE_CONCAT(NS, ID) NS ## ID
   #define CASADI_PREFIX(ID) CASADI_NAMESPACE_CONCAT(CODEGEN_PREFIX, ID)
 #else
-  #define CASADI_PREFIX(ID) hess_J_ ## ID
+  #define CASADI_PREFIX(ID) casadi_meme_ ## ID
 #endif
 
 #include <math.h>
@@ -30,6 +30,8 @@ extern "C" {
 
 /* Add prefix to internal symbols */
 #define casadi_f0 CASADI_PREFIX(f0)
+#define casadi_f1 CASADI_PREFIX(f1)
+#define casadi_f2 CASADI_PREFIX(f2)
 #define casadi_s0 CASADI_PREFIX(s0)
 #define casadi_s1 CASADI_PREFIX(s1)
 #define casadi_s2 CASADI_PREFIX(s2)
@@ -54,46 +56,1706 @@ extern "C" {
 
 casadi_real casadi_sq(casadi_real x) { return x*x;}
 
-static const casadi_int casadi_s0[7] = {3, 1, 0, 3, 0, 1, 2};
-static const casadi_int casadi_s1[5] = {1, 1, 0, 1, 0};
-static const casadi_int casadi_s2[23] = {4, 4, 0, 4, 8, 12, 16, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
-static const casadi_int casadi_s3[15] = {2, 4, 0, 2, 4, 6, 8, 0, 1, 0, 1, 0, 1, 0, 1};
+static const casadi_int casadi_s0[5] = {1, 1, 0, 1, 0};
+static const casadi_int casadi_s1[23] = {4, 4, 0, 4, 8, 12, 16, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
+static const casadi_int casadi_s2[15] = {2, 4, 0, 2, 4, 6, 8, 0, 1, 0, 1, 0, 1, 0, 1};
+static const casadi_int casadi_s3[7] = {3, 1, 0, 3, 0, 1, 2};
 static const casadi_int casadi_s4[15] = {3, 3, 0, 3, 6, 9, 0, 1, 2, 0, 1, 2, 0, 1, 2};
 
-/* hess_J:(i0[3],i1,i2,i3,i4,i5[4x4],i6[4x4],i7[2x4])->(o0[3x3]) */
+/* J:(robot_x,robot_y,robot_θ,fx,fy,cx,cy,robot2camera[4x4],field2points[4x4],point_observations[2x4])->(J) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
+  casadi_real a0, a1, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a2, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a3, a30, a31, a4, a5, a6, a7, a8, a9;
+  a0=arg[3]? arg[3][0] : 0;
+  a1=arg[2]? arg[2][0] : 0;
+  a2=cos(a1);
+  a3=arg[7]? arg[7][0] : 0;
+  a4=(a2*a3);
+  a1=sin(a1);
+  a5=arg[7]? arg[7][1] : 0;
+  a6=(a1*a5);
+  a4=(a4-a6);
+  a6=arg[0]? arg[0][0] : 0;
+  a7=arg[7]? arg[7][3] : 0;
+  a8=(a6*a7);
+  a4=(a4+a8);
+  a8=casadi_sq(a4);
+  a3=(a1*a3);
+  a5=(a2*a5);
+  a3=(a3+a5);
+  a5=arg[1]? arg[1][0] : 0;
+  a9=(a5*a7);
+  a3=(a3+a9);
+  a9=casadi_sq(a3);
+  a8=(a8+a9);
+  a9=arg[7]? arg[7][2] : 0;
+  a10=casadi_sq(a9);
+  a8=(a8+a10);
+  a10=casadi_sq(a7);
+  a8=(a8+a10);
+  a8=sqrt(a8);
+  a4=(a4/a8);
+  a10=arg[7]? arg[7][12] : 0;
+  a11=(a2*a10);
+  a12=arg[7]? arg[7][13] : 0;
+  a13=(a1*a12);
+  a11=(a11-a13);
+  a13=arg[7]? arg[7][15] : 0;
+  a14=(a6*a13);
+  a11=(a11+a14);
+  a14=(a11*a4);
+  a10=(a1*a10);
+  a12=(a2*a12);
+  a10=(a10+a12);
+  a12=(a5*a13);
+  a10=(a10+a12);
+  a3=(a3/a8);
+  a12=(a10*a3);
+  a14=(a14+a12);
+  a12=arg[7]? arg[7][14] : 0;
+  a9=(a9/a8);
+  a15=(a12*a9);
+  a14=(a14+a15);
+  a7=(a7/a8);
+  a15=(a13*a7);
+  a14=(a14+a15);
+  a15=(a14*a4);
+  a11=(a11-a15);
+  a15=arg[7]? arg[7][4] : 0;
+  a16=(a2*a15);
+  a17=arg[7]? arg[7][5] : 0;
+  a18=(a1*a17);
+  a16=(a16-a18);
+  a18=arg[7]? arg[7][7] : 0;
+  a19=(a6*a18);
+  a16=(a16+a19);
+  a19=(a16*a4);
+  a15=(a1*a15);
+  a17=(a2*a17);
+  a15=(a15+a17);
+  a17=(a5*a18);
+  a15=(a15+a17);
+  a17=(a15*a3);
+  a19=(a19+a17);
+  a17=arg[7]? arg[7][6] : 0;
+  a20=(a17*a9);
+  a19=(a19+a20);
+  a20=(a18*a7);
+  a19=(a19+a20);
+  a20=(a19*a4);
+  a16=(a16-a20);
+  a20=casadi_sq(a16);
+  a21=(a19*a3);
+  a15=(a15-a21);
+  a21=casadi_sq(a15);
+  a20=(a20+a21);
+  a21=(a19*a9);
+  a17=(a17-a21);
+  a21=casadi_sq(a17);
+  a20=(a20+a21);
+  a21=(a19*a7);
+  a18=(a18-a21);
+  a21=casadi_sq(a18);
+  a20=(a20+a21);
+  a20=sqrt(a20);
+  a16=(a16/a20);
+  a21=(a11*a16);
+  a22=(a14*a3);
+  a10=(a10-a22);
+  a15=(a15/a20);
+  a22=(a10*a15);
+  a21=(a21+a22);
+  a22=(a14*a9);
+  a12=(a12-a22);
+  a17=(a17/a20);
+  a22=(a12*a17);
+  a21=(a21+a22);
+  a22=(a14*a7);
+  a13=(a13-a22);
+  a18=(a18/a20);
+  a22=(a13*a18);
+  a21=(a21+a22);
+  a22=(a21*a16);
+  a11=(a11-a22);
+  a22=arg[7]? arg[7][8] : 0;
+  a23=(a2*a22);
+  a24=arg[7]? arg[7][9] : 0;
+  a25=(a1*a24);
+  a23=(a23-a25);
+  a25=arg[7]? arg[7][11] : 0;
+  a6=(a6*a25);
+  a23=(a23+a6);
+  a6=(a23*a4);
+  a1=(a1*a22);
+  a2=(a2*a24);
+  a1=(a1+a2);
+  a5=(a5*a25);
+  a1=(a1+a5);
+  a5=(a1*a3);
+  a6=(a6+a5);
+  a5=arg[7]? arg[7][10] : 0;
+  a2=(a5*a9);
+  a6=(a6+a2);
+  a2=(a25*a7);
+  a6=(a6+a2);
+  a2=(a6*a4);
+  a23=(a23-a2);
+  a2=(a23*a16);
+  a24=(a6*a3);
+  a1=(a1-a24);
+  a24=(a1*a15);
+  a2=(a2+a24);
+  a24=(a6*a9);
+  a5=(a5-a24);
+  a24=(a5*a17);
+  a2=(a2+a24);
+  a24=(a6*a7);
+  a25=(a25-a24);
+  a24=(a25*a18);
+  a2=(a2+a24);
+  a24=(a2*a16);
+  a23=(a23-a24);
+  a24=casadi_sq(a23);
+  a22=(a2*a15);
+  a1=(a1-a22);
+  a22=casadi_sq(a1);
+  a24=(a24+a22);
+  a22=(a2*a17);
+  a5=(a5-a22);
+  a22=casadi_sq(a5);
+  a24=(a24+a22);
+  a22=(a2*a18);
+  a25=(a25-a22);
+  a22=casadi_sq(a25);
+  a24=(a24+a22);
+  a24=sqrt(a24);
+  a23=(a23/a24);
+  a22=(a11*a23);
+  a26=(a21*a15);
+  a10=(a10-a26);
+  a1=(a1/a24);
+  a26=(a10*a1);
+  a22=(a22+a26);
+  a26=(a21*a17);
+  a12=(a12-a26);
+  a5=(a5/a24);
+  a26=(a12*a5);
+  a22=(a22+a26);
+  a26=(a21*a18);
+  a13=(a13-a26);
+  a25=(a25/a24);
+  a26=(a13*a25);
+  a22=(a22+a26);
+  a26=(a22*a23);
+  a11=(a11-a26);
+  a26=casadi_sq(a11);
+  a27=(a22*a1);
+  a10=(a10-a27);
+  a27=casadi_sq(a10);
+  a26=(a26+a27);
+  a27=(a22*a5);
+  a12=(a12-a27);
+  a27=casadi_sq(a12);
+  a26=(a26+a27);
+  a27=(a22*a25);
+  a13=(a13-a27);
+  a27=casadi_sq(a13);
+  a26=(a26+a27);
+  a26=sqrt(a26);
+  a11=(a11/a26);
+  a11=(a11/a26);
+  a27=(a14*a11);
+  a4=(a4-a27);
+  a27=(a22*a11);
+  a23=(a23-a27);
+  a23=(a23/a24);
+  a27=(a6*a23);
+  a4=(a4-a27);
+  a11=(a21*a11);
+  a16=(a16-a11);
+  a11=(a2*a23);
+  a16=(a16-a11);
+  a16=(a16/a20);
+  a11=(a19*a16);
+  a4=(a4-a11);
+  a4=(a4/a8);
+  a11=arg[8]? arg[8][0] : 0;
+  a27=(a4*a11);
+  a10=(a10/a26);
+  a10=(a10/a26);
+  a28=(a14*a10);
+  a3=(a3-a28);
+  a28=(a22*a10);
+  a1=(a1-a28);
+  a1=(a1/a24);
+  a28=(a6*a1);
+  a3=(a3-a28);
+  a10=(a21*a10);
+  a15=(a15-a10);
+  a10=(a2*a1);
+  a15=(a15-a10);
+  a15=(a15/a20);
+  a10=(a19*a15);
+  a3=(a3-a10);
+  a3=(a3/a8);
+  a10=arg[8]? arg[8][1] : 0;
+  a28=(a3*a10);
+  a27=(a27+a28);
+  a12=(a12/a26);
+  a12=(a12/a26);
+  a28=(a14*a12);
+  a9=(a9-a28);
+  a28=(a22*a12);
+  a5=(a5-a28);
+  a5=(a5/a24);
+  a28=(a6*a5);
+  a9=(a9-a28);
+  a12=(a21*a12);
+  a17=(a17-a12);
+  a12=(a2*a5);
+  a17=(a17-a12);
+  a17=(a17/a20);
+  a12=(a19*a17);
+  a9=(a9-a12);
+  a9=(a9/a8);
+  a12=arg[8]? arg[8][2] : 0;
+  a28=(a9*a12);
+  a27=(a27+a28);
+  a13=(a13/a26);
+  a13=(a13/a26);
+  a14=(a14*a13);
+  a7=(a7-a14);
+  a22=(a22*a13);
+  a25=(a25-a22);
+  a25=(a25/a24);
+  a6=(a6*a25);
+  a7=(a7-a6);
+  a21=(a21*a13);
+  a18=(a18-a21);
+  a2=(a2*a25);
+  a18=(a18-a2);
+  a18=(a18/a20);
+  a19=(a19*a18);
+  a7=(a7-a19);
+  a7=(a7/a8);
+  a8=arg[8]? arg[8][3] : 0;
+  a19=(a7*a8);
+  a27=(a27+a19);
+  a19=(a23*a11);
+  a20=(a1*a10);
+  a19=(a19+a20);
+  a20=(a5*a12);
+  a19=(a19+a20);
+  a20=(a25*a8);
+  a19=(a19+a20);
+  a27=(a27/a19);
+  a27=(a0*a27);
+  a20=arg[5]? arg[5][0] : 0;
+  a27=(a27+a20);
+  a2=arg[9]? arg[9][0] : 0;
+  a27=(a27-a2);
+  a27=casadi_sq(a27);
+  a2=arg[8]? arg[8][4] : 0;
+  a21=(a4*a2);
+  a13=arg[8]? arg[8][5] : 0;
+  a6=(a3*a13);
+  a21=(a21+a6);
+  a6=arg[8]? arg[8][6] : 0;
+  a24=(a9*a6);
+  a21=(a21+a24);
+  a24=arg[8]? arg[8][7] : 0;
+  a22=(a7*a24);
+  a21=(a21+a22);
+  a22=(a23*a2);
+  a14=(a1*a13);
+  a22=(a22+a14);
+  a14=(a5*a6);
+  a22=(a22+a14);
+  a14=(a25*a24);
+  a22=(a22+a14);
+  a21=(a21/a22);
+  a21=(a0*a21);
+  a21=(a21+a20);
+  a14=arg[9]? arg[9][2] : 0;
+  a21=(a21-a14);
+  a21=casadi_sq(a21);
+  a27=(a27+a21);
+  a21=arg[8]? arg[8][8] : 0;
+  a14=(a4*a21);
+  a26=arg[8]? arg[8][9] : 0;
+  a28=(a3*a26);
+  a14=(a14+a28);
+  a28=arg[8]? arg[8][10] : 0;
+  a29=(a9*a28);
+  a14=(a14+a29);
+  a29=arg[8]? arg[8][11] : 0;
+  a30=(a7*a29);
+  a14=(a14+a30);
+  a30=(a23*a21);
+  a31=(a1*a26);
+  a30=(a30+a31);
+  a31=(a5*a28);
+  a30=(a30+a31);
+  a31=(a25*a29);
+  a30=(a30+a31);
+  a14=(a14/a30);
+  a14=(a0*a14);
+  a14=(a14+a20);
+  a31=arg[9]? arg[9][4] : 0;
+  a14=(a14-a31);
+  a14=casadi_sq(a14);
+  a27=(a27+a14);
+  a14=arg[8]? arg[8][12] : 0;
+  a4=(a4*a14);
+  a31=arg[8]? arg[8][13] : 0;
+  a3=(a3*a31);
+  a4=(a4+a3);
+  a3=arg[8]? arg[8][14] : 0;
+  a9=(a9*a3);
+  a4=(a4+a9);
+  a9=arg[8]? arg[8][15] : 0;
+  a7=(a7*a9);
+  a4=(a4+a7);
+  a23=(a23*a14);
+  a1=(a1*a31);
+  a23=(a23+a1);
+  a5=(a5*a3);
+  a23=(a23+a5);
+  a25=(a25*a9);
+  a23=(a23+a25);
+  a4=(a4/a23);
+  a0=(a0*a4);
+  a0=(a0+a20);
+  a20=arg[9]? arg[9][6] : 0;
+  a0=(a0-a20);
+  a0=casadi_sq(a0);
+  a27=(a27+a0);
+  a0=arg[4]? arg[4][0] : 0;
+  a11=(a16*a11);
+  a10=(a15*a10);
+  a11=(a11+a10);
+  a12=(a17*a12);
+  a11=(a11+a12);
+  a8=(a18*a8);
+  a11=(a11+a8);
+  a11=(a11/a19);
+  a11=(a0*a11);
+  a19=arg[6]? arg[6][0] : 0;
+  a11=(a11+a19);
+  a8=arg[9]? arg[9][1] : 0;
+  a11=(a11-a8);
+  a11=casadi_sq(a11);
+  a2=(a16*a2);
+  a13=(a15*a13);
+  a2=(a2+a13);
+  a6=(a17*a6);
+  a2=(a2+a6);
+  a24=(a18*a24);
+  a2=(a2+a24);
+  a2=(a2/a22);
+  a2=(a0*a2);
+  a2=(a2+a19);
+  a22=arg[9]? arg[9][3] : 0;
+  a2=(a2-a22);
+  a2=casadi_sq(a2);
+  a11=(a11+a2);
+  a21=(a16*a21);
+  a26=(a15*a26);
+  a21=(a21+a26);
+  a28=(a17*a28);
+  a21=(a21+a28);
+  a29=(a18*a29);
+  a21=(a21+a29);
+  a21=(a21/a30);
+  a21=(a0*a21);
+  a21=(a21+a19);
+  a30=arg[9]? arg[9][5] : 0;
+  a21=(a21-a30);
+  a21=casadi_sq(a21);
+  a11=(a11+a21);
+  a16=(a16*a14);
+  a15=(a15*a31);
+  a16=(a16+a15);
+  a17=(a17*a3);
+  a16=(a16+a17);
+  a18=(a18*a9);
+  a16=(a16+a18);
+  a16=(a16/a23);
+  a0=(a0*a16);
+  a0=(a0+a19);
+  a19=arg[9]? arg[9][7] : 0;
+  a0=(a0-a19);
+  a0=casadi_sq(a0);
+  a11=(a11+a0);
+  a27=(a27+a11);
+  if (res[0]!=0) res[0][0]=a27;
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT int J(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
+  return casadi_f0(arg, res, iw, w, mem);
+}
+
+CASADI_SYMBOL_EXPORT int J_alloc_mem(void) {
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT int J_init_mem(int mem) {
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT void J_free_mem(int mem) {
+}
+
+CASADI_SYMBOL_EXPORT int J_checkout(void) {
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT void J_release(int mem) {
+}
+
+CASADI_SYMBOL_EXPORT void J_incref(void) {
+}
+
+CASADI_SYMBOL_EXPORT void J_decref(void) {
+}
+
+CASADI_SYMBOL_EXPORT casadi_int J_n_in(void) { return 10;}
+
+CASADI_SYMBOL_EXPORT casadi_int J_n_out(void) { return 1;}
+
+CASADI_SYMBOL_EXPORT casadi_real J_default_in(casadi_int i) {
+  switch (i) {
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const char* J_name_in(casadi_int i) {
+  switch (i) {
+    case 0: return "robot_x";
+    case 1: return "robot_y";
+    case 2: return "robot_θ";
+    case 3: return "fx";
+    case 4: return "fy";
+    case 5: return "cx";
+    case 6: return "cy";
+    case 7: return "robot2camera";
+    case 8: return "field2points";
+    case 9: return "point_observations";
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const char* J_name_out(casadi_int i) {
+  switch (i) {
+    case 0: return "J";
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const casadi_int* J_sparsity_in(casadi_int i) {
+  switch (i) {
+    case 0: return casadi_s0;
+    case 1: return casadi_s0;
+    case 2: return casadi_s0;
+    case 3: return casadi_s0;
+    case 4: return casadi_s0;
+    case 5: return casadi_s0;
+    case 6: return casadi_s0;
+    case 7: return casadi_s1;
+    case 8: return casadi_s1;
+    case 9: return casadi_s2;
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const casadi_int* J_sparsity_out(casadi_int i) {
+  switch (i) {
+    case 0: return casadi_s0;
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT int J_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+  if (sz_arg) *sz_arg = 10;
+  if (sz_res) *sz_res = 1;
+  if (sz_iw) *sz_iw = 0;
+  if (sz_w) *sz_w = 0;
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT int J_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+  if (sz_arg) *sz_arg = 10*sizeof(const casadi_real*);
+  if (sz_res) *sz_res = 1*sizeof(casadi_real*);
+  if (sz_iw) *sz_iw = 0*sizeof(casadi_int);
+  if (sz_w) *sz_w = 0*sizeof(casadi_real);
+  return 0;
+}
+
+/* grad_J:(robot_x,robot_y,robot_θ,fx,fy,cx,cy,robot2camera[4x4],field2points[4x4],point_observations[2x4])->(grad_J[3]) */
+static int casadi_f1(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
+  casadi_real a0, a1, a10, a100, a101, a102, a103, a104, a105, a106, a107, a108, a109, a11, a110, a111, a112, a113, a114, a115, a116, a117, a118, a119, a12, a120, a121, a122, a123, a124, a125, a13, a14, a15, a16, a17, a18, a19, a2, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a3, a30, a31, a32, a33, a34, a35, a36, a37, a38, a39, a4, a40, a41, a42, a43, a44, a45, a46, a47, a48, a49, a5, a50, a51, a52, a53, a54, a55, a56, a57, a58, a59, a6, a60, a61, a62, a63, a64, a65, a66, a67, a68, a69, a7, a70, a71, a72, a73, a74, a75, a76, a77, a78, a79, a8, a80, a81, a82, a83, a84, a85, a86, a87, a88, a89, a9, a90, a91, a92, a93, a94, a95, a96, a97, a98, a99;
+  a0=arg[7]? arg[7][11] : 0;
+  a1=arg[2]? arg[2][0] : 0;
+  a2=cos(a1);
+  a3=arg[7]? arg[7][12] : 0;
+  a4=(a2*a3);
+  a5=sin(a1);
+  a6=arg[7]? arg[7][13] : 0;
+  a7=(a5*a6);
+  a4=(a4-a7);
+  a7=arg[0]? arg[0][0] : 0;
+  a8=arg[7]? arg[7][15] : 0;
+  a9=(a7*a8);
+  a4=(a4+a9);
+  a9=arg[7]? arg[7][0] : 0;
+  a10=(a2*a9);
+  a11=arg[7]? arg[7][1] : 0;
+  a12=(a5*a11);
+  a10=(a10-a12);
+  a12=arg[7]? arg[7][3] : 0;
+  a13=(a7*a12);
+  a10=(a10+a13);
+  a13=casadi_sq(a10);
+  a14=(a5*a9);
+  a15=(a2*a11);
+  a14=(a14+a15);
+  a15=arg[1]? arg[1][0] : 0;
+  a16=(a15*a12);
+  a14=(a14+a16);
+  a16=casadi_sq(a14);
+  a13=(a13+a16);
+  a16=arg[7]? arg[7][2] : 0;
+  a17=casadi_sq(a16);
+  a13=(a13+a17);
+  a17=casadi_sq(a12);
+  a13=(a13+a17);
+  a13=sqrt(a13);
+  a17=(a10/a13);
+  a18=(a4*a17);
+  a19=(a5*a3);
+  a20=(a2*a6);
+  a19=(a19+a20);
+  a20=(a15*a8);
+  a19=(a19+a20);
+  a20=(a14/a13);
+  a21=(a19*a20);
+  a18=(a18+a21);
+  a21=arg[7]? arg[7][14] : 0;
+  a16=(a16/a13);
+  a22=(a21*a16);
+  a18=(a18+a22);
+  a22=(a12/a13);
+  a23=(a8*a22);
+  a18=(a18+a23);
+  a23=(a18*a17);
+  a23=(a4-a23);
+  a24=arg[7]? arg[7][4] : 0;
+  a25=(a2*a24);
+  a26=arg[7]? arg[7][5] : 0;
+  a27=(a5*a26);
+  a25=(a25-a27);
+  a27=arg[7]? arg[7][7] : 0;
+  a28=(a7*a27);
+  a25=(a25+a28);
+  a28=(a25*a17);
+  a29=(a5*a24);
+  a30=(a2*a26);
+  a29=(a29+a30);
+  a30=(a15*a27);
+  a29=(a29+a30);
+  a30=(a29*a20);
+  a28=(a28+a30);
+  a30=arg[7]? arg[7][6] : 0;
+  a31=(a30*a16);
+  a28=(a28+a31);
+  a31=(a27*a22);
+  a28=(a28+a31);
+  a31=(a28*a17);
+  a31=(a25-a31);
+  a32=casadi_sq(a31);
+  a33=(a28*a20);
+  a33=(a29-a33);
+  a34=casadi_sq(a33);
+  a32=(a32+a34);
+  a34=(a28*a16);
+  a34=(a30-a34);
+  a35=casadi_sq(a34);
+  a32=(a32+a35);
+  a35=(a28*a22);
+  a35=(a27-a35);
+  a36=casadi_sq(a35);
+  a32=(a32+a36);
+  a32=sqrt(a32);
+  a36=(a31/a32);
+  a37=(a23*a36);
+  a38=(a18*a20);
+  a38=(a19-a38);
+  a39=(a33/a32);
+  a40=(a38*a39);
+  a37=(a37+a40);
+  a40=(a18*a16);
+  a40=(a21-a40);
+  a41=(a34/a32);
+  a42=(a40*a41);
+  a37=(a37+a42);
+  a42=(a18*a22);
+  a42=(a8-a42);
+  a43=(a35/a32);
+  a44=(a42*a43);
+  a37=(a37+a44);
+  a44=(a37*a36);
+  a44=(a23-a44);
+  a45=(a37*a43);
+  a45=(a42-a45);
+  a46=arg[7]? arg[7][8] : 0;
+  a47=(a2*a46);
+  a48=arg[7]? arg[7][9] : 0;
+  a49=(a5*a48);
+  a47=(a47-a49);
+  a7=(a7*a0);
+  a47=(a47+a7);
+  a7=(a47*a17);
+  a5=(a5*a46);
+  a2=(a2*a48);
+  a5=(a5+a2);
+  a15=(a15*a0);
+  a5=(a5+a15);
+  a15=(a5*a20);
+  a7=(a7+a15);
+  a15=arg[7]? arg[7][10] : 0;
+  a2=(a15*a16);
+  a7=(a7+a2);
+  a2=(a0*a22);
+  a7=(a7+a2);
+  a2=(a7*a17);
+  a2=(a47-a2);
+  a49=(a2*a36);
+  a50=(a7*a20);
+  a50=(a5-a50);
+  a51=(a50*a39);
+  a49=(a49+a51);
+  a51=(a7*a16);
+  a51=(a15-a51);
+  a52=(a51*a41);
+  a49=(a49+a52);
+  a52=(a7*a22);
+  a52=(a0-a52);
+  a53=(a52*a43);
+  a49=(a49+a53);
+  a53=(a49*a36);
+  a53=(a2-a53);
+  a54=casadi_sq(a53);
+  a55=(a49*a39);
+  a55=(a50-a55);
+  a56=casadi_sq(a55);
+  a54=(a54+a56);
+  a56=(a49*a41);
+  a56=(a51-a56);
+  a57=casadi_sq(a56);
+  a54=(a54+a57);
+  a57=(a49*a43);
+  a57=(a52-a57);
+  a58=casadi_sq(a57);
+  a54=(a54+a58);
+  a54=sqrt(a54);
+  a58=(a53/a54);
+  a59=(a44*a58);
+  a60=(a37*a39);
+  a60=(a38-a60);
+  a61=(a55/a54);
+  a62=(a60*a61);
+  a59=(a59+a62);
+  a62=(a37*a41);
+  a62=(a40-a62);
+  a63=(a56/a54);
+  a64=(a62*a63);
+  a59=(a59+a64);
+  a64=(a57/a54);
+  a65=(a45*a64);
+  a59=(a59+a65);
+  a65=(a59*a64);
+  a65=(a45-a65);
+  a66=(a59*a58);
+  a66=(a44-a66);
+  a67=casadi_sq(a66);
+  a68=(a59*a61);
+  a68=(a60-a68);
+  a69=casadi_sq(a68);
+  a67=(a67+a69);
+  a69=(a59*a63);
+  a69=(a62-a69);
+  a70=casadi_sq(a69);
+  a67=(a67+a70);
+  a70=casadi_sq(a65);
+  a67=(a67+a70);
+  a67=sqrt(a67);
+  a70=(a65/a67);
+  a71=(a70/a67);
+  a72=arg[8]? arg[8][15] : 0;
+  a73=(a66/a67);
+  a74=(a73/a67);
+  a75=(a37*a74);
+  a75=(a36-a75);
+  a76=(a59*a74);
+  a76=(a58-a76);
+  a76=(a76/a54);
+  a77=(a49*a76);
+  a75=(a75-a77);
+  a75=(a75/a32);
+  a77=arg[8]? arg[8][12] : 0;
+  a78=(a75*a77);
+  a79=(a68/a67);
+  a80=(a79/a67);
+  a81=(a37*a80);
+  a81=(a39-a81);
+  a82=(a59*a80);
+  a82=(a61-a82);
+  a82=(a82/a54);
+  a83=(a49*a82);
+  a81=(a81-a83);
+  a81=(a81/a32);
+  a83=arg[8]? arg[8][13] : 0;
+  a84=(a81*a83);
+  a78=(a78+a84);
+  a84=(a69/a67);
+  a85=(a84/a67);
+  a86=(a37*a85);
+  a86=(a41-a86);
+  a87=(a59*a85);
+  a87=(a63-a87);
+  a87=(a87/a54);
+  a88=(a49*a87);
+  a86=(a86-a88);
+  a86=(a86/a32);
+  a88=arg[8]? arg[8][14] : 0;
+  a89=(a86*a88);
+  a78=(a78+a89);
+  a89=(a37*a71);
+  a89=(a43-a89);
+  a90=(a59*a71);
+  a90=(a64-a90);
+  a90=(a90/a54);
+  a91=(a49*a90);
+  a89=(a89-a91);
+  a89=(a89/a32);
+  a91=(a89*a72);
+  a78=(a78+a91);
+  a91=(a76*a77);
+  a92=(a82*a83);
+  a91=(a91+a92);
+  a92=(a87*a88);
+  a91=(a91+a92);
+  a92=(a90*a72);
+  a91=(a91+a92);
+  a78=(a78/a91);
+  a92=(a78/a91);
+  a93=arg[4]? arg[4][0] : 0;
+  a78=(a93*a78);
+  a94=arg[6]? arg[6][0] : 0;
+  a78=(a78+a94);
+  a95=arg[9]? arg[9][7] : 0;
+  a78=(a78-a95);
+  a78=(a78+a78);
+  a78=(a93*a78);
+  a92=(a92*a78);
+  a95=(a18*a74);
+  a95=(a17-a95);
+  a96=(a7*a76);
+  a95=(a95-a96);
+  a96=(a28*a75);
+  a95=(a95-a96);
+  a95=(a95/a13);
+  a96=(a95*a77);
+  a97=(a18*a80);
+  a97=(a20-a97);
+  a98=(a7*a82);
+  a97=(a97-a98);
+  a98=(a28*a81);
+  a97=(a97-a98);
+  a97=(a97/a13);
+  a98=(a97*a83);
+  a96=(a96+a98);
+  a98=(a18*a85);
+  a98=(a16-a98);
+  a99=(a7*a87);
+  a98=(a98-a99);
+  a99=(a28*a86);
+  a98=(a98-a99);
+  a98=(a98/a13);
+  a99=(a98*a88);
+  a96=(a96+a99);
+  a99=(a18*a71);
+  a99=(a22-a99);
+  a100=(a7*a90);
+  a99=(a99-a100);
+  a100=(a28*a89);
+  a99=(a99-a100);
+  a99=(a99/a13);
+  a100=(a99*a72);
+  a96=(a96+a100);
+  a96=(a96/a91);
+  a100=(a96/a91);
+  a101=arg[3]? arg[3][0] : 0;
+  a96=(a101*a96);
+  a102=arg[5]? arg[5][0] : 0;
+  a96=(a96+a102);
+  a103=arg[9]? arg[9][6] : 0;
+  a96=(a96-a103);
+  a96=(a96+a96);
+  a96=(a101*a96);
+  a100=(a100*a96);
+  a92=(a92+a100);
+  a100=(a72*a92);
+  a103=arg[8]? arg[8][11] : 0;
+  a104=arg[8]? arg[8][8] : 0;
+  a105=(a75*a104);
+  a106=arg[8]? arg[8][9] : 0;
+  a107=(a81*a106);
+  a105=(a105+a107);
+  a107=arg[8]? arg[8][10] : 0;
+  a108=(a86*a107);
+  a105=(a105+a108);
+  a108=(a89*a103);
+  a105=(a105+a108);
+  a108=(a76*a104);
+  a109=(a82*a106);
+  a108=(a108+a109);
+  a109=(a87*a107);
+  a108=(a108+a109);
+  a109=(a90*a103);
+  a108=(a108+a109);
+  a105=(a105/a108);
+  a109=(a105/a108);
+  a105=(a93*a105);
+  a105=(a105+a94);
+  a110=arg[9]? arg[9][5] : 0;
+  a105=(a105-a110);
+  a105=(a105+a105);
+  a105=(a93*a105);
+  a109=(a109*a105);
+  a110=(a95*a104);
+  a111=(a97*a106);
+  a110=(a110+a111);
+  a111=(a98*a107);
+  a110=(a110+a111);
+  a111=(a99*a103);
+  a110=(a110+a111);
+  a110=(a110/a108);
+  a111=(a110/a108);
+  a110=(a101*a110);
+  a110=(a110+a102);
+  a112=arg[9]? arg[9][4] : 0;
+  a110=(a110-a112);
+  a110=(a110+a110);
+  a110=(a101*a110);
+  a111=(a111*a110);
+  a109=(a109+a111);
+  a111=(a103*a109);
+  a100=(a100+a111);
+  a111=arg[8]? arg[8][7] : 0;
+  a112=arg[8]? arg[8][4] : 0;
+  a113=(a75*a112);
+  a114=arg[8]? arg[8][5] : 0;
+  a115=(a81*a114);
+  a113=(a113+a115);
+  a115=arg[8]? arg[8][6] : 0;
+  a116=(a86*a115);
+  a113=(a113+a116);
+  a116=(a89*a111);
+  a113=(a113+a116);
+  a116=(a76*a112);
+  a117=(a82*a114);
+  a116=(a116+a117);
+  a117=(a87*a115);
+  a116=(a116+a117);
+  a117=(a90*a111);
+  a116=(a116+a117);
+  a113=(a113/a116);
+  a117=(a113/a116);
+  a113=(a93*a113);
+  a113=(a113+a94);
+  a118=arg[9]? arg[9][3] : 0;
+  a113=(a113-a118);
+  a113=(a113+a113);
+  a113=(a93*a113);
+  a117=(a117*a113);
+  a118=(a95*a112);
+  a119=(a97*a114);
+  a118=(a118+a119);
+  a119=(a98*a115);
+  a118=(a118+a119);
+  a119=(a99*a111);
+  a118=(a118+a119);
+  a118=(a118/a116);
+  a119=(a118/a116);
+  a118=(a101*a118);
+  a118=(a118+a102);
+  a120=arg[9]? arg[9][2] : 0;
+  a118=(a118-a120);
+  a118=(a118+a118);
+  a118=(a101*a118);
+  a119=(a119*a118);
+  a117=(a117+a119);
+  a119=(a111*a117);
+  a100=(a100+a119);
+  a119=arg[8]? arg[8][3] : 0;
+  a120=arg[8]? arg[8][0] : 0;
+  a121=(a75*a120);
+  a122=arg[8]? arg[8][1] : 0;
+  a123=(a81*a122);
+  a121=(a121+a123);
+  a123=arg[8]? arg[8][2] : 0;
+  a124=(a86*a123);
+  a121=(a121+a124);
+  a124=(a89*a119);
+  a121=(a121+a124);
+  a124=(a76*a120);
+  a125=(a82*a122);
+  a124=(a124+a125);
+  a125=(a87*a123);
+  a124=(a124+a125);
+  a125=(a90*a119);
+  a124=(a124+a125);
+  a121=(a121/a124);
+  a125=(a121/a124);
+  a121=(a93*a121);
+  a121=(a121+a94);
+  a94=arg[9]? arg[9][1] : 0;
+  a121=(a121-a94);
+  a121=(a121+a121);
+  a93=(a93*a121);
+  a125=(a125*a93);
+  a121=(a95*a120);
+  a94=(a97*a122);
+  a121=(a121+a94);
+  a94=(a98*a123);
+  a121=(a121+a94);
+  a94=(a99*a119);
+  a121=(a121+a94);
+  a121=(a121/a124);
+  a94=(a121/a124);
+  a121=(a101*a121);
+  a121=(a121+a102);
+  a102=arg[9]? arg[9][0] : 0;
+  a121=(a121-a102);
+  a121=(a121+a121);
+  a101=(a101*a121);
+  a94=(a94*a101);
+  a125=(a125+a94);
+  a94=(a119*a125);
+  a100=(a100+a94);
+  a78=(a78/a91);
+  a94=(a72*a78);
+  a105=(a105/a108);
+  a121=(a103*a105);
+  a94=(a94+a121);
+  a113=(a113/a116);
+  a121=(a111*a113);
+  a94=(a94+a121);
+  a93=(a93/a124);
+  a121=(a119*a93);
+  a94=(a94+a121);
+  a96=(a96/a91);
+  a72=(a72*a96);
+  a110=(a110/a108);
+  a103=(a103*a110);
+  a72=(a72+a103);
+  a118=(a118/a116);
+  a111=(a111*a118);
+  a72=(a72+a111);
+  a101=(a101/a124);
+  a119=(a119*a101);
+  a72=(a72+a119);
+  a119=(a72/a13);
+  a124=(a28*a119);
+  a94=(a94-a124);
+  a124=(a94/a32);
+  a111=(a49*a124);
+  a100=(a100+a111);
+  a111=(a7*a119);
+  a100=(a100+a111);
+  a111=(a100/a54);
+  a116=(a71*a111);
+  a103=(a88*a92);
+  a108=(a107*a109);
+  a103=(a103+a108);
+  a108=(a115*a117);
+  a103=(a103+a108);
+  a108=(a123*a125);
+  a103=(a103+a108);
+  a108=(a88*a78);
+  a91=(a107*a105);
+  a108=(a108+a91);
+  a91=(a115*a113);
+  a108=(a108+a91);
+  a91=(a123*a93);
+  a108=(a108+a91);
+  a88=(a88*a96);
+  a107=(a107*a110);
+  a88=(a88+a107);
+  a115=(a115*a118);
+  a88=(a88+a115);
+  a123=(a123*a101);
+  a88=(a88+a123);
+  a123=(a88/a13);
+  a115=(a28*a123);
+  a108=(a108-a115);
+  a115=(a108/a32);
+  a107=(a49*a115);
+  a103=(a103+a107);
+  a107=(a7*a123);
+  a103=(a103+a107);
+  a107=(a103/a54);
+  a91=(a85*a107);
+  a116=(a116+a91);
+  a91=(a83*a92);
+  a121=(a106*a109);
+  a91=(a91+a121);
+  a121=(a114*a117);
+  a91=(a91+a121);
+  a121=(a122*a125);
+  a91=(a91+a121);
+  a121=(a83*a78);
+  a102=(a106*a105);
+  a121=(a121+a102);
+  a102=(a114*a113);
+  a121=(a121+a102);
+  a102=(a122*a93);
+  a121=(a121+a102);
+  a83=(a83*a96);
+  a106=(a106*a110);
+  a83=(a83+a106);
+  a114=(a114*a118);
+  a83=(a83+a114);
+  a122=(a122*a101);
+  a83=(a83+a122);
+  a122=(a83/a13);
+  a114=(a28*a122);
+  a121=(a121-a114);
+  a114=(a121/a32);
+  a106=(a49*a114);
+  a91=(a91+a106);
+  a106=(a7*a122);
+  a91=(a91+a106);
+  a106=(a91/a54);
+  a102=(a80*a106);
+  a116=(a116+a102);
+  a92=(a77*a92);
+  a109=(a104*a109);
+  a92=(a92+a109);
+  a117=(a112*a117);
+  a92=(a92+a117);
+  a125=(a120*a125);
+  a92=(a92+a125);
+  a78=(a77*a78);
+  a105=(a104*a105);
+  a78=(a78+a105);
+  a113=(a112*a113);
+  a78=(a78+a113);
+  a93=(a120*a93);
+  a78=(a78+a93);
+  a77=(a77*a96);
+  a104=(a104*a110);
+  a77=(a77+a104);
+  a112=(a112*a118);
+  a77=(a77+a112);
+  a120=(a120*a101);
+  a77=(a77+a120);
+  a120=(a77/a13);
+  a101=(a28*a120);
+  a78=(a78-a101);
+  a101=(a78/a32);
+  a112=(a49*a101);
+  a92=(a92+a112);
+  a112=(a7*a120);
+  a92=(a92+a112);
+  a112=(a92/a54);
+  a118=(a74*a112);
+  a116=(a116+a118);
+  a118=(a59*a111);
+  a104=(a37*a124);
+  a118=(a118-a104);
+  a104=(a18*a119);
+  a118=(a118-a104);
+  a104=(a118/a67);
+  a110=(a104/a67);
+  a65=(a65+a65);
+  a96=(a71/a67);
+  a96=(a96*a118);
+  a70=(a70/a67);
+  a70=(a70*a104);
+  a96=(a96+a70);
+  a70=(a85/a67);
+  a104=(a59*a107);
+  a118=(a37*a115);
+  a104=(a104-a118);
+  a118=(a18*a123);
+  a104=(a104-a118);
+  a70=(a70*a104);
+  a96=(a96+a70);
+  a84=(a84/a67);
+  a104=(a104/a67);
+  a84=(a84*a104);
+  a96=(a96+a84);
+  a84=(a80/a67);
+  a70=(a59*a106);
+  a118=(a37*a114);
+  a70=(a70-a118);
+  a118=(a18*a122);
+  a70=(a70-a118);
+  a84=(a84*a70);
+  a96=(a96+a84);
+  a79=(a79/a67);
+  a70=(a70/a67);
+  a79=(a79*a70);
+  a96=(a96+a79);
+  a79=(a74/a67);
+  a84=(a59*a112);
+  a118=(a37*a101);
+  a84=(a84-a118);
+  a118=(a18*a120);
+  a84=(a84-a118);
+  a79=(a79*a84);
+  a96=(a96+a79);
+  a73=(a73/a67);
+  a84=(a84/a67);
+  a73=(a73*a84);
+  a96=(a96+a73);
+  a73=(a67+a67);
+  a96=(a96/a73);
+  a65=(a65*a96);
+  a110=(a110-a65);
+  a65=(a64*a110);
+  a116=(a116-a65);
+  a104=(a104/a67);
+  a69=(a69+a69);
+  a69=(a69*a96);
+  a104=(a104-a69);
+  a69=(a63*a104);
+  a116=(a116-a69);
+  a70=(a70/a67);
+  a68=(a68+a68);
+  a68=(a68*a96);
+  a70=(a70-a68);
+  a68=(a61*a70);
+  a116=(a116-a68);
+  a84=(a84/a67);
+  a66=(a66+a66);
+  a66=(a66*a96);
+  a84=(a84-a66);
+  a66=(a58*a84);
+  a116=(a116-a66);
+  a44=(a44*a116);
+  a66=(a59*a84);
+  a112=(a112+a66);
+  a44=(a44-a112);
+  a112=(a44/a54);
+  a53=(a53+a53);
+  a66=(a90/a54);
+  a66=(a66*a100);
+  a100=(a87/a54);
+  a100=(a100*a103);
+  a66=(a66+a100);
+  a100=(a82/a54);
+  a100=(a100*a91);
+  a66=(a66+a100);
+  a100=(a76/a54);
+  a100=(a100*a92);
+  a66=(a66+a100);
+  a100=(a64/a54);
+  a45=(a45*a116);
+  a92=(a59*a110);
+  a111=(a111+a92);
+  a45=(a45-a111);
+  a100=(a100*a45);
+  a66=(a66-a100);
+  a100=(a63/a54);
+  a62=(a62*a116);
+  a111=(a59*a104);
+  a107=(a107+a111);
+  a62=(a62-a107);
+  a100=(a100*a62);
+  a66=(a66-a100);
+  a100=(a61/a54);
+  a60=(a60*a116);
+  a59=(a59*a70);
+  a106=(a106+a59);
+  a60=(a60-a106);
+  a100=(a100*a60);
+  a66=(a66-a100);
+  a100=(a58/a54);
+  a100=(a100*a44);
+  a66=(a66-a100);
+  a100=(a54+a54);
+  a66=(a66/a100);
+  a53=(a53*a66);
+  a112=(a112+a53);
+  a53=(a90*a124);
+  a100=(a87*a115);
+  a53=(a53+a100);
+  a100=(a82*a114);
+  a53=(a53+a100);
+  a100=(a76*a101);
+  a53=(a53+a100);
+  a45=(a45/a54);
+  a57=(a57+a57);
+  a57=(a57*a66);
+  a45=(a45+a57);
+  a57=(a43*a45);
+  a53=(a53+a57);
+  a62=(a62/a54);
+  a56=(a56+a56);
+  a56=(a56*a66);
+  a62=(a62+a56);
+  a56=(a41*a62);
+  a53=(a53+a56);
+  a60=(a60/a54);
+  a55=(a55+a55);
+  a55=(a55*a66);
+  a60=(a60+a55);
+  a55=(a39*a60);
+  a53=(a53+a55);
+  a55=(a36*a112);
+  a53=(a53+a55);
+  a55=(a36*a53);
+  a55=(a112-a55);
+  a90=(a90*a119);
+  a87=(a87*a123);
+  a90=(a90+a87);
+  a82=(a82*a122);
+  a90=(a90+a82);
+  a76=(a76*a120);
+  a90=(a90+a76);
+  a76=(a43*a53);
+  a76=(a45-a76);
+  a82=(a22*a76);
+  a90=(a90+a82);
+  a82=(a41*a53);
+  a82=(a62-a82);
+  a87=(a16*a82);
+  a90=(a90+a87);
+  a87=(a39*a53);
+  a87=(a60-a87);
+  a66=(a20*a87);
+  a90=(a90+a66);
+  a66=(a17*a55);
+  a90=(a90+a66);
+  a66=(a17*a90);
+  a66=(a55-a66);
+  a54=(a0*a66);
+  a112=(a49*a112);
+  a112=(a101-a112);
+  a2=(a2*a53);
+  a112=(a112-a2);
+  a58=(a58*a116);
+  a84=(a84+a58);
+  a58=(a37*a84);
+  a112=(a112-a58);
+  a58=(a71*a124);
+  a2=(a85*a115);
+  a58=(a58+a2);
+  a2=(a80*a114);
+  a58=(a58+a2);
+  a101=(a74*a101);
+  a58=(a58+a101);
+  a64=(a64*a116);
+  a110=(a110+a64);
+  a64=(a43*a110);
+  a58=(a58+a64);
+  a63=(a63*a116);
+  a104=(a104+a63);
+  a63=(a41*a104);
+  a58=(a58+a63);
+  a61=(a61*a116);
+  a70=(a70+a61);
+  a61=(a39*a70);
+  a58=(a58+a61);
+  a61=(a36*a84);
+  a58=(a58+a61);
+  a23=(a23*a58);
+  a112=(a112-a23);
+  a23=(a112/a32);
+  a31=(a31+a31);
+  a61=(a89/a32);
+  a61=(a61*a94);
+  a94=(a86/a32);
+  a94=(a94*a108);
+  a61=(a61+a94);
+  a94=(a81/a32);
+  a94=(a94*a121);
+  a61=(a61+a94);
+  a94=(a75/a32);
+  a94=(a94*a78);
+  a61=(a61+a94);
+  a94=(a43/a32);
+  a78=(a37*a110);
+  a124=(a124-a78);
+  a45=(a49*a45);
+  a124=(a124-a45);
+  a52=(a52*a53);
+  a124=(a124-a52);
+  a42=(a42*a58);
+  a124=(a124-a42);
+  a94=(a94*a124);
+  a61=(a61+a94);
+  a94=(a41/a32);
+  a42=(a37*a104);
+  a115=(a115-a42);
+  a62=(a49*a62);
+  a115=(a115-a62);
+  a51=(a51*a53);
+  a115=(a115-a51);
+  a40=(a40*a58);
+  a115=(a115-a40);
+  a94=(a94*a115);
+  a61=(a61+a94);
+  a94=(a39/a32);
+  a37=(a37*a70);
+  a114=(a114-a37);
+  a49=(a49*a60);
+  a114=(a114-a49);
+  a50=(a50*a53);
+  a114=(a114-a50);
+  a38=(a38*a58);
+  a114=(a114-a38);
+  a94=(a94*a114);
+  a61=(a61+a94);
+  a94=(a36/a32);
+  a94=(a94*a112);
+  a61=(a61+a94);
+  a94=(a32+a32);
+  a61=(a61/a94);
+  a31=(a31*a61);
+  a23=(a23-a31);
+  a89=(a89*a119);
+  a86=(a86*a123);
+  a89=(a89+a86);
+  a81=(a81*a122);
+  a89=(a89+a81);
+  a75=(a75*a120);
+  a89=(a89+a75);
+  a124=(a124/a32);
+  a35=(a35+a35);
+  a35=(a35*a61);
+  a124=(a124-a35);
+  a35=(a22*a124);
+  a89=(a89+a35);
+  a115=(a115/a32);
+  a34=(a34+a34);
+  a34=(a34*a61);
+  a115=(a115-a34);
+  a34=(a16*a115);
+  a89=(a89+a34);
+  a114=(a114/a32);
+  a33=(a33+a33);
+  a33=(a33*a61);
+  a114=(a114-a33);
+  a33=(a20*a114);
+  a89=(a89+a33);
+  a33=(a17*a23);
+  a89=(a89+a33);
+  a33=(a17*a89);
+  a33=(a23-a33);
+  a61=(a27*a33);
+  a54=(a54+a61);
+  a36=(a36*a58);
+  a84=(a84-a36);
+  a71=(a71*a119);
+  a85=(a85*a123);
+  a71=(a71+a85);
+  a80=(a80*a122);
+  a71=(a71+a80);
+  a74=(a74*a120);
+  a71=(a71+a74);
+  a43=(a43*a58);
+  a110=(a110-a43);
+  a43=(a22*a110);
+  a71=(a71+a43);
+  a41=(a41*a58);
+  a104=(a104-a41);
+  a41=(a16*a104);
+  a71=(a71+a41);
+  a39=(a39*a58);
+  a70=(a70-a39);
+  a39=(a20*a70);
+  a71=(a71+a39);
+  a39=(a17*a84);
+  a71=(a71+a39);
+  a39=(a17*a71);
+  a39=(a84-a39);
+  a58=(a8*a39);
+  a54=(a54+a58);
+  a55=(a7*a55);
+  a120=(a120-a55);
+  a47=(a47*a90);
+  a120=(a120-a47);
+  a23=(a28*a23);
+  a120=(a120-a23);
+  a25=(a25*a89);
+  a120=(a120-a25);
+  a84=(a18*a84);
+  a120=(a120-a84);
+  a4=(a4*a71);
+  a120=(a120-a4);
+  a4=(a120/a13);
+  a10=(a10+a10);
+  a99=(a99/a13);
+  a99=(a99*a72);
+  a98=(a98/a13);
+  a98=(a98*a88);
+  a99=(a99+a98);
+  a97=(a97/a13);
+  a97=(a97*a83);
+  a99=(a99+a97);
+  a95=(a95/a13);
+  a95=(a95*a77);
+  a99=(a99+a95);
+  a22=(a22/a13);
+  a76=(a7*a76);
+  a119=(a119-a76);
+  a76=(a0*a90);
+  a119=(a119-a76);
+  a110=(a18*a110);
+  a119=(a119-a110);
+  a124=(a28*a124);
+  a119=(a119-a124);
+  a124=(a27*a89);
+  a119=(a119-a124);
+  a124=(a8*a71);
+  a119=(a119-a124);
+  a22=(a22*a119);
+  a99=(a99+a22);
+  a16=(a16/a13);
+  a82=(a7*a82);
+  a123=(a123-a82);
+  a15=(a15*a90);
+  a123=(a123-a15);
+  a104=(a18*a104);
+  a123=(a123-a104);
+  a115=(a28*a115);
+  a123=(a123-a115);
+  a30=(a30*a89);
+  a123=(a123-a30);
+  a21=(a21*a71);
+  a123=(a123-a21);
+  a16=(a16*a123);
+  a99=(a99+a16);
+  a16=(a20/a13);
+  a7=(a7*a87);
+  a122=(a122-a7);
+  a5=(a5*a90);
+  a122=(a122-a5);
+  a18=(a18*a70);
+  a122=(a122-a18);
+  a28=(a28*a114);
+  a122=(a122-a28);
+  a29=(a29*a89);
+  a122=(a122-a29);
+  a19=(a19*a71);
+  a122=(a122-a19);
+  a16=(a16*a122);
+  a99=(a99+a16);
+  a17=(a17/a13);
+  a17=(a17*a120);
+  a99=(a99+a17);
+  a17=(a13+a13);
+  a99=(a99/a17);
+  a10=(a10*a99);
+  a4=(a4-a10);
+  a10=(a12*a4);
+  a54=(a54+a10);
+  if (res[0]!=0) res[0][0]=a54;
+  a90=(a20*a90);
+  a87=(a87-a90);
+  a0=(a0*a87);
+  a89=(a20*a89);
+  a114=(a114-a89);
+  a27=(a27*a114);
+  a0=(a0+a27);
+  a20=(a20*a71);
+  a70=(a70-a20);
+  a8=(a8*a70);
+  a0=(a0+a8);
+  a122=(a122/a13);
+  a14=(a14+a14);
+  a14=(a14*a99);
+  a122=(a122-a14);
+  a12=(a12*a122);
+  a0=(a0+a12);
+  if (res[0]!=0) res[0][1]=a0;
+  a0=cos(a1);
+  a12=(a46*a87);
+  a14=(a48*a66);
+  a12=(a12-a14);
+  a14=(a24*a114);
+  a12=(a12+a14);
+  a14=(a26*a33);
+  a12=(a12-a14);
+  a14=(a3*a70);
+  a12=(a12+a14);
+  a14=(a6*a39);
+  a12=(a12-a14);
+  a14=(a9*a122);
+  a12=(a12+a14);
+  a14=(a11*a4);
+  a12=(a12-a14);
+  a0=(a0*a12);
+  a1=sin(a1);
+  a48=(a48*a87);
+  a46=(a46*a66);
+  a48=(a48+a46);
+  a26=(a26*a114);
+  a48=(a48+a26);
+  a24=(a24*a33);
+  a48=(a48+a24);
+  a6=(a6*a70);
+  a48=(a48+a6);
+  a3=(a3*a39);
+  a48=(a48+a3);
+  a11=(a11*a122);
+  a48=(a48+a11);
+  a9=(a9*a4);
+  a48=(a48+a9);
+  a1=(a1*a48);
+  a0=(a0-a1);
+  if (res[0]!=0) res[0][2]=a0;
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT int grad_J(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
+  return casadi_f1(arg, res, iw, w, mem);
+}
+
+CASADI_SYMBOL_EXPORT int grad_J_alloc_mem(void) {
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT int grad_J_init_mem(int mem) {
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT void grad_J_free_mem(int mem) {
+}
+
+CASADI_SYMBOL_EXPORT int grad_J_checkout(void) {
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT void grad_J_release(int mem) {
+}
+
+CASADI_SYMBOL_EXPORT void grad_J_incref(void) {
+}
+
+CASADI_SYMBOL_EXPORT void grad_J_decref(void) {
+}
+
+CASADI_SYMBOL_EXPORT casadi_int grad_J_n_in(void) { return 10;}
+
+CASADI_SYMBOL_EXPORT casadi_int grad_J_n_out(void) { return 1;}
+
+CASADI_SYMBOL_EXPORT casadi_real grad_J_default_in(casadi_int i) {
+  switch (i) {
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const char* grad_J_name_in(casadi_int i) {
+  switch (i) {
+    case 0: return "robot_x";
+    case 1: return "robot_y";
+    case 2: return "robot_θ";
+    case 3: return "fx";
+    case 4: return "fy";
+    case 5: return "cx";
+    case 6: return "cy";
+    case 7: return "robot2camera";
+    case 8: return "field2points";
+    case 9: return "point_observations";
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const char* grad_J_name_out(casadi_int i) {
+  switch (i) {
+    case 0: return "grad_J";
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const casadi_int* grad_J_sparsity_in(casadi_int i) {
+  switch (i) {
+    case 0: return casadi_s0;
+    case 1: return casadi_s0;
+    case 2: return casadi_s0;
+    case 3: return casadi_s0;
+    case 4: return casadi_s0;
+    case 5: return casadi_s0;
+    case 6: return casadi_s0;
+    case 7: return casadi_s1;
+    case 8: return casadi_s1;
+    case 9: return casadi_s2;
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT const casadi_int* grad_J_sparsity_out(casadi_int i) {
+  switch (i) {
+    case 0: return casadi_s3;
+    default: return 0;
+  }
+}
+
+CASADI_SYMBOL_EXPORT int grad_J_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+  if (sz_arg) *sz_arg = 10;
+  if (sz_res) *sz_res = 1;
+  if (sz_iw) *sz_iw = 0;
+  if (sz_w) *sz_w = 0;
+  return 0;
+}
+
+CASADI_SYMBOL_EXPORT int grad_J_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+  if (sz_arg) *sz_arg = 10*sizeof(const casadi_real*);
+  if (sz_res) *sz_res = 1*sizeof(casadi_real*);
+  if (sz_iw) *sz_iw = 0*sizeof(casadi_int);
+  if (sz_w) *sz_w = 0*sizeof(casadi_real);
+  return 0;
+}
+
+/* hess_J:(robot_x,robot_y,robot_θ,fx,fy,cx,cy,robot2camera[4x4],field2points[4x4],point_observations[2x4])->(hess_J[3x3]) */
+static int casadi_f2(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_real a0, a1, a10, a100, a101, a102, a103, a104, a105, a106, a107, a108, a109, a11, a110, a111, a112, a113, a114, a115, a116, a117, a118, a119, a12, a120, a121, a122, a123, a124, a125, a126, a127, a128, a129, a13, a130, a131, a132, a133, a134, a135, a136, a137, a138, a139, a14, a140, a141, a142, a143, a144, a145, a146, a147, a148, a149, a15, a150, a151, a152, a153, a154, a155, a156, a157, a158, a159, a16, a160, a161, a162, a163, a164, a165, a166, a167, a168, a169, a17, a170, a171, a172, a173, a174, a175, a176, a177, a178, a179, a18, a180, a181, a182, a183, a184, a185, a186, a187, a188, a189, a19, a190, a191, a192, a193, a194, a195, a196, a197, a198, a199, a2, a20, a200, a201, a202, a203, a204, a205, a206, a207, a208, a209, a21, a210, a211, a212, a213, a214, a215, a216, a217, a218, a219, a22, a220, a221, a222, a223, a224, a225, a226, a227, a228, a229, a23, a230, a231, a232, a233, a234, a235, a236, a237, a238, a239, a24, a240, a241, a242, a243, a244, a245, a246, a247, a248, a249, a25, a250, a251, a252, a253, a254, a255, a256, a257, a258, a259, a26, a260, a261, a262, a263, a264, a265, a266, a267, a268, a269, a27, a270, a271, a272, a273, a274, a275, a276, a277, a278, a279, a28, a280, a281, a282, a283, a284, a285, a286, a287, a288, a289, a29, a290, a291, a292, a293, a294, a295, a296, a297, a298, a299, a3, a30, a300, a301, a302, a303, a304, a305, a306, a307, a308, a309, a31, a310, a311, a312, a313, a314, a315, a316, a317, a318, a319, a32, a320, a321, a322, a323, a324, a325, a326, a327, a328, a329, a33, a330, a331, a332, a333, a334, a335, a336, a337, a338, a339, a34, a340, a341, a342, a343, a344, a345, a346, a347, a348, a349, a35, a350, a351, a352, a353, a354, a355, a356, a357, a358, a359, a36, a360, a361, a362, a363, a364, a365, a366, a367, a368, a369, a37, a370, a371, a372, a373, a374, a375, a376, a377, a378, a379, a38, a380, a381, a382, a383, a384, a385, a386, a387, a388, a389, a39, a390, a391, a392, a393, a394, a395, a396, a397, a398, a399, a4, a40, a400, a401, a402, a403, a404, a405, a406, a407, a408, a409, a41, a410, a411, a412, a413, a414, a415, a416, a417, a418, a419, a42, a420, a421, a422, a423, a424, a425, a426, a427, a428, a429, a43, a430, a431, a432, a433, a434, a435, a436, a437, a438, a439, a44, a440, a441, a442, a443, a444, a445, a446, a447, a448, a449, a45, a450, a451, a452, a453, a454, a455, a456, a457, a458, a459, a46, a460, a461, a462, a463, a464, a465, a466, a467, a468, a469, a47, a470, a471, a472, a48, a49, a5, a50, a51, a52, a53, a54, a55, a56, a57, a58, a59, a6, a60, a61, a62, a63, a64, a65, a66, a67, a68, a69, a7, a70, a71, a72, a73, a74, a75, a76, a77, a78, a79, a8, a80, a81, a82, a83, a84, a85, a86, a87, a88, a89, a9, a90, a91, a92, a93, a94, a95, a96, a97, a98, a99;
-  a0=arg[5]? arg[5][11] : 0;
-  a1=arg[5]? arg[5][15] : 0;
-  a2=arg[0]? arg[0][2] : 0;
+  a0=arg[7]? arg[7][11] : 0;
+  a1=arg[7]? arg[7][15] : 0;
+  a2=arg[2]? arg[2][0] : 0;
   a3=cos(a2);
-  a4=arg[5]? arg[5][12] : 0;
+  a4=arg[7]? arg[7][12] : 0;
   a5=(a3*a4);
   a6=sin(a2);
-  a7=arg[5]? arg[5][13] : 0;
+  a7=arg[7]? arg[7][13] : 0;
   a8=(a6*a7);
   a5=(a5-a8);
   a8=arg[0]? arg[0][0] : 0;
   a9=(a8*a1);
   a5=(a5+a9);
-  a9=arg[5]? arg[5][0] : 0;
+  a9=arg[7]? arg[7][0] : 0;
   a10=(a3*a9);
-  a11=arg[5]? arg[5][1] : 0;
+  a11=arg[7]? arg[7][1] : 0;
   a12=(a6*a11);
   a10=(a10-a12);
-  a12=arg[5]? arg[5][3] : 0;
+  a12=arg[7]? arg[7][3] : 0;
   a13=(a8*a12);
   a10=(a10+a13);
   a13=casadi_sq(a10);
   a14=(a6*a9);
   a15=(a3*a11);
   a14=(a14+a15);
-  a15=arg[0]? arg[0][1] : 0;
+  a15=arg[1]? arg[1][0] : 0;
   a16=(a15*a12);
   a14=(a14+a16);
   a16=casadi_sq(a14);
   a13=(a13+a16);
-  a16=arg[5]? arg[5][2] : 0;
+  a16=arg[7]? arg[7][2] : 0;
   a17=casadi_sq(a16);
   a13=(a13+a17);
   a17=casadi_sq(a12);
@@ -109,7 +1771,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a20=(a14/a13);
   a21=(a19*a20);
   a18=(a18+a21);
-  a21=arg[5]? arg[5][14] : 0;
+  a21=arg[7]? arg[7][14] : 0;
   a16=(a16/a13);
   a22=(a21*a16);
   a18=(a18+a22);
@@ -120,12 +1782,12 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a23=(a1-a23);
   a24=(a18*a17);
   a24=(a5-a24);
-  a25=arg[5]? arg[5][4] : 0;
+  a25=arg[7]? arg[7][4] : 0;
   a26=(a3*a25);
-  a27=arg[5]? arg[5][5] : 0;
+  a27=arg[7]? arg[7][5] : 0;
   a28=(a6*a27);
   a26=(a26-a28);
-  a28=arg[5]? arg[5][7] : 0;
+  a28=arg[7]? arg[7][7] : 0;
   a29=(a8*a28);
   a26=(a26+a29);
   a29=(a26*a17);
@@ -136,7 +1798,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a30=(a30+a31);
   a31=(a30*a20);
   a29=(a29+a31);
-  a31=arg[5]? arg[5][6] : 0;
+  a31=arg[7]? arg[7][6] : 0;
   a32=(a31*a16);
   a29=(a29+a32);
   a32=(a28*a22);
@@ -176,9 +1838,9 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a44=(a23-a44);
   a45=(a38*a37);
   a45=(a24-a45);
-  a46=arg[5]? arg[5][8] : 0;
+  a46=arg[7]? arg[7][8] : 0;
   a47=(a3*a46);
-  a48=arg[5]? arg[5][9] : 0;
+  a48=arg[7]? arg[7][9] : 0;
   a49=(a6*a48);
   a47=(a47-a49);
   a8=(a8*a0);
@@ -191,7 +1853,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a6=(a6+a15);
   a15=(a6*a20);
   a8=(a8+a15);
-  a15=arg[5]? arg[5][10] : 0;
+  a15=arg[7]? arg[7][10] : 0;
   a3=(a15*a16);
   a8=(a8+a3);
   a3=(a0*a22);
@@ -260,7 +1922,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a67=sqrt(a67);
   a70=(a65/a67);
   a71=(a70/a67);
-  a72=arg[6]? arg[6][15] : 0;
+  a72=arg[8]? arg[8][15] : 0;
   a73=(a66/a67);
   a74=(a73/a67);
   a75=(a38*a74);
@@ -271,7 +1933,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a77=(a49*a76);
   a75=(a75-a77);
   a75=(a75/a33);
-  a77=arg[6]? arg[6][12] : 0;
+  a77=arg[8]? arg[8][12] : 0;
   a78=(a75*a77);
   a79=(a68/a67);
   a80=(a79/a67);
@@ -283,7 +1945,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a83=(a49*a82);
   a81=(a81-a83);
   a81=(a81/a33);
-  a83=arg[6]? arg[6][13] : 0;
+  a83=arg[8]? arg[8][13] : 0;
   a84=(a81*a83);
   a78=(a78+a84);
   a84=(a69/a67);
@@ -296,7 +1958,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a88=(a49*a87);
   a86=(a86-a88);
   a86=(a86/a33);
-  a88=arg[6]? arg[6][14] : 0;
+  a88=arg[8]? arg[8][14] : 0;
   a89=(a86*a88);
   a78=(a78+a89);
   a89=(a38*a71);
@@ -318,11 +1980,11 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a91=(a91+a92);
   a78=(a78/a91);
   a92=(a78/a91);
-  a93=arg[2]? arg[2][0] : 0;
+  a93=arg[4]? arg[4][0] : 0;
   a94=(a93*a78);
-  a95=arg[4]? arg[4][0] : 0;
+  a95=arg[6]? arg[6][0] : 0;
   a94=(a94+a95);
-  a96=arg[7]? arg[7][7] : 0;
+  a96=arg[9]? arg[9][7] : 0;
   a94=(a94-a96);
   a94=(a94+a94);
   a94=(a93*a94);
@@ -364,24 +2026,24 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a98=(a98+a102);
   a98=(a98/a91);
   a102=(a98/a91);
-  a103=arg[1]? arg[1][0] : 0;
+  a103=arg[3]? arg[3][0] : 0;
   a104=(a103*a98);
-  a105=arg[3]? arg[3][0] : 0;
+  a105=arg[5]? arg[5][0] : 0;
   a104=(a104+a105);
-  a106=arg[7]? arg[7][6] : 0;
+  a106=arg[9]? arg[9][6] : 0;
   a104=(a104-a106);
   a104=(a104+a104);
   a104=(a103*a104);
   a106=(a102*a104);
   a96=(a96+a106);
   a106=(a72*a96);
-  a107=arg[6]? arg[6][11] : 0;
-  a108=arg[6]? arg[6][8] : 0;
+  a107=arg[8]? arg[8][11] : 0;
+  a108=arg[8]? arg[8][8] : 0;
   a109=(a75*a108);
-  a110=arg[6]? arg[6][9] : 0;
+  a110=arg[8]? arg[8][9] : 0;
   a111=(a81*a110);
   a109=(a109+a111);
-  a111=arg[6]? arg[6][10] : 0;
+  a111=arg[8]? arg[8][10] : 0;
   a112=(a86*a111);
   a109=(a109+a112);
   a112=(a89*a107);
@@ -397,7 +2059,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a113=(a109/a112);
   a114=(a93*a109);
   a114=(a114+a95);
-  a115=arg[7]? arg[7][5] : 0;
+  a115=arg[9]? arg[9][5] : 0;
   a114=(a114-a115);
   a114=(a114+a114);
   a114=(a93*a114);
@@ -413,7 +2075,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a117=(a116/a112);
   a118=(a103*a116);
   a118=(a118+a105);
-  a119=arg[7]? arg[7][4] : 0;
+  a119=arg[9]? arg[9][4] : 0;
   a118=(a118-a119);
   a118=(a118+a118);
   a118=(a103*a118);
@@ -421,13 +2083,13 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a115=(a115+a119);
   a119=(a107*a115);
   a106=(a106+a119);
-  a119=arg[6]? arg[6][7] : 0;
-  a120=arg[6]? arg[6][4] : 0;
+  a119=arg[8]? arg[8][7] : 0;
+  a120=arg[8]? arg[8][4] : 0;
   a121=(a75*a120);
-  a122=arg[6]? arg[6][5] : 0;
+  a122=arg[8]? arg[8][5] : 0;
   a123=(a81*a122);
   a121=(a121+a123);
-  a123=arg[6]? arg[6][6] : 0;
+  a123=arg[8]? arg[8][6] : 0;
   a124=(a86*a123);
   a121=(a121+a124);
   a124=(a89*a119);
@@ -443,7 +2105,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a125=(a121/a124);
   a126=(a93*a121);
   a126=(a126+a95);
-  a127=arg[7]? arg[7][3] : 0;
+  a127=arg[9]? arg[9][3] : 0;
   a126=(a126-a127);
   a126=(a126+a126);
   a126=(a93*a126);
@@ -459,7 +2121,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a129=(a128/a124);
   a130=(a103*a128);
   a130=(a130+a105);
-  a131=arg[7]? arg[7][2] : 0;
+  a131=arg[9]? arg[9][2] : 0;
   a130=(a130-a131);
   a130=(a130+a130);
   a130=(a103*a130);
@@ -467,13 +2129,13 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a127=(a127+a131);
   a131=(a119*a127);
   a106=(a106+a131);
-  a131=arg[6]? arg[6][3] : 0;
-  a132=arg[6]? arg[6][0] : 0;
+  a131=arg[8]? arg[8][3] : 0;
+  a132=arg[8]? arg[8][0] : 0;
   a133=(a75*a132);
-  a134=arg[6]? arg[6][1] : 0;
+  a134=arg[8]? arg[8][1] : 0;
   a135=(a81*a134);
   a133=(a133+a135);
-  a135=arg[6]? arg[6][2] : 0;
+  a135=arg[8]? arg[8][2] : 0;
   a136=(a86*a135);
   a133=(a133+a136);
   a136=(a89*a131);
@@ -489,7 +2151,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a137=(a133/a136);
   a138=(a93*a133);
   a138=(a138+a95);
-  a95=arg[7]? arg[7][1] : 0;
+  a95=arg[9]? arg[9][1] : 0;
   a138=(a138-a95);
   a138=(a138+a138);
   a138=(a93*a138);
@@ -505,7 +2167,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a140=(a139/a136);
   a141=(a103*a139);
   a141=(a141+a105);
-  a105=arg[7]? arg[7][0] : 0;
+  a105=arg[9]? arg[9][0] : 0;
   a141=(a141-a105);
   a141=(a141+a141);
   a141=(a103*a141);
@@ -6066,7 +7728,7 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
 }
 
 CASADI_SYMBOL_EXPORT int hess_J(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
-  return casadi_f0(arg, res, iw, w, mem);
+  return casadi_f2(arg, res, iw, w, mem);
 }
 
 CASADI_SYMBOL_EXPORT int hess_J_alloc_mem(void) {
@@ -6093,7 +7755,7 @@ CASADI_SYMBOL_EXPORT void hess_J_incref(void) {
 CASADI_SYMBOL_EXPORT void hess_J_decref(void) {
 }
 
-CASADI_SYMBOL_EXPORT casadi_int hess_J_n_in(void) { return 8;}
+CASADI_SYMBOL_EXPORT casadi_int hess_J_n_in(void) { return 10;}
 
 CASADI_SYMBOL_EXPORT casadi_int hess_J_n_out(void) { return 1;}
 
@@ -6105,21 +7767,23 @@ CASADI_SYMBOL_EXPORT casadi_real hess_J_default_in(casadi_int i) {
 
 CASADI_SYMBOL_EXPORT const char* hess_J_name_in(casadi_int i) {
   switch (i) {
-    case 0: return "i0";
-    case 1: return "i1";
-    case 2: return "i2";
-    case 3: return "i3";
-    case 4: return "i4";
-    case 5: return "i5";
-    case 6: return "i6";
-    case 7: return "i7";
+    case 0: return "robot_x";
+    case 1: return "robot_y";
+    case 2: return "robot_θ";
+    case 3: return "fx";
+    case 4: return "fy";
+    case 5: return "cx";
+    case 6: return "cy";
+    case 7: return "robot2camera";
+    case 8: return "field2points";
+    case 9: return "point_observations";
     default: return 0;
   }
 }
 
 CASADI_SYMBOL_EXPORT const char* hess_J_name_out(casadi_int i) {
   switch (i) {
-    case 0: return "o0";
+    case 0: return "hess_J";
     default: return 0;
   }
 }
@@ -6127,13 +7791,15 @@ CASADI_SYMBOL_EXPORT const char* hess_J_name_out(casadi_int i) {
 CASADI_SYMBOL_EXPORT const casadi_int* hess_J_sparsity_in(casadi_int i) {
   switch (i) {
     case 0: return casadi_s0;
-    case 1: return casadi_s1;
-    case 2: return casadi_s1;
-    case 3: return casadi_s1;
-    case 4: return casadi_s1;
-    case 5: return casadi_s2;
-    case 6: return casadi_s2;
-    case 7: return casadi_s3;
+    case 1: return casadi_s0;
+    case 2: return casadi_s0;
+    case 3: return casadi_s0;
+    case 4: return casadi_s0;
+    case 5: return casadi_s0;
+    case 6: return casadi_s0;
+    case 7: return casadi_s1;
+    case 8: return casadi_s1;
+    case 9: return casadi_s2;
     default: return 0;
   }
 }
@@ -6146,7 +7812,7 @@ CASADI_SYMBOL_EXPORT const casadi_int* hess_J_sparsity_out(casadi_int i) {
 }
 
 CASADI_SYMBOL_EXPORT int hess_J_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
-  if (sz_arg) *sz_arg = 8;
+  if (sz_arg) *sz_arg = 10;
   if (sz_res) *sz_res = 1;
   if (sz_iw) *sz_iw = 0;
   if (sz_w) *sz_w = 0;
@@ -6154,7 +7820,7 @@ CASADI_SYMBOL_EXPORT int hess_J_work(casadi_int *sz_arg, casadi_int* sz_res, cas
 }
 
 CASADI_SYMBOL_EXPORT int hess_J_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
-  if (sz_arg) *sz_arg = 8*sizeof(const casadi_real*);
+  if (sz_arg) *sz_arg = 10*sizeof(const casadi_real*);
   if (sz_res) *sz_res = 1*sizeof(casadi_real*);
   if (sz_iw) *sz_iw = 0*sizeof(casadi_int);
   if (sz_w) *sz_w = 0*sizeof(casadi_real);

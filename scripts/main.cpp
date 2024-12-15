@@ -34,9 +34,7 @@ void print_sparsity(const casadi_int sparsity[]) {
     printf("\n");
 }
 
-int nsec_J = 0;
-int nsec_grad = 0;
-int nsec_hess = 0;
+int nsec_solve = 0;
 
 void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_theta) {
     using StateMatrix = Eigen::Matrix<casadi_real, 3, 1, Eigen::ColMajor>;
@@ -60,10 +58,10 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
 
     Eigen::Matrix<casadi_real, NUM_LANDMARKS, 4, Eigen::ColMajor> field2points_;
     field2points_ <<
-        1.5, 0 - 0.08255, 0.5 - 0.08255, 1,
-        1.5, 0 - 0.08255, 0.5 + 0.08255, 1,
-        1.5, 0 + 0.08255, 0.5 + 0.08255, 1,
-        1.5, 0 + 0.08255, 0.5 - 0.08255, 1;
+        2.5, 0 - 0.08255, 0.5 - 0.08255, 1,
+        2.5, 0 - 0.08255, 0.5 + 0.08255, 1,
+        2.5, 0 + 0.08255, 0.5 + 0.08255, 1,
+        2.5, 0 + 0.08255, 0.5 - 0.08255, 1;
     Eigen::Matrix<casadi_real, 4, NUM_LANDMARKS, Eigen::ColMajor> field2points = field2points_.transpose();
 
     Eigen::Matrix<casadi_real, NUM_LANDMARKS, 2, Eigen::ColMajor> point_observations_;
@@ -80,8 +78,10 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
 
     StateMatrix x { robot_x, robot_y, robot_theta };
 
+std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     for (int iter = 0; iter < 100; iter++) {
-        std::cout << "iter " << iter << " x [" << x.transpose() << "]" << std::endl;
+        // std::cout << "iter " << iter << " x [" << x.transpose() << "]" << std::endl;
 
         const casadi_real *argv[] = {
             &x[0], &x[1], &x[2],
@@ -118,7 +118,7 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
         if ((H_ldlt.vectorD().array() <= 0.0).any()) {
             HessianMat delta_I = HessianMat::Identity() * 1e-5;
 
-            std::cout << "Eig(H)=[" << H_ldlt.vectorD().transpose() << "] not positive definite - regularizing" << std::endl;
+            // std::cout << "Eig(H)=[" << H_ldlt.vectorD().transpose() << "] not positive definite - regularizing" << std::endl;
             int j = 0;
             while ((H_ldlt.vectorD().array() <= 0.0).any()) {
                 delta_I *= 10;
@@ -127,7 +127,7 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
                 j++;
             }
 
-            std::cout << "regularization tool " << j << " iters, delta_I=I*" << delta_I(0,0) << std::endl;
+            // std::cout << "regularization tool " << j << " iters, delta_I=I*" << delta_I(0,0) << std::endl;
             H = H + delta_I;
         }
 
@@ -175,10 +175,15 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
         }
 
         if (g.norm() < 1e-8) {
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            nsec_solve += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+
             std::cout << "Converged! x=\n" << x << std::endl;
             break;
         }
     }
+
+
 }
 
 int main() {
@@ -195,7 +200,7 @@ int main() {
     // print_cost(0,0,0);
     // print_cost(0.1,0,0);
     // print_cost(0,0.2,0);
-    int total = 1;
-    for (int i = 0; i < total; i++) print_cost(0.1,0.1,0.1);
-    // printf("Total time,n=%i:\n\nJ=%ins\ngrad(J)=%ins\nhess(J)=%ins\n", total, nsec_J/total, nsec_grad/total,nsec_hess/total);
+    int total = 100;
+    for (int i = 0; i < total; i++) print_cost(0.2,-.3,0.1);
+    printf("Total time,n=%i:\n\nsolve=%ins\n", total, nsec_solve/total);
 }

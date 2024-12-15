@@ -37,7 +37,7 @@ int J_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casa
 #define J_SZ_ARG 10
 #define J_SZ_RES 1
 #define J_SZ_IW 0
-#define J_SZ_W 32
+#define J_SZ_W 52
 int grad_J(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem);
 int grad_J_alloc_mem(void);
 int grad_J_init_mem(int mem);
@@ -58,7 +58,7 @@ int grad_J_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw,
 #define grad_J_SZ_ARG 10
 #define grad_J_SZ_RES 1
 #define grad_J_SZ_IW 0
-#define grad_J_SZ_W 126
+#define grad_J_SZ_W 158
 int hess_J(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem);
 int hess_J_alloc_mem(void);
 int hess_J_init_mem(int mem);
@@ -79,7 +79,7 @@ int hess_J_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw,
 #define hess_J_SZ_ARG 10
 #define hess_J_SZ_RES 1
 #define hess_J_SZ_IW 0
-#define hess_J_SZ_W 473
+#define hess_J_SZ_W 545
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

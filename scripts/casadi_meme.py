@@ -46,7 +46,7 @@ robot2camera = ca.SX.sym("robot2camera", 4, 4)
 
 field2camera = field2robot @ robot2camera
 
-NUM_LANDMARKS = 4 * 8
+NUM_LANDMARKS = 4 * 1
 
 # Points in the field (homogeneous coordinates). Rows are [x, y, z, 1]
 field2points = ca.SX.sym("field2landmark", 4, NUM_LANDMARKS)
@@ -227,7 +227,7 @@ if False:
 
     plt.show()
 
-SOLVE_NEWTON = False
+SOLVE_NEWTON = True
 if SOLVE_NEWTON:
     # Newton's method parameters
     x0 = np.array([-0.1, 0.0, 0.2]).reshape((3, 1))  # Initial guess
@@ -243,8 +243,8 @@ if SOLVE_NEWTON:
     x = x0
     error = float("inf")
     for i in range(max_iter):
-        grad = np.array(grad_func(x, fx, fy, cx, cy))
-        hess = np.array(hess_func(x, fx, fy, cx, cy))
+        grad = np.array(grad_func(*x, fx, fy, cx, cy, robot2camera, field2points, point_observations))
+        hess = np.array(hess_func(*x, fx, fy, cx, cy, robot2camera, field2points, point_observations))
 
         L, D, perm = sp.linalg.ldl(hess)
 
@@ -261,12 +261,12 @@ if SOLVE_NEWTON:
 
         p_x = np.linalg.solve(hess + delta_I, -grad)
 
-        oldCost = J_func(x, fx, fy, cx, cy)
+        oldCost = J_func(*x, fx, fy, cx, cy, robot2camera, field2points, point_observations)
         alpha = 1.0
         trial_x = x + alpha * p_x
 
         # hack
-        while J_func(trial_x, fx, fy, cx, cy) > oldCost:
+        while J_func(*trial_x, fx, fy, cx, cy, robot2camera, field2points, point_observations) > oldCost:
             alpha *= 0.5
             trial_x = x + alpha * p_x
         print(

@@ -117,11 +117,17 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
         // Make sure H is positive definite (all eigenvalues are > 0)
         if ((H_ldlt.vectorD().array() <= 0.0).any()) {
             HessianMat delta_I = HessianMat::Identity() * 1e-5;
+
+            std::cout << "Eig(H)=[" << H_ldlt.vectorD().transpose() << "] not positive definite - regularizing" << std::endl;
+            int j = 0;
             while ((H_ldlt.vectorD().array() <= 0.0).any()) {
                 delta_I *= 10;
                 H_ldlt = (H + delta_I).ldlt();
+
+                j++;
             }
 
+            std::cout << "regularization tool " << j << " iters, delta_I=I*" << delta_I(0,0) << std::endl;
             H = H + delta_I;
         }
 

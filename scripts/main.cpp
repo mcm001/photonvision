@@ -38,7 +38,7 @@ void print_sparsity(const casadi_int sparsity[]) {
 
 uint64_t nsec_solve = 0;
 
-#define TAG_COUNT 2
+#define TAG_COUNT 3
 #if TAG_COUNT < 1
 	#error TAG_COUNT cannot be less than 1!
 #endif
@@ -265,7 +265,7 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
 			}
 		}
 
-		if (g.norm() < 1e-6) {
+		if (g.norm() < 1e-8) {
 			auto end = steady_clock::now();
 			nsec_solve += duration_cast<nanoseconds>(end - begin).count();
 

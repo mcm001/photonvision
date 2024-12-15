@@ -46,7 +46,7 @@ robot2camera = ca.SX.sym("robot2camera", 4, 4)
 
 field2camera = field2robot @ robot2camera
 
-TAG_COUNT = 2
+TAG_COUNT = 3
 NUM_LANDMARKS = 4 * TAG_COUNT
 
 # Points in the field (homogeneous coordinates). Rows are [x, y, z, 1]

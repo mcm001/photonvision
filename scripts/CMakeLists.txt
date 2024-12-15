@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 project(casadi_meme)
 
 ### START EIGEN3 ###
@@ -28,7 +30,7 @@ list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "fetched")
 ### END EIGEN3 ###
 
-add_library(costs_4_tag SHARED
+add_library(costs_4_tag STATIC
 	casadi_meme.c
 )
 

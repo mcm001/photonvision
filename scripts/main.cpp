@@ -251,13 +251,13 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
 			casadi_real new_cost;
 			{
 				casadi_real *j_out[] = {&new_cost};
-				if (J(argv, j_out, 0, 0, 0)) {
+				if (J(trial_argv, j_out, 0, 0, 0)) {
 					printf("Failure!");
 					return;
 				}
 			}
 
-			if (new_cost <= old_cost) {
+			if (new_cost < old_cost) {
 				x = trial_x;
 				break;
 			} else {

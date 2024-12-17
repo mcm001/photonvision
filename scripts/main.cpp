@@ -1,6 +1,6 @@
 #include <cstdio>
 
-#include "casadi_meme.h"
+#include "casadi_meme_3_tags.h"
 
 #include <vector>
 #include <iostream>
@@ -187,14 +187,14 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
 
 		{
 			casadi_real *hess_j_out[] = {H.data()};
-			if (hess_J(argv, hess_j_out, 0, 0, 0)) {
+			if (calc_hessJ_3_tags(argv, hess_j_out, 0, 0, 0)) {
 				printf("Failure!");
 				return;
 			}
 		}
 		{
 			casadi_real *grad_j_out[] = {g.data()};
-			if (grad_J(argv, grad_j_out, 0, 0, 0)) {
+			if (calc_gradJ_3_tags(argv, grad_j_out, 0, 0, 0)) {
 				printf("Failure!");
 				return;
 			}
@@ -230,7 +230,7 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
 		// Calculate our old cost before refinement
 		{
 			casadi_real *j_out[] = {&old_cost};
-			if (J(argv, j_out, 0, 0, 0)) {
+			if (calc_J_3_tags(argv, j_out, 0, 0, 0)) {
 				printf("Failure!");
 				return;
 			}
@@ -251,7 +251,7 @@ void print_cost(casadi_real robot_x, casadi_real robot_y, casadi_real robot_thet
 			casadi_real new_cost;
 			{
 				casadi_real *j_out[] = {&new_cost};
-				if (J(trial_argv, j_out, 0, 0, 0)) {
+				if (calc_J_3_tags(trial_argv, j_out, 0, 0, 0)) {
 					printf("Failure!");
 					return;
 				}

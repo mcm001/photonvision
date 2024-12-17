@@ -30,13 +30,14 @@ list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "fetched")
 ### END EIGEN3 ###
 
-add_library(costs_4_tag STATIC
-	casadi_meme.c
+file(GLOB SRC_FILES casadi_meme_*_tags.c)
+add_library(casadi_meme SHARED
+  ${SRC_FILES}
 )
 
 add_executable(test_casadi main.cpp)
 
 target_link_libraries(test_casadi PRIVATE
 	Eigen3::Eigen
-	costs_4_tag
+	casadi_meme
 )

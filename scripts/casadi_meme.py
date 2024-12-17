@@ -46,43 +46,82 @@ robot2camera = ca.SX.sym("robot2camera", 4, 4)
 
 field2camera = field2robot @ robot2camera
 
-TAG_COUNT = 3
-NUM_LANDMARKS = 4 * TAG_COUNT
+for TAG_COUNT in range(1, 11):
+    NUM_LANDMARKS = 4 * TAG_COUNT
 
-# Points in the field (homogeneous coordinates). Rows are [x, y, z, 1]
-field2points = ca.SX.sym("field2landmark", 4, NUM_LANDMARKS)
+    # Points in the field (homogeneous coordinates). Rows are [x, y, z, 1]
+    field2points = ca.SX.sym("field2landmark", 4, NUM_LANDMARKS)
 
-# Observed points in the image
-point_observations = ca.SX.sym("observations_px", 2, NUM_LANDMARKS)
+    # Observed points in the image
+    point_observations = ca.SX.sym("observations_px", 2, NUM_LANDMARKS)
 
-# landmarks in camera frame
-camera2field = ca.inv(field2camera)
-camera2point = camera2field @ field2points
+    # landmarks in camera frame
+    camera2field = ca.inv(field2camera)
+    camera2point = camera2field @ field2points
 
-# Camera frame coordinates
-x = camera2point[0, :]
-y = camera2point[1, :]
-z = camera2point[2, :]
+    # Camera frame coordinates
+    x = camera2point[0, :]
+    y = camera2point[1, :]
+    z = camera2point[2, :]
 
-# Observed coordinates
-u_observed = point_observations[0, :]
-v_observed = point_observations[1, :]
+    # Observed coordinates
+    u_observed = point_observations[0, :]
+    v_observed = point_observations[1, :]
 
-# Project to image plane
-X = x / z
-Y = y / z
+    # Project to image plane
+    X = x / z
+    Y = y / z
 
-u = fx * X + cx
-v = fy * Y + cy
+    u = fx * X + cx
+    v = fy * Y + cy
 
-# Reprojection error
-u_err = u - u_observed
-v_err = v - v_observed
+    # Reprojection error
+    u_err = u - u_observed
+    v_err = v - v_observed
 
-# Frobenius norm - sqrt(sum squared of each component). Square to remove sqrt
-J = ca.norm_fro(u_err)**2 + ca.norm_fro(v_err)**2
+    # Frobenius norm - sqrt(sum squared of each component). Square to remove sqrt
+    J = ca.norm_fro(u_err)**2 + ca.norm_fro(v_err)**2
 
-# print(J)
+    x_vec = ca.vertcat(robot_x, robot_y, robot_θ)
+
+    # Hessian + gradient
+    hess_J, _ = ca.hessian(J, x_vec)
+    grad_J = ca.gradient(J, x_vec)
+
+    # Cost, plus grad and hessian of cost
+    J_func = ca.Function(
+        f"calc_J_{TAG_COUNT}_tags", 
+        [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations], 
+        [J],
+        ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
+        ["J"],
+    )
+    grad_func = ca.Function(
+        f"calc_gradJ_{TAG_COUNT}_tags",
+        [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations],
+        [grad_J],
+        ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
+        ["grad_J"],
+    )
+    hess_func = ca.Function(
+        f"calc_hessJ_{TAG_COUNT}_tags",
+        [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations],
+        [hess_J],
+        ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
+        ["hess_J"],
+    )
+    
+
+    cg = CodeGenerator(f"casadi_meme_{TAG_COUNT}_tags", {
+        'with_header': True,
+        'cpp': False,
+    })
+
+    cg.add(J_func)
+    cg.add(grad_func)
+    cg.add(hess_func)
+
+    cg.generate()
 
 
 SOLVE_IPOPT = False
@@ -104,39 +143,6 @@ if SOLVE_IPOPT:
 
     # Print results
     print(f"X={robot_x_sol:.5f} m, Y={robot_y_sol:.5f} m, theta={robot_θ_sol:.5f} rad")
-
-x_vec = ca.vertcat(robot_x, robot_y, robot_θ)
-
-# Hessian + gradient
-hess_J, _ = ca.hessian(J, x_vec)
-grad_J = ca.gradient(J, x_vec)
-
-# Cost, plus grad and hessian of cost
-J_func = ca.Function(
-    "J", 
-    [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations], 
-    [J],
-    ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
-    ["J"],
-)
-grad_func = ca.Function(
-    "grad_J",
-    [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations],
-    [grad_J],
-    ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
-    ["grad_J"],
-)
-hess_func = ca.Function(
-    "hess_J",
-    [robot_x, robot_y, robot_θ, fx, fy, cx, cy, robot2camera, field2points, point_observations],
-    [hess_J],
-    ["robot_x", "robot_y", "robot_θ", "fx", "fy", "cx", "cy", "robot2camera", "field2points", "point_observations"], 
-    ["hess_J"],
-)
-
-print(J_func)
-print(grad_func)
-print(hess_func)
 
 if True:
     robot2camera = np.array(
@@ -228,7 +234,7 @@ if False:
 
     plt.show()
 
-SOLVE_NEWTON = True
+SOLVE_NEWTON = False
 if SOLVE_NEWTON:
     # Newton's method parameters
     x0 = np.array([-0.1, 0.0, 0.2]).reshape((3, 1))  # Initial guess
@@ -283,14 +289,7 @@ if SOLVE_NEWTON:
     robot_x_sol, robot_y_sol, robot_θ_sol = x
     print(f"X={robot_x_sol} m, Y={robot_y_sol} m, theta={robot_θ_sol} rad")
 
-cg = CodeGenerator('casadi_meme', {
-    'with_header': True,
-    'cpp': False,
-})
-cg.add(J_func)
-cg.add(grad_func)
-cg.add(hess_func)
-cg.generate()
+
 
 # print('Compiling with O3 optimization: ', oname_O3)
 # t1 = time.time()

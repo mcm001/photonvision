@@ -18,11 +18,14 @@
 package org.photonvision;
 
 import edu.wpi.first.hal.HAL;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.cli.*;
+import org.opencv.core.CvType;
+import org.opencv.core.Size;
 import org.photonvision.common.configuration.CameraConfiguration;
 import org.photonvision.common.configuration.ConfigManager;
 import org.photonvision.common.configuration.NeuralNetworkModelManager;
@@ -44,6 +47,9 @@ import org.photonvision.mrcal.MrCalJNILoader;
 import org.photonvision.raspi.LibCameraJNILoader;
 import org.photonvision.server.Server;
 import org.photonvision.vision.apriltag.AprilTagFamily;
+import org.photonvision.vision.calibration.CameraCalibrationCoefficients;
+import org.photonvision.vision.calibration.CameraLensModel;
+import org.photonvision.vision.calibration.JsonMatOfDouble;
 import org.photonvision.vision.camera.PVCameraInfo;
 import org.photonvision.vision.opencv.CVMat;
 import org.photonvision.vision.pipeline.AprilTagPipelineSettings;
@@ -133,36 +139,45 @@ public class Main {
     private static void addTestModeSources() {
         ConfigManager.getInstance().load();
 
-        CameraConfiguration camConf2024 =
-                ConfigManager.getInstance().getConfig().getCameraConfigurations().get("WPI2024");
-        if (camConf2024 == null || true) {
-            camConf2024 =
+        CameraConfiguration camConf2025 =
+                ConfigManager.getInstance().getConfig().getCameraConfigurations().get("WPI2025");
+        if (camConf2025 == null || true) {
+            camConf2025 =
                     new CameraConfiguration(
                             PVCameraInfo.fromFileInfo(
-                                    TestUtils.getResourcesFolderPath(true)
-                                            .resolve("testimages")
-                                            .resolve(TestUtils.WPI2024Images.kSpeakerCenter_143in.path)
-                                            .toString(),
-                                    "WPI2024"));
+                                    // "/home/matt/Downloads/frc-2025-field-images/20241112_183833.jpg",
+                                    "/home/matt/Downloads/frc-2025-field-images/20241112_184121.jpg",
+                                    "WPI2025"));
 
-            camConf2024.FOV = TestUtils.WPI2024Images.FOV;
+            camConf2025.FOV = TestUtils.WPI2024Images.FOV;
             // same camera as 2023
-            camConf2024.calibrations.add(TestUtils.get2023LifeCamCoeffs(true));
+            camConf2025.calibrations.add(new CameraCalibrationCoefficients(
+                new Size(4000, 1868),
+                new JsonMatOfDouble(
+                    3, 3, CvType.CV_64F,
+                    new double[]{
+                        1000, 0, 4000/2,
+                        0, 1000, 1868/2,
+                        0, 0, 1
+                    }
+                ),
+                new JsonMatOfDouble(1, 8, CvType.CV_64F, new double[]{0, 0, 0, 0, 0, 0, 0, 0}),
+                new double[]{}, List.of(), new Size(), 0, CameraLensModel.LENSMODEL_OPENCV));
 
-            var pipeline2024 = new AprilTagPipelineSettings();
-            var path_split = Path.of(camConf2024.matchedCameraInfo.path()).getFileName().toString();
-            pipeline2024.pipelineNickname = path_split.replace(".jpg", "");
-            pipeline2024.targetModel = TargetModel.kAprilTag6p5in_36h11;
-            pipeline2024.tagFamily = AprilTagFamily.kTag36h11;
-            pipeline2024.inputShouldShow = true;
-            pipeline2024.solvePNPEnabled = true;
+            var pipeline2025 = new AprilTagPipelineSettings();
+            var path_split = Path.of(camConf2025.matchedCameraInfo.path()).getFileName().toString();
+            pipeline2025.pipelineNickname = path_split.replace(".jpg", "");
+            pipeline2025.targetModel = TargetModel.kAprilTag6p5in_36h11;
+            pipeline2025.tagFamily = AprilTagFamily.kTag36h11;
+            pipeline2025.inputShouldShow = true;
+            pipeline2025.solvePNPEnabled = false;
 
-            var psList2024 = new ArrayList<CVPipelineSettings>();
-            psList2024.add(pipeline2024);
-            camConf2024.pipelineSettings = psList2024;
+            var psList2025 = new ArrayList<CVPipelineSettings>();
+            psList2025.add(pipeline2025);
+            camConf2025.pipelineSettings = psList2025;
         }
 
-        var cameraConfigs = List.of(camConf2024);
+        var cameraConfigs = List.of(camConf2025);
 
         ConfigManager.getInstance().unloadCameraConfigs();
         cameraConfigs.stream().forEach(ConfigManager.getInstance()::addCameraConfiguration);

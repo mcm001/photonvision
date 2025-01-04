@@ -24,6 +24,9 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -42,13 +45,20 @@ public class Constants {
         public static final String kCameraName = "YOUR CAMERA NAME";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
         // pitched upward.
-        private static final double camPitch = Units.degreesToRadians(30.0);
+        private static final double camPitch = Units.degreesToRadians(10.0);
         public static final Transform3d kRobotToCam =
                 new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, -camPitch, 0));
 
+        private static AprilTagFieldLayout loadWrappedUnchecked() {
+            try {
+                return new AprilTagFieldLayout("/home/matt/Documents/GitHub/photonvision/test-resources/field-layouts/2025-reefscape.json");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         // The layout of the AprilTags on the field
-        public static final AprilTagFieldLayout kTagLayout =
-                AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+        public static final AprilTagFieldLayout kTagLayout = loadWrappedUnchecked();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         // (Fake values. Experiment and determine estimation noise on an actual robot.)

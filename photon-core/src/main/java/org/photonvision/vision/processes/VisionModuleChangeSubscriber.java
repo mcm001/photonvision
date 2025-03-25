@@ -57,8 +57,8 @@ public class VisionModuleChangeSubscriber extends DataChangeSubscriber {
     public void onDataChangeEvent(DataChangeEvent<?> event) {
         if (event instanceof IncomingWebSocketEvent wsEvent) {
             // Camera index -1 means a "multicast event" (i.e. the event is received by all cameras)
-            if (wsEvent.cameraIndex != null
-                    && (wsEvent.cameraIndex == parentModule.moduleIndex || wsEvent.cameraIndex == -1)) {
+            if (wsEvent.cameraUniqueName != null
+                    && wsEvent.cameraUniqueName.equals(parentModule.uniqueName())) {
                 logger.trace("Got PSC event - propName: " + wsEvent.propertyName);
                 changeListLock.lock();
                 try {
@@ -89,8 +89,12 @@ public class VisionModuleChangeSubscriber extends DataChangeSubscriber {
                 var newPropValue = change.getNewPropValue();
                 var currentSettings = change.getCurrentSettings();
                 var originContext = change.getOriginContext();
+                boolean handled = true;
                 switch (propName) {
-                    case "pipelineName" -> newPipelineNickname((String) newPropValue);
+                    case "pipelineName" -> {
+                        newPipelineNickname((String) newPropValue);
+                        continue;
+                    }
                     case "newPipelineInfo" -> newPipelineInfo((Pair<String, PipelineType>) newPropValue);
                     case "deleteCurrPipeline" -> deleteCurrPipeline();
                     case "changePipeline" -> changePipeline((Integer) newPropValue);
@@ -116,6 +120,7 @@ public class VisionModuleChangeSubscriber extends DataChangeSubscriber {
                         parentModule.saveAndBroadcastAll();
                     }
                     case "isDriverMode" -> parentModule.setDriverMode((Boolean) newPropValue);
+                    default -> handled = false;
                 }
 
                 // special case for camera settables
@@ -133,21 +138,24 @@ public class VisionModuleChangeSubscriber extends DataChangeSubscriber {
                     }
                 }
 
-                try {
-                    setProperty(currentSettings, propName, newPropValue);
-                    logger.trace("Set prop " + propName + " to value " + newPropValue);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    logger.error(
-                            "Could not set prop "
-                                    + propName
-                                    + " with value "
-                                    + newPropValue
-                                    + " on "
-                                    + currentSettings
-                                    + " | "
-                                    + e.getClass().getSimpleName());
-                } catch (Exception e) {
-                    logger.error("Unknown exception when setting PSC prop!", e);
+                if (!handled) {
+                    try {
+                        setProperty(currentSettings, propName, newPropValue);
+                        logger.trace("Set prop " + propName + " to value " + newPropValue);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        logger.error(
+                                "Could not set prop "
+                                        + propName
+                                        + " with value "
+                                        + newPropValue
+                                        + " on "
+                                        + currentSettings
+                                        + " | "
+                                        + e.getClass().getSimpleName(),
+                                e);
+                    } catch (Exception e) {
+                        logger.error("Unknown exception when setting PSC prop!", e);
+                    }
                 }
 
                 parentModule.saveAndBroadcastSelective(originContext, propName, newPropValue);
@@ -198,7 +206,7 @@ public class VisionModuleChangeSubscriber extends DataChangeSubscriber {
             parentModule.startCalibration(deserialized);
             parentModule.saveAndBroadcastAll();
         } catch (Exception e) {
-            logger.error("Error deserailizing start-calibration request", e);
+            logger.error("Error deserializing start-calibration request", e);
         }
     }
 

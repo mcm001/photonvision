@@ -36,6 +36,9 @@ class PhotonCameraSim:
         self,
         camera: PhotonCamera,
         props: SimCameraProperties = SimCameraProperties.PERFECT_90DEG(),
+        tagLayout: AprilTagFieldLayout = AprilTagFieldLayout.loadField(
+            AprilTagField.kDefaultField
+        ),
         minTargetAreaPercent: float | None = None,
         maxSightRange: meters | None = None,
     ):
@@ -64,7 +67,7 @@ class PhotonCameraSim:
         self.videoSimProcEnabled: bool = False
         self.heartbeatCounter: int = 0
         self.nextNtEntryTime = wpilib.Timer.getFPGATimestamp()
-        self.tagLayout = AprilTagFieldLayout.loadField(AprilTagField.k2024Crescendo)
+        self.tagLayout = tagLayout
 
         self.cam = camera
         self.prop = props
@@ -420,9 +423,9 @@ class PhotonCameraSim:
         now_micros = wpilib.Timer.getFPGATimestamp() * 1e6
         return PhotonPipelineResult(
             metadata=PhotonPipelineMetadata(
-                self.heartbeatCounter,
                 int(now_micros - latency * 1e6),
                 int(now_micros),
+                self.heartbeatCounter,
                 # Pretend like we heard a pong recently
                 int(np.random.uniform(950, 1050)),
             ),
@@ -474,11 +477,11 @@ class PhotonCameraSim:
 
         intrinsics = self.prop.getIntrinsics()
         intrinsicsView = intrinsics.flatten().tolist()
-        self.ts.cameraIntrinsicsPublisher.set(intrinsicsView, receiveTimestamp_us)
+        self.ts.cameraIntrinsicsPublisher.set(list(intrinsicsView), receiveTimestamp_us)
 
         distortion = self.prop.getDistCoeffs()
         distortionView = distortion.flatten().tolist()
-        self.ts.cameraDistortionPublisher.set(distortionView, receiveTimestamp_us)
+        self.ts.cameraDistortionPublisher.set(list(distortionView), receiveTimestamp_us)
 
         self.ts.heartbeatPublisher.set(self.heartbeatCounter, receiveTimestamp_us)
         self.heartbeatCounter += 1

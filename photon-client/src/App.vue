@@ -19,7 +19,7 @@ function topicUnannounceHandler( newTopic ) {
 function valueUpdateHandler( topic, timestamp_us, value ) {
   // const name: string = topic.name
   // if (name.includes("result_proto")) {
-  //   console.log("value update: ", topic, timestamp_us, value);
+    console.log("value update: ", topic, timestamp_us, ": value=", value);
   // }
 }
 function onConnect() {

@@ -618,7 +618,7 @@ export class NT4_Client {
                     else if (topic.type.startsWith("proto:")) {
                         const schemaMessageName = topic.type.substring(topic.type.indexOf(":") + 1);
                         const decoded = this.protoDecoder.decode(schemaMessageName, value);
-                        console.log("[NT4] decoded protobuf data: ", decoded.data);
+                        console.log("[NT4] decoded protobuf data: ", JSON.stringify(decoded.data));
                     }
 
                     this.onNewTopicData(topic, timestamp_us, value);
@@ -636,7 +636,7 @@ export class NT4_Client {
 
         this.clientIdx = Math.floor(Math.random() * 99999999); //Not great, but using it for now
 
-        var port = 5810; //fallback - unsecured
+        var port = 5801; // TODO -- hard-coded
         var prefix = "ws://";
 
         this.serverAddr = prefix + this.serverBaseAddr + ":" + port.toString() + "/nt/" + "JSClient_" + this.clientIdx.toString();

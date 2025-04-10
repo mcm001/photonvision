@@ -11,16 +11,16 @@ import PhotonErrorSnackbar from "@/components/app/photon-error-snackbar.vue";
 import { NT4_Client } from "@/nt4.js";
 
 function topicAnnounceHandler( newTopic ) {
-  console.log("topic announced: ", newTopic);
+  // console.log("topic announced: ", newTopic);
 }
 function topicUnannounceHandler( newTopic ) {
-  console.log("topic unannounced: ", newTopic);
+  // console.log("topic unannounced: ", newTopic);
 }
 function valueUpdateHandler( topic, timestamp_us, value ) {
-  const name: string = topic.name
-  if (name.includes("schema")) {
-    console.log("value update: ", topic, timestamp_us, value);
-  }
+  // const name: string = topic.name
+  // if (name.includes("schema")) {
+  //   console.log("value update: ", topic, timestamp_us, value);
+  // }
 }
 function onConnect() {
   console.log("connectedaaaaaaaaaa")

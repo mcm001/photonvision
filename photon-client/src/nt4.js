@@ -1,4 +1,5 @@
 import "@/msgpack.js";
+import * as ProtoDecoder from "@/ProtoDecoder";
 
 /**
  * nt4.js - Pure-javascript module implementation of the NetworkTables 4 spec 
@@ -141,8 +142,6 @@ export class NT4_Topic {
 }
 
 export class NT4_Client {
-
-
     /**
      * Main client class. User code should instantiate one of these.
      * Client will immediately start to try to connect to the server on instantiation
@@ -183,6 +182,8 @@ export class NT4_Client {
         this.serverAddr = "";
         this.serverConnectionActive = false;
         this.serverTimeOffset_us = 0;
+
+        this.protoDecoder = new ProtoDecoder.default();
 
         //Trigger the websocket to connect automatically
         this.ws_connect();
@@ -560,6 +561,12 @@ export class NT4_Client {
                     newTopic.type = params.type;
                     newTopic.properties = params.properties;
                     this.announcedTopics.set(newTopic.id, newTopic);
+                    
+                    // If this is a schema, write it down
+                    if (newTopic.name.startsWith("/.schema/")) {
+                        console.log("[NT4] Schema topic discovered: ", newTopic.name);
+                    }
+
                     this.onTopicAnnounce(newTopic);
                 } else if (method === "unannounce") {
                     var removedTopic = this.announcedTopics.get(params.id);
@@ -590,6 +597,23 @@ export class NT4_Client {
 
                 if (topicID >= 0) {
                     var topic = this.announcedTopics.get(topicID);
+
+                    // if this is a schema topic, record its new value
+                    const schemaPrefix = "/.schema/"
+                    if (topic.name.startsWith(schemaPrefix)) {
+                        let schemaName = topic.name.replace(schemaPrefix, "");
+
+                        const schemaType = schemaName.substring(0, schemaName.indexOf(":"));
+                        const schemaFileName = schemaName.substring(schemaName.indexOf(":") + 1);
+
+
+                        if (schemaType === "proto") {
+                            console.log("[NT4] got protobuf schema: ", schemaType, " --- ", schemaFileName);
+
+                            this.protoDecoder.addDescriptor(value);
+                        }
+                    }
+
                     this.onNewTopicData(topic, timestamp_us, value);
                 } else if (topicID === -1) {
                     this.ws_handleReceiveTimestamp(timestamp_us, value);
@@ -634,6 +658,4 @@ export class NT4_Client {
         this.publish_uid_counter++;
         return this.publish_uid_counter + this.clientIdx;
     }
-
-
 }

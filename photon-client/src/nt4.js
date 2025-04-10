@@ -614,6 +614,13 @@ export class NT4_Client {
                         }
                     }
 
+                    // If this topic has a schema, decode it first
+                    else if (topic.type.startsWith("proto:")) {
+                        const schemaMessageName = topic.type.substring(topic.type.indexOf(":") + 1);
+                        const decoded = this.protoDecoder.decode(schemaMessageName, value);
+                        console.log("[NT4] decoded protobuf data: ", decoded.data);
+                    }
+
                     this.onNewTopicData(topic, timestamp_us, value);
                 } else if (topicID === -1) {
                     this.ws_handleReceiveTimestamp(timestamp_us, value);

@@ -11,14 +11,14 @@ import PhotonErrorSnackbar from "@/components/app/photon-error-snackbar.vue";
 import { NT4_Client } from "@/nt4.js";
 
 function topicAnnounceHandler( newTopic ) {
-  // console.log("topic announced: ", newTopic);
+  console.log("topic announced: ", newTopic);
 }
 function topicUnannounceHandler( newTopic ) {
   // console.log("topic unannounced: ", newTopic);
 }
 function valueUpdateHandler( topic, timestamp_us, value ) {
   // const name: string = topic.name
-  // if (name.includes("schema")) {
+  // if (name.includes("result_proto")) {
   //   console.log("value update: ", topic, timestamp_us, value);
   // }
 }
@@ -38,6 +38,7 @@ var nt4Client = new NT4_Client("localhost",
                                );
 // nt4Client.subscribeTopicNames("/.schema")
 const sub = nt4Client.subscribeAllSamples("/.schema/proto:photon.proto")
+const sub2 = nt4Client.subscribeAllSamples("/photonvision/WPI2024/result_proto")
 
 const is_demo = import.meta.env.MODE === "demo";
 if (!is_demo) {

@@ -1,7 +1,11 @@
 import protobuf from "protobufjs";
 import descriptor from "protobufjs/ext/descriptor";
 
-/** Class to manage decoding protobufs. From https://github.com/Mechanical-Advantage/AdvantageScope/blob/f767ffbac2c020b76eb811d1f32fff55765733cb/src/shared/log/ProtoDecoder.ts */
+/** 
+ * Class to manage decoding protobufs. 
+ * From https://github.com/Mechanical-Advantage/AdvantageScope/blob/f767ffbac2c020b76eb811d1f32fff55765733cb/src/shared/log/ProtoDecoder.ts 
+ * Licensed under the MIT license
+ * */
 export default class ProtoDecoder {
   private root = new protobuf.Root();
   private rawDescriptors: Uint8Array[] = [];

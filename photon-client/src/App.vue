@@ -8,6 +8,37 @@ import PhotonSidebar from "@/components/app/photon-sidebar.vue";
 import PhotonLogView from "@/components/app/photon-log-view.vue";
 import PhotonErrorSnackbar from "@/components/app/photon-error-snackbar.vue";
 
+import { NT4_Client } from "@/nt4.js";
+
+function topicAnnounceHandler( newTopic ) {
+  console.log("topic announced: ", newTopic);
+}
+function topicUnannounceHandler( newTopic ) {
+  console.log("topic unannounced: ", newTopic);
+}
+function valueUpdateHandler( topic, timestamp_us, value ) {
+  const name: string = topic.name
+  if (name.includes("schema")) {
+    console.log("value update: ", topic, timestamp_us, value);
+  }
+}
+function onConnect() {
+  console.log("connectedaaaaaaaaaa")
+}
+function onDisconnect() {
+  console.log("disconnectedaaaaaaaaaaaaa")
+}
+
+var nt4Client = new NT4_Client("localhost", 
+                               topicAnnounceHandler,
+                               topicUnannounceHandler,
+                               valueUpdateHandler,
+                               onConnect,
+                               onDisconnect
+                               );
+// nt4Client.subscribeTopicNames("/.schema")
+const sub = nt4Client.subscribeAllSamples("/.schema/proto:photon.proto")
+
 const is_demo = import.meta.env.MODE === "demo";
 if (!is_demo) {
   const websocket = new AutoReconnectingWebsocket(

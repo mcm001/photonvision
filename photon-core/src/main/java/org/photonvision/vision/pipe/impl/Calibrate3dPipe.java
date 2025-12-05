@@ -423,9 +423,11 @@ public class Calibrate3dPipe
                 var error = new Point(measured.x - expected.x, measured.y - expected.y);
                 reprojectionError.add(error);
             }
+            reprojectionErrors.add(reprojectionError);
         }
         jac_temp.release();
 
+        assert reprojectionErrors.size() == objPoints.size();
         return reprojectionErrors;
     }
 

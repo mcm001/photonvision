@@ -410,17 +410,17 @@ public class Calibrate3dPipe
                     continue;
                 }
 
-                // error = (measured - expected)
-                var measured = img_pts_reprojected_list.get(j);
+                // error = (reprojected - expected)
+                var reprojectedImagePoint = img_pts_reprojected_list.get(j);
                 var expected = i_imgPts.get(j);
-                if (!(measured.x >= 0 && measured.y >= 0 && expected.x >= 0 && expected.y >= 0)) {
+                if (!(reprojectedImagePoint.x >= 0 && reprojectedImagePoint.y >= 0 && expected.x >= 0 && expected.y >= 0)) {
                     throw new RuntimeException(
                             "Negative corner in reprojection error calc! Measured: "
-                                    + measured
+                                    + reprojectedImagePoint
                                     + ", expected: "
                                     + expected);
                 }
-                var error = new Point(measured.x - expected.x, measured.y - expected.y);
+                var error = new Point(reprojectedImagePoint.x - expected.x, reprojectedImagePoint.y - expected.y);
                 reprojectionError.add(error);
             }
             reprojectionErrors.add(reprojectionError);

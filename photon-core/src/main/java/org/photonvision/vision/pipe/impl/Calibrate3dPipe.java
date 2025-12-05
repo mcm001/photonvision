@@ -74,6 +74,33 @@ public class Calibrate3dPipe
     private final Mat perViewErrors = new Mat();
 
     /**
+     * Warp the board world point locations according to the warp parameters. The chessboard spans
+     * [-1, 1] on the x and y axies. We then let z=k_x(1-x^2)+k_y(1-y^2)
+     *
+     * <p>Mutates objectPoints in place.
+     */
+    private void warpBoardObservation(
+            MatOfPoint3f objectPoints, CalibratePipeParams params, double[] warp) {
+
+        double xmin = 0;
+        double ymin = 0;
+        double xmax = params.boardWidth * params.squareSize;
+        double ymax = params.boardHeight * params.squareSize;
+        double k_x = warp[0];
+        double k_y = warp[1];
+
+        // Convert to list, remap z, and back to cv::Mat
+        var list = objectPoints.toArray();
+        for (var pt : list) {
+            double x_norm = MathUtils.map(pt.x, xmin, xmax, -1, 1);
+            double y_norm = MathUtils.map(pt.y, ymin, ymax, -1, 1);
+            // assuems that the board is at z=0 before warping
+            pt.z = k_x * (1 - x_norm * x_norm) + k_y * (1 - y_norm * y_norm);
+        }
+        objectPoints.fromArray(list);
+    }
+
+    /**
      * Runs the process for the pipe.
      *
      * @param in Input for pipe processing. In the format (Input image, object points, image points)
@@ -204,16 +231,11 @@ public class Calibrate3dPipe
                                 })
                         .collect(Collectors.toList());
 
+        var reprojectionErrors =
+                calculateReprojectionError(
+                        in, cameraMatrix, distortionCoefficients, rvecs, tvecs, inliners, null);
         var observations =
-                createObservations(
-                        in,
-                        cameraMatrix,
-                        distortionCoefficients,
-                        rvecs,
-                        tvecs,
-                        inliners,
-                        new double[] {0, 0},
-                        imageSavePath);
+                createObservations(in, rvecs, tvecs, inliners, reprojectionErrors, imageSavePath);
 
         cameraMatrix.release();
         distortionCoefficients.release();
@@ -260,6 +282,8 @@ public class Calibrate3dPipe
         levels.forEach(MatOfFloat::release);
         corner_locations.forEach(MatOfPoint2f::release);
 
+        var boardWarp = new double[] {result.warp_x, result.warp_y};
+
         // intrinsics are fx fy cx cy from mrcal
         JsonMatOfDouble cameraMatrixMat =
                 new JsonMatOfDouble(
@@ -290,7 +314,7 @@ public class Calibrate3dPipe
             var rvec = new MatOfDouble();
             var tvec = new MatOfDouble();
 
-            rvec.fromArray(o.getRotation().getAxis().times(o.getRotation().getAngle()).getData());
+            rvec.fromArray(o.getRotation().toVector().getData());
             tvec.fromArray(
                     o.getTranslation().getX(), o.getTranslation().getY(), o.getTranslation().getZ());
 
@@ -298,16 +322,14 @@ public class Calibrate3dPipe
             tvecs.add(tvec);
         }
 
+        // Re-calculate error ourselves to preserve old behavior
+        List<boolean[]> inliners = result.cornersUsed;
+        var reprojectionErrors =
+                calculateReprojectionError(
+                        in, cameraMatrixMat.getAsMatOfDouble(), distortionCoefficientsMat.getAsMatOfDouble(), rvecs, tvecs, inliners, boardWarp);
         List<BoardObservation> observations =
                 createObservations(
-                        in,
-                        cameraMatrixMat.getAsMatOfDouble(),
-                        distortionCoefficientsMat.getAsMatOfDouble(),
-                        rvecs,
-                        tvecs,
-                        result.cornersUsed,
-                        new double[] {result.warp_x, result.warp_y},
-                        imageSavePath);
+                        in, rvecs, tvecs, result.cornersUsed, reprojectionErrors, imageSavePath);
 
         rvecs.forEach(Mat::release);
         tvecs.forEach(Mat::release);
@@ -316,63 +338,50 @@ public class Calibrate3dPipe
                 in.get(0).size,
                 cameraMatrixMat,
                 distortionCoefficientsMat,
-                new double[] {result.warp_x, result.warp_y},
+                boardWarp,
                 observations,
                 new Size(params.boardWidth, params.boardHeight),
                 params.squareSize,
                 CameraLensModel.LENSMODEL_OPENCV);
     }
 
-    private List<BoardObservation> createObservations(
+    /**
+     * Calculate the reprojection error for each corner in each observation. If the corner isn't
+     * marked as used, the error is (0,0) and you should filter these out before doing additional
+     * statistics.
+     *
+     * @param in
+     * @param cameraMatrix_
+     * @param distortionCoefficients_
+     * @param rvecs
+     * @param tvecs
+     * @param cornersUsed
+     * @param calobject_warp
+     * @return
+     */
+    private List<List<Point>> calculateReprojectionError(
             List<FindBoardCornersPipe.FindBoardCornersPipeResult> in,
             Mat cameraMatrix_,
             MatOfDouble distortionCoefficients_,
             List<Mat> rvecs,
             List<Mat> tvecs,
             List<boolean[]> cornersUsed,
-            double[] calobject_warp,
-            Path imageSavePath) {
+            double[] calobject_warp) {
         List<Mat> objPoints = in.stream().map(it -> it.objectPoints).collect(Collectors.toList());
         List<Mat> imgPts = in.stream().map(it -> it.imagePoints).collect(Collectors.toList());
 
-        // Clear the calibration image folder of any old images before we save the new ones.
-
-        try {
-            FileUtils.cleanDirectory(imageSavePath.toFile());
-        } catch (Exception e) {
-            logger.error("Failed to clean calibration image directory", e);
-        }
+        List<List<Point>> reprojectionErrors = new ArrayList<>();
 
         // For each observation, calc reprojection error
         Mat jac_temp = new Mat();
-        List<BoardObservation> observations = new ArrayList<>();
         for (int snapshotId = 0; snapshotId < objPoints.size(); snapshotId++) {
             MatOfPoint3f i_objPtsNative = new MatOfPoint3f();
             objPoints.get(snapshotId).copyTo(i_objPtsNative);
-            var i_objPts = i_objPtsNative.toList();
             var i_imgPts = ((MatOfPoint2f) imgPts.get(snapshotId)).toList();
 
             // Apply warp, if set
             if (calobject_warp != null && calobject_warp.length == 2) {
-                // mrcal warp model!
-                // The chessboard spans [-1, 1] on the x and y axies. We then let
-                // z=k_x(1-x^2)+k_y(1-y^2)
-
-                double xmin = 0;
-                double ymin = 0;
-                double xmax = params.boardWidth * params.squareSize;
-                double ymax = params.boardHeight * params.squareSize;
-                double k_x = calobject_warp[0];
-                double k_y = calobject_warp[1];
-
-                // Convert to list, remap z, and back to cv::Mat
-                var list = i_objPtsNative.toArray();
-                for (var pt : list) {
-                    double x_norm = MathUtils.map(pt.x, xmin, xmax, -1, 1);
-                    double y_norm = MathUtils.map(pt.y, ymin, ymax, -1, 1);
-                    pt.z = k_x * (1 - x_norm * x_norm) + k_y * (1 - y_norm * y_norm);
-                }
-                i_objPtsNative.fromArray(list);
+                warpBoardObservation(i_objPtsNative, params, calobject_warp);
             }
 
             var img_pts_reprojected = new MatOfPoint2f();
@@ -394,25 +403,63 @@ public class Calibrate3dPipe
 
             var reprojectionError = new ArrayList<Point>();
             for (int j = 0; j < img_pts_reprojected_list.size(); j++) {
-                // Outliers are not part of the calibration, so don't calculate error for them
+                // Outliers are not part of the calibration -- return 0, expect caller to deal
+                // with this
                 if (!cornersUsed.get(snapshotId)[j]) {
+                    reprojectionError.add(new Point(0, 0));
                     continue;
                 }
 
                 // error = (measured - expected)
                 var measured = img_pts_reprojected_list.get(j);
                 var expected = i_imgPts.get(j);
-                assert measured.x >= 0 && measured.y >= 0 && expected.x >= 0 && expected.y >= 0
-                        : "Negative corner in reprojection error calc! Measured: "
-                                + measured
-                                + ", expected: "
-                                + expected;
+                if (!(measured.x >= 0 && measured.y >= 0 && expected.x >= 0 && expected.y >= 0)) {
+                    throw new RuntimeException(
+                            "Negative corner in reprojection error calc! Measured: "
+                                    + measured
+                                    + ", expected: "
+                                    + expected);
+                }
                 var error = new Point(measured.x - expected.x, measured.y - expected.y);
                 reprojectionError.add(error);
             }
+        }
+        jac_temp.release();
+
+        return reprojectionErrors;
+    }
+
+    private List<BoardObservation> createObservations(
+            List<FindBoardCornersPipe.FindBoardCornersPipeResult> in,
+            List<Mat> rvecs,
+            List<Mat> tvecs,
+            List<boolean[]> cornersUsed,
+            List<List<Point>> reprojectionErrors,
+            Path imageSavePath) {
+        List<Mat> objPoints = in.stream().map(it -> it.objectPoints).collect(Collectors.toList());
+        List<Mat> imgPts = in.stream().map(it -> it.imagePoints).collect(Collectors.toList());
+
+        // Clear the calibration image folder of any old images before we save the new
+        // ones.
+
+        try {
+            FileUtils.cleanDirectory(imageSavePath.toFile());
+        } catch (Exception e) {
+            logger.error("Failed to clean calibration image directory", e);
+        }
+
+        // For each observation, calc reprojection error
+        Mat jac_temp = new Mat();
+        List<BoardObservation> observations = new ArrayList<>();
+        for (int snapshotId = 0; snapshotId < objPoints.size(); snapshotId++) {
+            MatOfPoint3f i_objPtsNative = new MatOfPoint3f();
+            objPoints.get(snapshotId).copyTo(i_objPtsNative);
+            var i_objPts = i_objPtsNative.toList();
+            var i_imgPts = ((MatOfPoint2f) imgPts.get(snapshotId)).toList();
 
             var camToBoard = MathUtils.opencvRTtoPose3d(rvecs.get(snapshotId), tvecs.get(snapshotId));
 
+            // Save out the image used for calibration
             var inputImage = in.get(snapshotId).inputImage;
             Path image_path = null;
             String snapshotName = "img" + snapshotId + ".png";
@@ -425,7 +472,7 @@ public class Calibrate3dPipe
                     new BoardObservation(
                             i_objPts,
                             i_imgPts,
-                            reprojectionError,
+                            reprojectionErrors.get(snapshotId),
                             camToBoard,
                             cornersUsed.get(snapshotId),
                             snapshotName,

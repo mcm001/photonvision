@@ -21,6 +21,7 @@ import type { BoardObservation, CameraCalibrationResult } from "@/types/SettingT
 import axios from "axios";
 import { useCameraSettingsStore } from "@/stores/settings/CameraSettingsStore";
 import { useTheme } from "vuetify";
+import { createPerspectiveCamera } from "@/lib/ThreeUtils";
 
 const theme = useTheme();
 
@@ -92,14 +93,8 @@ const drawCalibration = (cal: CameraCalibrationResult | null) => {
     previousTargets.push(board);
   });
 
-  // And show camera fov
-  const imageWidth = props.resolution.width;
-  const imageHeight = props.resolution.height;
-  const focalLengthY = cal.cameraIntrinsics.data[4];
-  const fovY = 2 * Math.atan(imageHeight / (2 * focalLengthY)) * (180 / Math.PI);
-  const aspect = imageWidth / imageHeight;
-
-  const calibCamera = new PerspectiveCamera(fovY, aspect, 0.1, 1.0);
+  // And show camera frustum
+  const calibCamera = createPerspectiveCamera(props.resolution, cal.cameraIntrinsics);
   const helper = new CameraHelper(calibCamera);
 
   // Flip to +Z forward
@@ -291,8 +286,8 @@ watch(
         <v-btn
           style="width: 100%"
           color="buttonActive"
-          @click="resetCamFirstPerson"
           :variant="theme.global.name.value === 'LightTheme' ? 'elevated' : 'outlined'"
+          @click="resetCamFirstPerson"
         >
           First Person
         </v-btn>
@@ -301,15 +296,15 @@ watch(
         <v-btn
           style="width: 100%"
           color="buttonActive"
-          @click="resetCamThirdPerson"
           :variant="theme.global.name.value === 'LightTheme' ? 'elevated' : 'outlined'"
+          @click="resetCamThirdPerson"
         >
           Third Person
         </v-btn>
       </v-col>
     </div>
     <div style="flex: 1 1 auto">
-      <canvas class="w-100 h-100" id="view" />
+      <canvas id="view" class="w-100 h-100" />
     </div>
   </div>
 </template>

@@ -332,8 +332,8 @@ public class Calibrate3dPipe
             List<boolean[]> cornersUsed,
             double[] calobject_warp,
             Path imageSavePath) {
-        List<Mat> objPoints = in.stream().map(it -> it.objectPoints).collect(Collectors.toList());
-        List<Mat> imgPts = in.stream().map(it -> it.imagePoints).collect(Collectors.toList());
+        List<MatOfPoint3f> objPoints = in.stream().map(it -> it.objectPoints).toList();
+        List<MatOfPoint2f> imgPts = in.stream().map(it -> it.imagePoints).toList();
 
         // Clear the calibration image folder of any old images before we save the new ones.
 
@@ -347,10 +347,10 @@ public class Calibrate3dPipe
         Mat jac_temp = new Mat();
         List<BoardObservation> observations = new ArrayList<>();
         for (int snapshotId = 0; snapshotId < objPoints.size(); snapshotId++) {
+            // Copy object points to a new mat to allow warp modification without affecting underlying data
             MatOfPoint3f i_objPtsNative = new MatOfPoint3f();
             objPoints.get(snapshotId).copyTo(i_objPtsNative);
-            var i_objPts = i_objPtsNative.toList();
-            var i_imgPts = ((MatOfPoint2f) imgPts.get(snapshotId)).toList();
+
 
             // Apply warp, if set
             if (calobject_warp != null && calobject_warp.length == 2) {
@@ -374,7 +374,8 @@ public class Calibrate3dPipe
                 }
                 i_objPtsNative.fromArray(list);
             }
-
+            
+            // Project distorted object points to image space
             var img_pts_reprojected = new MatOfPoint2f();
             try {
                 Calib3d.projectPoints(
@@ -390,9 +391,11 @@ public class Calibrate3dPipe
                 e.printStackTrace();
                 continue;
             }
-            var img_pts_reprojected_list = img_pts_reprojected.toList();
 
+            // Calculate reprojection error for each point
             var reprojectionError = new ArrayList<Point>();
+            List<Point> i_imgPts = imgPts.get(snapshotId).toList();
+            var img_pts_reprojected_list = img_pts_reprojected.toList();
             for (int j = 0; j < img_pts_reprojected_list.size(); j++) {
                 // Outliers are not part of the calibration, so don't calculate error for them
                 if (!cornersUsed.get(snapshotId)[j]) {
@@ -423,7 +426,7 @@ public class Calibrate3dPipe
 
             observations.add(
                     new BoardObservation(
-                            i_objPts,
+                            i_objPtsNative.toList(),
                             i_imgPts,
                             reprojectionError,
                             camToBoard,

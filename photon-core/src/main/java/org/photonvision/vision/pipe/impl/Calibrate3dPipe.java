@@ -232,7 +232,7 @@ public class Calibrate3dPipe
                 observations,
                 new Size(params.boardWidth, params.boardHeight),
                 params.squareSize,
-                CameraLensModel.LENSMODEL_OPENCV);
+                CameraLensModel.LENSMODEL_OPENCV, null);
     }
 
     protected CameraCalibrationCoefficients calibrateMrcal(
@@ -353,7 +353,7 @@ public class Calibrate3dPipe
                 observations,
                 new Size(params.boardWidth, params.boardHeight),
                 params.squareSize,
-                CameraLensModel.LENSMODEL_OPENCV);
+                CameraLensModel.LENSMODEL_OPENCV, null);
     }
 
     private List<BoardObservation> createObservations(

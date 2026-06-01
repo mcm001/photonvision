@@ -127,7 +127,6 @@ public class Calibrate3dPipeTest {
     public void calibrateTestMatrix(
             @Enum(CalibrationDatasets.class) CalibrationDatasets dataset,
             @Values(booleans = {true, false}) boolean useMrCal) {
-        // Pi3 and V1.3 camera
         String squareBase = TestUtils.getSquaresBoardImagesPath().toAbsolutePath().toString();
         String charucoBase = TestUtils.getCharucoBoardImagesPath().toAbsolutePath().toString();
 
@@ -152,14 +151,14 @@ public class Calibrate3dPipeTest {
                     dataset.useOldPattern);
     }
 
-    public static void calibrateCommon(
+    public static CameraCalibrationCoefficients calibrateCommon(
             Size imgRes,
             File rootFolder,
             Size boardDim,
             BoardType boardType,
             boolean useMrCal,
             boolean useOldPattern) {
-        calibrateCommon(
+        return calibrateCommon(
                 imgRes,
                 rootFolder,
                 boardDim,
@@ -173,7 +172,7 @@ public class Calibrate3dPipeTest {
                 useOldPattern);
     }
 
-    public static void calibrateCommon(
+    public static CameraCalibrationCoefficients calibrateCommon(
             Size imgRes,
             File rootFolder,
             Size boardDim,
@@ -184,7 +183,7 @@ public class Calibrate3dPipeTest {
             double expectedYCenter,
             boolean useMrCal,
             boolean useOldPattern) {
-        calibrateCommon(
+        return calibrateCommon(
                 imgRes,
                 rootFolder,
                 boardDim,
@@ -198,7 +197,7 @@ public class Calibrate3dPipeTest {
                 useOldPattern);
     }
 
-    public static void calibrateCommon(
+    public static CameraCalibrationCoefficients calibrateCommon(
             Size imgRes,
             File rootFolder,
             Size boardDim,
@@ -259,8 +258,6 @@ public class Calibrate3dPipeTest {
                                 .getCalibrationImageSavePathWithRes(imgRes, "Calibration_Test"));
         calibration3dPipeline.finishCalibration();
 
-        // visuallyDebugDistortion(directoryListing, imgRes, cal );
-
         // Confirm we have indeed gotten valid calibration objects
         assertNotNull(cal);
         assertNotNull(cal.observations);
@@ -296,6 +293,8 @@ public class Calibrate3dPipeTest {
         // doesn't
         // work in CI
         System.out.println("CVMats left: " + CVMat.getMatCount() + " Start: " + startMatCount);
+
+        return cal;
     }
 
     /**

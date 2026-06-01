@@ -25,9 +25,18 @@ import org.opencv.core.MatOfDouble;
 import org.opencv.core.Size;
 import org.photonvision.vision.opencv.ImageRotationMode;
 import org.photonvision.vision.opencv.Releasable;
+import org.wpilib.math.geometry.Pose3d;
 
 @Json
 public class CameraCalibrationCoefficients implements Releasable {
+    // Mirror of
+    // https://github.com/dkogan/mrcal/blob/c311b0acdb29d3f6c1a5abeaf17dc6a7e2ab10d9/mrcal/cameramodel.py#L377
+    // We must pass the exact optimization state vector back to mrcal when computing uncertainty, but
+    // we re-estimate the camera to object pose using SolvePNP
+    // So we need to keep this + the observation camera to object around. This input shall not change
+    // with "calibration rotation"
+    public static record OptimizationInputs(List<Pose3d> rt_cam_ref) {}
+
     /** The unrotated resolution of the calibration */
     public final Size resolution;
 
@@ -44,6 +53,9 @@ public class CameraCalibrationCoefficients implements Releasable {
     public final double calobjectSpacing;
 
     public final CameraLensModel lensmodel;
+
+    // Solver optimization inputs, or null if not available (e.g. legacy calibrations)
+    public final OptimizationInputs optimizationInputs;
 
     /**
      * Contains all camera calibration data for a particular resolution of a camera. Designed for use
@@ -71,7 +83,8 @@ public class CameraCalibrationCoefficients implements Releasable {
             List<BoardObservation> observations,
             Size calobjectSize,
             double calobjectSpacing,
-            CameraLensModel lensmodel) {
+            CameraLensModel lensmodel,
+            OptimizationInputs optimizationInputs) {
         this.resolution = resolution;
         this.cameraIntrinsics = cameraIntrinsics;
         this.distCoeffs = distCoeffs;
@@ -79,6 +92,7 @@ public class CameraCalibrationCoefficients implements Releasable {
         this.calobjectSize = calobjectSize;
         this.calobjectSpacing = calobjectSpacing;
         this.lensmodel = lensmodel;
+        this.optimizationInputs = optimizationInputs;
 
         // Legacy migration just to make sure that observations is at worst empty and never null
         if (observations == null) {
@@ -180,7 +194,8 @@ public class CameraCalibrationCoefficients implements Releasable {
                 observations,
                 calobjectSize,
                 calobjectSpacing,
-                lensmodel);
+                lensmodel,
+                optimizationInputs);
     }
 
     public Mat getCameraIntrinsicsMat() {
@@ -233,6 +248,7 @@ public class CameraCalibrationCoefficients implements Releasable {
                 observations,
                 calobjectSize,
                 calobjectSpacing,
-                lensmodel);
+                lensmodel,
+                null);
     }
 }
